@@ -46,6 +46,12 @@ $('[href="#mem-info"]').click(function() {
 $('[href="#proc-info"]').click(function() {
   ajaxRequest("cgi-bin/proc-info.sh", "textarea#console");
 });
+$('[href="#shutdown"]').click(function() {
+  ajaxRequest("cgi-bin/shutdown.sh", "textarea#console");
+});
+$('[href="#reboot"]').click(function() {
+  ajaxRequest("cgi-bin/reboot.sh", "textarea#console");
+});
 
 $('a#ls-tmp').click(function() {
   ajaxRequest("cgi-bin/ls-tmp.sh", "textarea#console");
