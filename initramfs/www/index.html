@@ -1,71 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
 
-    <title>Fixed Top Navbar Example for Bootstrap</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/main.css">
 
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+        <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
-    <!-- Custom styles for this template
-    <link href="navbar-fixed-top.css" rel="stylesheet"> -->
-  </head>
 
-  <body>
 
-    <!-- Fixed navbar -->
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+    <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="index.html">Linux HTTP Server</a>
+          <a class="navbar-brand" href="#">Embedded Linux HTTP Server</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Home</a></li>
-            <li><a href="#network-info.html" id="network-info">Network Info</a></li>
-            <li><a href="#cpu-info" id="cpu-info">CPU Info</a></li>
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#cpu-info">CPU Info</a></li>
+            <li><a href="#mem-info">Mem Info</a></li>
+            <li><a href="#network-info">Network Info</a></li>
+            <li><a href="#proc-info">Process Info</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Command<b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Commands <b class="caret"></b></a>
               <ul class="dropdown-menu">
+                <li><a href="#shutdown">shutdown</a></li>
+                <li><a href="#reboot">reboot</a></li>
                 <li><a href="#ls-tmp" id="ls-tmp">List /tmp folder</a></li>
                 <li><a href="#delete-tmp" id="delete-tmp">Delete /tmp folder</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
               </ul>
             </li>
           </ul>
-        </div><!--/.nav-collapse -->
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>This is the Embedded Linux HTTP Server </h1>
+        <p> 
+        Developed and compiled by Jakub Werner and Stefano Di Martino
+       </p>
       </div>
     </div>
 
     <div class="container">
-
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h1>Gott zum Gru&szlig;e!</h1>
-        <h2>Willkommen beim Ponyhof!</h2>
-
-        <p>Toben Sie sich aus! Dr&uuml;cken Sie Kn&ouml;pfe! &ndash; Dies ist ein Ponyhof!</p>
-        
-        <textarea class="form-control" rows="9" id="console"></textarea>
-      </div>
-
+      <textarea class="form-control" rows="20" id="console"></textarea>
+      <hr>
 
       <footer>
         <div id="os-info"></div>
@@ -73,71 +81,25 @@
         <br />
         <p>&copy; Stefano Di Martino & Jakub Werner</p>
       </footer>
+    </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 
-    </div> <!-- /container -->
+        <script src="js/vendor/bootstrap.min.js"></script>
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    
-    <script>
-        // Load header before $() in order to make work addClass()
-        $("#header").load("header.html"); 
-    </script>
-    
-    <script>
-	    $(function(){
-		    init();
-		    show_os_info();
-		    show_network_info();
-	    });
+        <script src="js/main.js"></script>
 
-	    function init() {
-		    $("#home").addClass("active");
-	    }
+        <script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src='//www.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
 
-	    function show_os_info() {
-	        ajaxRequest("cgi-bin/os-info.sh", "div#os-info");
-	        ajaxRequest("cgi-bin/uptime.sh", "div#uptime");
-        }
-        
-        function show_network_info() {
-	        ajaxRequest("cgi-bin/network-info.sh", "textarea#console");
-        }
-        
-        var ajaxRequest = function (url, copy_to_element) {
-            request = $.ajax({ url : url, type : "post", contentType : "text/html", data : null });
+        <script>
+            </script>
 
-            //request.done(function (response, textStatus, jqXHR){ console.log(response); });
-            
-            request.fail(function (jqXHR, textStatus, errorThrown){ console.log("error from " + url) });
-            
-            request.success(function(data){
-                    $(copy_to_element).text(data);
-                    console.log("success from " + url)
-                }
-            );
-        }
-        
-        $('a#network-info').click(function() {
-            ajaxRequest("cgi-bin/network-info.sh", "textarea#console");    
-        });
-        
-        $('a#cpu-info').click(function() {
-            ajaxRequest("cgi-bin/cpu-info.sh", "textarea#console");
-        });
 
-	$('a#cpu-info').click(function() {
-            ajaxRequest("cgi-bin/cpu-info.sh", "textarea#console");
-        });
 
-	$('a#ls-tmp').click(function() {
-            ajaxRequest("cgi-bin/ls-tmp.sh", "textarea#console");
-        });
 
-	$('a#delete-tmp').click(function() {
-            ajaxRequest("cgi-bin/rm-tmp.sh", "textarea#console");
-        });
-    </script>
-  </body>
+    </body>
 </html>
-
