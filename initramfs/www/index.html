@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
+
+    <title>Fixed Top Navbar Example for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template
+    <link href="navbar-fixed-top.css" rel="stylesheet"> -->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Linux HTTP Server</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="index.html">Home</a></li>
+            <li><a href="#network-info.html" id="network-info">Network Info</a></li>
+            <li><a href="#cpu-info" id="cpu-info">CPU Info</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Command<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#ls-tmp" id="ls-tmp">List /tmp folder</a></li>
+                <li><a href="#delete-tmp" id="delete-tmp">Delete /tmp folder</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>Gott zum Gru&szlig;e!</h1>
+        <h2>Willkommen beim Ponyhof!</h2>
+
+        <p>Toben Sie sich aus! Dr&uuml;cken Sie Kn&ouml;pfe! &ndash; Dies ist ein Ponyhof!</p>
+        
+        <textarea class="form-control" rows="9" id="console"></textarea>
+      </div>
+
+
+      <footer>
+        <div id="os-info"></div>
+        <div id="uptime"></div>
+        <br />
+        <p>&copy; Stefano Di Martino & Jakub Werner</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    
+    <script>
+        // Load header before $() in order to make work addClass()
+        $("#header").load("header.html"); 
+    </script>
+    
+    <script>
+	    $(function(){
+		    init();
+		    show_os_info();
+		    show_network_info();
+	    });
+
+	    function init() {
+		    $("#home").addClass("active");
+	    }
+
+	    function show_os_info() {
+	        ajaxRequest("cgi-bin/os-info.sh", "div#os-info");
+	        ajaxRequest("cgi-bin/uptime.sh", "div#uptime");
+        }
+        
+        function show_network_info() {
+	        ajaxRequest("cgi-bin/network-info.sh", "textarea#console");
+        }
+        
+        var ajaxRequest = function (url, copy_to_element) {
+            request = $.ajax({ url : url, type : "post", contentType : "text/html", data : null });
+
+            //request.done(function (response, textStatus, jqXHR){ console.log(response); });
+            
+            request.fail(function (jqXHR, textStatus, errorThrown){ console.log("error from " + url) });
+            
+            request.success(function(data){
+                    $(copy_to_element).text(data);
+                    console.log("success from " + url)
+                }
+            );
+        }
+        
+        $('a#network-info').click(function() {
+            ajaxRequest("cgi-bin/network-info.sh", "textarea#console");    
+        });
+        
+        $('a#cpu-info').click(function() {
+            ajaxRequest("cgi-bin/cpu-info.sh", "textarea#console");
+        });
+
+	$('a#cpu-info').click(function() {
+            ajaxRequest("cgi-bin/cpu-info.sh", "textarea#console");
+        });
+
+	$('a#ls-tmp').click(function() {
+            ajaxRequest("cgi-bin/ls-tmp.sh", "textarea#console");
+        });
+
+	$('a#delete-tmp').click(function() {
+            ajaxRequest("cgi-bin/rm-tmp.sh", "textarea#console");
+        });
+    </script>
+  </body>
+</html>
+
