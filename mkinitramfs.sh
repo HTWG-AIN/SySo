@@ -1,5 +1,7 @@
 #!/usr/bin/fakeroot /bin/sh
 
+[ -z $1 ] && echo "usage: $0 <initramfs-directory>" && exi
+
 echo "fakeing root enviroment"
 
 echo "creating temp dir"                                                                        
