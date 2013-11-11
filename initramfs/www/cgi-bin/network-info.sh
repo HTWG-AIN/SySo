@@ -2,5 +2,5 @@
 echo "Content-type: text/html"
 echo ""
 
-network_info=`ip addr`
+network_info=`ifconfig`
 echo "$network_info"

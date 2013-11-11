@@ -14,6 +14,8 @@ mdev -s
 mkdir /dev/pts
 mount -t devpts devpts /dev/pts
 
+loadkmap < /etc/keymaps/keymap_de_DE
+
 udhcpc -i eth0 -s /etc/udhcpc/simple.script
 
 httpd -h /www/

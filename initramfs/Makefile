@@ -5,7 +5,7 @@
 
 CC=arm-linux-gnueabi-gcc
 # Options
-CFLAGS = -g -W -Wall
+CFLAGS = -W -Wall
 
 STATIC = -static # For static lib binding.
 
@@ -20,7 +20,7 @@ all: $(TARGETS)
 # Look for 'glibc-static' in your distributor's repository!
 
 $(TARGETS): $(SOURCES)
-	$(CC) $(CFLAGS) -static $@.c -o $@
+	$(CC) $(CFLAGS) $@.c -o $@
 
 clean:
 	$(RM) $(TARGETS) *.o core* tmp*
