@@ -22,7 +22,7 @@ cd ..
 
 echo "xzing initrd"
 rm initramfs.cpio.xz
-xz -z initramfs.cpio
+xz -9 --check=crc32 initramfs.cpio
 
 echo "tmpmnt"
 rm -rf tmpmnt
