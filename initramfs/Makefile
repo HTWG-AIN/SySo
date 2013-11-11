@@ -3,7 +3,7 @@
 #
 # Autor: Stefano Di Martino
 
-CC=arm-buildroot-linux-uclibcgnueabi-gcc
+CC=arm-linux-gnueabi-gcc
 # Options
 CFLAGS = -g -W -Wall
 
