@@ -10,6 +10,10 @@ mount -t tmpfs tmpfs /tmp
 
 mdev -s
 
+#tmp vollschreiben
+mkdir /tmp/blub
+mkdir /tmp/bla
+
 # Mounting pseudo terminals for telnet and ssh!
 mkdir /dev/pts
 mount -t devpts devpts /dev/pts
