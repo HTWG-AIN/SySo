@@ -3,7 +3,7 @@
 #
 # Autor: Stefano Di Martino
 
-CC=arm-linux-gnueabi-gcc
+CC=/opt/toolchains/Sourcery-CodeBench-ARM-2013.05/bin/arm-none-linux-gnueabi-gcc
 # Options
 CFLAGS = -W -Wall
 
