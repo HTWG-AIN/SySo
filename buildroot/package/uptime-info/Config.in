@@ -1,0 +1,6 @@
+config BR2_PACKAGE_UPTIME_INFO
+	bool "uptime_info"
+	help
+	  Prints the uptime each second
+
+	  https://github.com/StefanoD/SySo/tree/master/uptime-info
