@@ -1,3 +1,3 @@
 #!/bin/sh
 cd uptime-info
-tar czfv uptime-info.tar.gz uptime-info.c Makefile && mv uptime-info.tar.gz ../tarballs
+tar czfv uptime-info-1.0.tar.gz uptime-info.c Makefile && mv uptime-info-1.0.tar.gz ../tarballs
