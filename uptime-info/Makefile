@@ -3,8 +3,8 @@
 #
 # Autor: Stefano Di Martino
 
-CROSS_COMPILE=arm-none-linux-gnueabi-
-CC=gcc
+#CROSS_COMPILE=arm-none-linux-gnueabi-
+#CC=gcc
 # Options
 CFLAGS = -W -Wall
 
@@ -18,7 +18,7 @@ TARGETS = $(C_FILES:%.c=%)
 all: $(TARGETS)
 
 $(TARGETS): $(SOURCES)
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $@.c -o $@  && $(CROSS_COMPILE)$(CC) $(STATIC) $(CFLAGS) $@.c -o $@-static
+	$(CC) $(CFLAGS) $@.c -o $@  && $(CC) $(STATIC) $(CFLAGS) $@.c -o $@-static
 	
 clean:
 	$(RM) $(TARGETS) $(TARGETS)-static *.o core* tmp*
