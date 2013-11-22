@@ -3,7 +3,7 @@
 #
 # Autor: Stefano Di Martino
 
-CROSS_COMPILE=/opt/toolchains/Sourcery-CodeBench-ARM-2013.05/bin/arm-none-linux-gnueabi-
+CROSS_COMPILE=arm-none-linux-gnueabi-
 CC=gcc
 # Options
 CFLAGS = -W -Wall
