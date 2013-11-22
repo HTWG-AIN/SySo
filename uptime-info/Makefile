@@ -21,4 +21,4 @@ $(TARGETS): $(SOURCES)
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $@.c -o $@  && $(CROSS_COMPILE)$(CC) $(STATIC) $(CFLAGS) $@.c -o $@-static
 	
 clean:
-	$(RM) $(TARGETS) *.o core* tmp*
+	$(RM) $(TARGETS) $(TARGETS)-static *.o core* tmp*
