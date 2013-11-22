@@ -3,7 +3,7 @@
 #
 # Autor: Stefano Di Martino
 
-CROSS_COMPILE=arm-none-linux-gnueabi-
+CROSS_COMPILE=arm-buildroot-linux-uclibcgnueabi-
 CC=gcc
 # Options
 CFLAGS = -W -Wall
