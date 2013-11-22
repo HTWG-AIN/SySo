@@ -17,11 +17,8 @@ TARGETS = $(C_FILES:%.c=%)
 
 all: $(TARGETS)
 
-# libc has to be installed as a static lib on your system!
-# Look for 'glibc-static' in your distributor's repository!
-
 $(TARGETS): $(SOURCES)
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) $@.c -o $@
-
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $@.c -o $@  && $(CROSS_COMPILE)$(CC) $(STATIC) $(CFLAGS) $@.c -o $@-static
+	
 clean:
 	$(RM) $(TARGETS) *.o core* tmp*
