@@ -26,8 +26,8 @@ endef
 #endef
 
 define UPTIME_INFO_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 0755 $(@D)/uptime-info-static $(STAGING_DIR)/bin/uptime-static
-	$(INSTALL) -D -m 0755 $(@D)/uptime-info $(STAGING_DIR)/bin/uptime
+	$(INSTALL) -D -m 0755 $(@D)/uptime-info-static $(TARGET_DIR)/bin/uptime-info-static
+	$(INSTALL) -D -m 0755 $(@D)/uptime-info $(TARGET_DIR)/bin/uptime-info
 endef
 
 #define UPTIME_INFO_DEVICES
