@@ -3,7 +3,8 @@
 #
 # Autor: Stefano Di Martino
 
-CC=/opt/toolchains/Sourcery-CodeBench-ARM-2013.05/bin/arm-none-linux-gnueabi-gcc
+CROSS_COMPILE=/opt/toolchains/Sourcery-CodeBench-ARM-2013.05/bin/arm-none-linux-gnueabi-
+CC=gcc
 # Options
 CFLAGS = -W -Wall
 
@@ -20,7 +21,7 @@ all: $(TARGETS)
 # Look for 'glibc-static' in your distributor's repository!
 
 $(TARGETS): $(SOURCES)
-	$(CC) $(CFLAGS) $@.c -o $@
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) $@.c -o $@
 
 clean:
 	$(RM) $(TARGETS) *.o core* tmp*
