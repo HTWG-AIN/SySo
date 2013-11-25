@@ -26,4 +26,4 @@ httpd -h /www/
 
 sysinfo-printer
 
-exec sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
+#exec sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
