@@ -8,3 +8,6 @@ PWD	:= $(shell pwd)
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 endif
+
+clean:
+	$(RM) $(TARGETS) *.o core* tmp*
