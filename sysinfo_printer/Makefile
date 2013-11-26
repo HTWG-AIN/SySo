@@ -6,7 +6,7 @@
 CROSS_COMPILE=arm-buildroot-linux-uclibcgnueabi-
 CC=gcc
 # Options
-CFLAGS = -W -Wall
+CFLAGS = -W -Wall -g
 
 STATIC = -static # For static lib binding.
 
