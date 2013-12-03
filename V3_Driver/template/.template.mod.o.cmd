@@ -1,23 +1,25 @@
-cmd_/home/stemarti/git-arm/V3_Driver/mod1.o := arm-buildroot-linux-uclibcgnueabi-gcc -Wp,-MD,/home/stemarti/git-arm/V3_Driver/.mod1.o.d  -nostdinc -isystem /home/stemarti/buildroot/output/host/usr/lib/gcc/arm-buildroot-linux-uclibcgnueabi/4.7.3/include -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include -Iarch/arm/include/generated  -Iinclude -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include/uapi -Iarch/arm/include/generated/uapi -I/home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi -Iinclude/generated/uapi -include /home/stemarti/buildroot/output/build/linux-3.10.18/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-versatile/include -Iarch/arm/plat-versatile/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -O2 -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -marm -D__LINUX_ARM_ARCH__=5 -march=armv5te -mtune=arm9tdmi -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -g -femit-struct-debug-baseonly -fno-var-tracking -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(mod1)"  -D"KBUILD_MODNAME=KBUILD_STR(mod1)" -c -o /home/stemarti/git-arm/V3_Driver/mod1.o /home/stemarti/git-arm/V3_Driver/mod1.c
+cmd_/home/stemarti/git-arm/V3_Driver/template/template.mod.o := arm-buildroot-linux-uclibcgnueabi-gcc -Wp,-MD,/home/stemarti/git-arm/V3_Driver/template/.template.mod.o.d  -nostdinc -isystem /home/stemarti/buildroot/output/host/usr/lib/gcc/arm-buildroot-linux-uclibcgnueabi/4.7.3/include -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include -Iarch/arm/include/generated  -Iinclude -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include/uapi -Iarch/arm/include/generated/uapi -I/home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi -Iinclude/generated/uapi -include /home/stemarti/buildroot/output/build/linux-3.10.18/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-versatile/include -Iarch/arm/plat-versatile/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -O2 -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -marm -D__LINUX_ARM_ARCH__=5 -march=armv5te -mtune=arm9tdmi -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -g -femit-struct-debug-baseonly -fno-var-tracking -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(template.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(template)" -DMODULE  -c -o /home/stemarti/git-arm/V3_Driver/template/template.mod.o /home/stemarti/git-arm/V3_Driver/template/template.mod.c
 
-source_/home/stemarti/git-arm/V3_Driver/mod1.o := /home/stemarti/git-arm/V3_Driver/mod1.c
+source_/home/stemarti/git-arm/V3_Driver/template/template.mod.o := /home/stemarti/git-arm/V3_Driver/template/template.mod.c
 
-deps_/home/stemarti/git-arm/V3_Driver/mod1.o := \
-  include/linux/init.h \
-    $(wildcard include/config/broken/rodata.h) \
+deps_/home/stemarti/git-arm/V3_Driver/template/template.mod.o := \
+    $(wildcard include/config/module/unload.h) \
+  include/linux/module.h \
+    $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
-  include/linux/compiler.h \
-    $(wildcard include/config/sparse/rcu/pointer.h) \
-    $(wildcard include/config/trace/branch/profiling.h) \
-    $(wildcard include/config/profile/all/branches.h) \
-    $(wildcard include/config/enable/must/check.h) \
-    $(wildcard include/config/enable/warn/deprecated.h) \
-    $(wildcard include/config/kprobes.h) \
-  include/linux/compiler-gcc.h \
-    $(wildcard include/config/arch/supports/optimized/inlining.h) \
-    $(wildcard include/config/optimize/inlining.h) \
-  include/linux/compiler-gcc4.h \
-    $(wildcard include/config/arch/use/builtin/bswap.h) \
+    $(wildcard include/config/unused/symbols.h) \
+    $(wildcard include/config/module/sig.h) \
+    $(wildcard include/config/generic/bug.h) \
+    $(wildcard include/config/kallsyms.h) \
+    $(wildcard include/config/smp.h) \
+    $(wildcard include/config/tracepoints.h) \
+    $(wildcard include/config/tracing.h) \
+    $(wildcard include/config/event/tracing.h) \
+    $(wildcard include/config/ftrace/mcount/record.h) \
+    $(wildcard include/config/constructors.h) \
+    $(wildcard include/config/debug/set/module/ronx.h) \
+  include/linux/list.h \
+    $(wildcard include/config/debug/list.h) \
   include/linux/types.h \
     $(wildcard include/config/uid16.h) \
     $(wildcard include/config/lbdaf.h) \
@@ -35,24 +37,20 @@ deps_/home/stemarti/git-arm/V3_Driver/mod1.o := \
   /home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi/linux/posix_types.h \
   include/linux/stddef.h \
   include/uapi/linux/stddef.h \
+  include/linux/compiler.h \
+    $(wildcard include/config/sparse/rcu/pointer.h) \
+    $(wildcard include/config/trace/branch/profiling.h) \
+    $(wildcard include/config/profile/all/branches.h) \
+    $(wildcard include/config/enable/must/check.h) \
+    $(wildcard include/config/enable/warn/deprecated.h) \
+    $(wildcard include/config/kprobes.h) \
+  include/linux/compiler-gcc.h \
+    $(wildcard include/config/arch/supports/optimized/inlining.h) \
+    $(wildcard include/config/optimize/inlining.h) \
+  include/linux/compiler-gcc4.h \
+    $(wildcard include/config/arch/use/builtin/bswap.h) \
   /home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include/uapi/asm/posix_types.h \
   /home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi/asm-generic/posix_types.h \
-  include/linux/module.h \
-    $(wildcard include/config/sysfs.h) \
-    $(wildcard include/config/unused/symbols.h) \
-    $(wildcard include/config/module/sig.h) \
-    $(wildcard include/config/generic/bug.h) \
-    $(wildcard include/config/kallsyms.h) \
-    $(wildcard include/config/smp.h) \
-    $(wildcard include/config/tracepoints.h) \
-    $(wildcard include/config/tracing.h) \
-    $(wildcard include/config/event/tracing.h) \
-    $(wildcard include/config/ftrace/mcount/record.h) \
-    $(wildcard include/config/module/unload.h) \
-    $(wildcard include/config/constructors.h) \
-    $(wildcard include/config/debug/set/module/ronx.h) \
-  include/linux/list.h \
-    $(wildcard include/config/debug/list.h) \
   include/linux/poison.h \
     $(wildcard include/config/illegal/pointer/value.h) \
   /home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi/linux/const.h \
@@ -114,6 +112,8 @@ deps_/home/stemarti/git-arm/V3_Driver/mod1.o := \
     $(wildcard include/config/early/printk.h) \
     $(wildcard include/config/printk.h) \
     $(wildcard include/config/dynamic/debug.h) \
+  include/linux/init.h \
+    $(wildcard include/config/broken/rodata.h) \
   include/linux/kern_levels.h \
   include/linux/dynamic_debug.h \
   include/linux/string.h \
@@ -379,7 +379,9 @@ deps_/home/stemarti/git-arm/V3_Driver/mod1.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
+  include/linux/vermagic.h \
+  include/generated/utsrelease.h \
 
-/home/stemarti/git-arm/V3_Driver/mod1.o: $(deps_/home/stemarti/git-arm/V3_Driver/mod1.o)
+/home/stemarti/git-arm/V3_Driver/template/template.mod.o: $(deps_/home/stemarti/git-arm/V3_Driver/template/template.mod.o)
 
-$(deps_/home/stemarti/git-arm/V3_Driver/mod1.o):
+$(deps_/home/stemarti/git-arm/V3_Driver/template/template.mod.o):

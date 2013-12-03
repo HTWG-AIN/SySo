@@ -1,0 +1,1 @@
+cmd_/home/stemarti/git-arm/V3_Driver/openclose/openclose.ko := arm-buildroot-linux-uclibcgnueabi-ld -EL -r  -T /home/stemarti/buildroot/output/build/linux-3.10.18/scripts/module-common.lds --build-id  -o /home/stemarti/git-arm/V3_Driver/openclose/openclose.ko /home/stemarti/git-arm/V3_Driver/openclose/openclose.o /home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o

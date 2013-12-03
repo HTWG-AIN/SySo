@@ -1,8 +1,8 @@
-cmd_/home/stemarti/git-arm/V3_Driver/mod1.mod.o := arm-buildroot-linux-uclibcgnueabi-gcc -Wp,-MD,/home/stemarti/git-arm/V3_Driver/.mod1.mod.o.d  -nostdinc -isystem /home/stemarti/buildroot/output/host/usr/lib/gcc/arm-buildroot-linux-uclibcgnueabi/4.7.3/include -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include -Iarch/arm/include/generated  -Iinclude -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include/uapi -Iarch/arm/include/generated/uapi -I/home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi -Iinclude/generated/uapi -include /home/stemarti/buildroot/output/build/linux-3.10.18/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-versatile/include -Iarch/arm/plat-versatile/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -O2 -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -marm -D__LINUX_ARM_ARCH__=5 -march=armv5te -mtune=arm9tdmi -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -g -femit-struct-debug-baseonly -fno-var-tracking -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(mod1.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(mod1)" -DMODULE  -c -o /home/stemarti/git-arm/V3_Driver/mod1.mod.o /home/stemarti/git-arm/V3_Driver/mod1.mod.c
+cmd_/home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o := arm-buildroot-linux-uclibcgnueabi-gcc -Wp,-MD,/home/stemarti/git-arm/V3_Driver/openclose/.openclose.mod.o.d  -nostdinc -isystem /home/stemarti/buildroot/output/host/usr/lib/gcc/arm-buildroot-linux-uclibcgnueabi/4.7.3/include -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include -Iarch/arm/include/generated  -Iinclude -I/home/stemarti/buildroot/output/build/linux-3.10.18/arch/arm/include/uapi -Iarch/arm/include/generated/uapi -I/home/stemarti/buildroot/output/build/linux-3.10.18/include/uapi -Iinclude/generated/uapi -include /home/stemarti/buildroot/output/build/linux-3.10.18/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-versatile/include -Iarch/arm/plat-versatile/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -O2 -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -marm -D__LINUX_ARM_ARCH__=5 -march=armv5te -mtune=arm9tdmi -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -g -femit-struct-debug-baseonly -fno-var-tracking -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(openclose.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(openclose)" -DMODULE  -c -o /home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o /home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.c
 
-source_/home/stemarti/git-arm/V3_Driver/mod1.mod.o := /home/stemarti/git-arm/V3_Driver/mod1.mod.c
+source_/home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o := /home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.c
 
-deps_/home/stemarti/git-arm/V3_Driver/mod1.mod.o := \
+deps_/home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o := \
     $(wildcard include/config/module/unload.h) \
   include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
@@ -382,6 +382,6 @@ deps_/home/stemarti/git-arm/V3_Driver/mod1.mod.o := \
   include/linux/vermagic.h \
   include/generated/utsrelease.h \
 
-/home/stemarti/git-arm/V3_Driver/mod1.mod.o: $(deps_/home/stemarti/git-arm/V3_Driver/mod1.mod.o)
+/home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o: $(deps_/home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o)
 
-$(deps_/home/stemarti/git-arm/V3_Driver/mod1.mod.o):
+$(deps_/home/stemarti/git-arm/V3_Driver/openclose/openclose.mod.o):
