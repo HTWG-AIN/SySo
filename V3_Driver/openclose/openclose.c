@@ -50,7 +50,7 @@ static int driver_open(struct inode *inode, struct file *instance)
 
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset)
 {
-	return count;
+	return 0; //EOF
 }
 
 static int driver_close(struct inode *inode, struct file *instance)
