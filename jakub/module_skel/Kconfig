@@ -1,0 +1,8 @@
+menu "module driver skeleton"
+
+config MODULE_SKEL_DRIVER
+  tristate "Compile with Jack Driver"
+	help
+  Compile with super duper Jack Driver 
+
+endmenu

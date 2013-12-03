@@ -1,0 +1,5 @@
+config TREIBER
+  tristate "With Treiber"
+	help
+  Compile with super duper Jack Driver 
+
