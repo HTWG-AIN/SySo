@@ -1,12 +1,17 @@
-buildroot_dir := /home/`whoami`/buildroot
-gitarm_dir := /home/`whoami`/git-arm
+buildroot_dir := ~/buildroot
+gitarm_dir := ~/git-arm
 driver_dir := $(gitarm_dir)/V3_Driver
 ip := 192.168.29.48
 
-all:  rebuild modulecopy
+CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
+
+
+all: install
+
+install: rebuild modulcopy
 
 rebuild:
-	$(MAKE) -C $(driver_dir)/* 
+	$(MAKE) -C $(driver_dir)/* all
 
 
 modulecopy:
