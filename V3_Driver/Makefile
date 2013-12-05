@@ -8,10 +8,12 @@ CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
 
 all: install
 
-install: rebuild modulcopy
+install: rebuild modulecopy
 
 rebuild:
-	$(MAKE) -C $(driver_dir)/* all
+	for i in $(driver_dir)/*; do \
+		$(MAKE) -C $$i all; \
+	done
 
 
 modulecopy:
@@ -21,7 +23,9 @@ copyid:
 	ssh-copy-id root@$(ip)
 
 clean-modules:
-	$(MAKE) -C $(driver_dir)/*  clean
+	for i in $(driver_dir)/*; do \
+		$(MAKE) -C $$i clean; \
+	done
 
 
 

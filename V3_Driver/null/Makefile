@@ -1,4 +1,4 @@
-TARGETS=zero
+TARGETS=null
 BUILDROOT_OUTPUT :=~/buildroot/output
 KDIR := $(BUILDROOT_OUTPUT)/build/linux-3.10.18
 OPTIONS= -C $(KDIR) M=$(shell pwd)  ARCH=arm

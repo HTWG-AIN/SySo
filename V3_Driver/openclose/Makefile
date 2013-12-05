@@ -1,19 +1,20 @@
-ifneq ($(KERNELRELEASE),)
-obj-m	:= openclose.o
- 
-else
-KDIR	:= ~/buildroot/output/build/linux-3.10.18
-PWD	:= $(shell pwd)
+TARGETS=openclose
+BUILDROOT_OUTPUT :=~/buildroot/output
+KDIR := $(BUILDROOT_OUTPUT)/build/linux-3.10.18
+OPTIONS= -C $(KDIR) M=$(shell pwd)  ARCH=arm
+CC := $(BUILDROOT_OUTPUT)/host/usr/bin/arm-linux-gcc
+LD := $(BUILDROOT_OUTPUT)/host/usr/bin/arm-linux-ld
+EXTRA_CFLAGS += -DDEBUG
 
-all: default
+OBJECTS=$(addsuffix .o, $(TARGETS))
+obj-m += $(OBJECTS)
 
-debug: CXX += -DDEBUG -g
-debug: CC += -DDEBUG -g
-debug: default
-
-default:
-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
-endif
+all:
+	make $(OPTIONS) modules
 
 clean:
-	$(RM) $(TARGETS) *.o core* tmp* *.ko *.symvers *.order *.mod.c
+	make $(OPTIONS) clean
+
+install:
+	make $(OPTIONS) INSTALL_MOD_PATH=$(BUILDROOT_OUTPUT)/target
+INSTALL_MOD_STRIP=1 modules_install
