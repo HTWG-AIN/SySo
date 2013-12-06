@@ -4,8 +4,7 @@
 
 source=~/git-arm/initramfs
 target=~/buildroot/output/target
-echo "Calling make..."
-cd ~/git-arm
-make
+
 echo "copying files from '$source' to '$target'"
-cp -r $source/* $target
+cd ~/git-arm/initramfs
+cp -r . $target

@@ -3,7 +3,7 @@
 
 CROSS_COMPILE=arm-buildroot-linux-uclibcgnueabi-
 CC = gcc
-CFLAGS = -W -Wall
+CFLAGS = -W -Wall -g
 
 TARGETS = access
 

@@ -36,19 +36,25 @@ static int driver_open(struct inode *inode, struct file *instance)
 	
 	if (atomic_inc_and_test(&v)) 
 	{
-		pr_debug("device locked by process!\n");
-		pr_debug("%d pending processes\n", open_count);
+		pr_debug("device is locked by process!\n");
 		open_count++;
 	} 
 	else 
 	{
-		pr_debug("%d pending processes\n", open_count);
 		pr_debug("device already locked by another process!\n");
+		pr_debug("%d process is accessing this file\n", open_count);
 		return -EBUSY;
 	}
 
 
 	return 0;
+}
+
+static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off)
+{
+
+    pr_debug("writing count = %d", count);
+    return count;
 }
 
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset)
@@ -72,6 +78,7 @@ static int driver_close(struct inode *inode, struct file *instance)
 static struct file_operations fops = {
 	.owner= THIS_MODULE,
 	.read= driver_read,
+	.write = driver_write,
 	.open= driver_open, 
 	.release= driver_close,
 };
