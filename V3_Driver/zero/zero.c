@@ -39,6 +39,7 @@ static int driver_open(struct inode *inode, struct file *instance)
 	
 	if (instance->private_data == NULL) {
 		pr_alert("Could not allocate memory!\n");
+		return -1;
 	}
 	*((int*) (instance->private_data)) = minor;
 
@@ -70,7 +71,16 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 		
 	not_copied = copy_to_user(user, data, to_copy);
 	
-	return to_copy - not_copied;   
+	ssize_t len = strlen(data);
+	ssize_t sent = len - not_copied;
+	ssize_t remaining = to_copy - not_copied;
+	
+	pr_debug("Module  zero: sent %d bytes to user space \nNot copied: %d bytes\n",
+			sent, not_copied);
+			
+	pr_debug("Remaining: %d\n", remaining);
+	
+	return remaining;   
 }
 
 static int driver_close(struct inode *inode, struct file *instance)
