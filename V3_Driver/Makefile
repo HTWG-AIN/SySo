@@ -1,7 +1,7 @@
 buildroot_dir := ~/buildroot
 gitarm_dir := ~/git-arm
 driver_dir := $(gitarm_dir)/V3_Driver
-ip := 192.168.29.48
+ip := 192.168.29.154
 
 CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
 
@@ -16,11 +16,16 @@ rebuild:
 	done
 
 
+clean:
+	for i in $(driver_dir)/*; do \
+		$(MAKE) -C $$i clean; \
+	done
+
 modulecopy:
-	scp -r $(gitarm_dir)/V3_Driver/* root@$(ip):/lib/modules/3.10.18/kernel/drivers
+	scp -r $(gitarm_dir)/V3_Driver/* root@$(ip):/lib/modules/3.10.18/kernel/drivers && 
 
 copyid: 
-	ssh-copy-id root@$(ip)
+	([ ! -f ~/.ssh/id_rsa.pub ] && ssh-keygen); ssh-copy-id root@$(ip)
 
 clean-modules:
 	for i in $(driver_dir)/*; do \
