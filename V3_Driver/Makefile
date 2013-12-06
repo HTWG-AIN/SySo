@@ -28,12 +28,12 @@ copyid:
 	([ ! -f ~/.ssh/id_rsa.pub ] && ssh-keygen); ssh-copy-id root@$(ip)
 
 
-setup-modules: make-nod
+setup-modules: 
 	ssh root@$(ip) /sbin/depmod -A
 	ssh root@$(ip) /sbin/modprobe -r null openclose zero hello
 	ssh root@$(ip) /sbin/modprobe -a null openclose zero hello
 
-make-nod: rm-nod
+make-nod: 
 	ssh root@$(ip) /bin/mknod /dev/t12hello c 116 0
 	ssh root@$(ip) /bin/mknod /dev/t12null c 115 0
 	ssh root@$(ip) /bin/mknod /dev/t12zero c 113 0
