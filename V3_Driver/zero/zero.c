@@ -48,7 +48,7 @@ static int driver_open(struct inode *inode, struct file *instance)
 
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
 {
-	int not_copied, to_copy, minor;
+	long not_copied, to_copy, minor, sent, copied;
 	char *data;
 	
 	minor = *((int*)(instance->private_data));
@@ -60,7 +60,7 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	}
 	else if (minor == 1)
 	{
-		to_copy = strlen(hello_world)+1;
+		to_copy = strlen(hello_world);
 		data = hello_world;
 	}
 	else
@@ -71,16 +71,15 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 		
 	not_copied = copy_to_user(user, data, to_copy);
 	
-	ssize_t len = strlen(data);
-	ssize_t sent = len - not_copied;
-	ssize_t remaining = to_copy - not_copied;
+	sent = to_copy - not_copied;
+	copied = to_copy - not_copied;
 	
-	pr_debug("Module  zero: sent %d bytes to user space \nNot copied: %d bytes\n",
+	pr_debug("Module  zero: sent %ld bytes to user space \nNot copied: %ld bytes\n",
 			sent, not_copied);
 			
-	pr_debug("Remaining: %d\n", remaining);
+	pr_debug("Copied: %ld\n", copied);
 	
-	return remaining;   
+	return copied;   
 }
 
 static int driver_close(struct inode *inode, struct file *instance)

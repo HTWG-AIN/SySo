@@ -32,14 +32,17 @@ static void __exit mod_exit(void)
 
 static int driver_open(struct inode *inode, struct file *instance)
 {
+	printk("open() called!\n");
+	
 	if (atomic_inc_and_test(&v)) 
 	{
-		printk("open() called!\n");
 		pr_debug("device locked by process!\n");
 		pr_debug("%d pending processes\n", open_count);
 		open_count++;
-	} else 
+	} 
+	else 
 	{
+		pr_debug("%d pending processes\n", open_count);
 		pr_debug("device already locked by another process!\n");
 		return -EBUSY;
 	}
@@ -59,8 +62,8 @@ static int driver_close(struct inode *inode, struct file *instance)
 	
 	if (atomic_dec_and_test(&v))
 	{
-		pr_debug("%d pending processes\n", open_count);
 		open_count--;
+		pr_debug("%d pending processes\n", open_count);
 	}
 	
 	return 0;

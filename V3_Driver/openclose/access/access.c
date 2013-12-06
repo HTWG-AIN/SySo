@@ -12,26 +12,45 @@
 #include <unistd.h>   /* read, write */
 #include <errno.h>    /* errno */
 
+static int open_device(int *in, char *file_name)
+{
+	*in = open(file_name, O_RDONLY);
+	
+	if (*in == -EBUSY)
+	{
+		fprintf(stderr,
+		      "Quelle %s kann nicht geoeffnet werden (errno %d: %s)\n",
+		      file_name, errno, strerror(errno));
+	}
+	
+	return *in;
+}
+
+
 int main(int argc, char *argv[])
 {
-  int in; /* Dateideskriptor */
+	int in1, in2, return_value; /* Dateideskriptor */
 
-  if (argc != 2)
-  {
-      fprintf(stderr, "Aufruf: %s Ziel\n", argv[0]);
-      return 1;
-  }
+	if (argc != 2)
+	{
+		fprintf(stderr, "Aufruf: %s Ziel\n", argv[0]);
+		return 1;
+	}
 
-  in = open(argv[1], O_RDONLY);
-  if (in == -1)
-  {
-      fprintf(stderr,
-	      "Quelle %s kann nicht geoeffnet werden (errno %d: %s)\n",
-	      argv[1], errno, strerror(errno));
-      return 1;
-  }
+	return_value = open_device(&in1, argv[1]);
+	
+	if (return_value < 0) {
+		return return_value;
+	}
+	
+	return_value = open_device(&in2, argv[1]);
 
-  close(in);
+	if (return_value < 0) {
+		close(in1);
+		return return_value;
+	}
+	
+	close(in2);
 
-  return 0;
+	return 0;
 }
