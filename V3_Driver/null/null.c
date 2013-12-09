@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/cdev.h>
+#include <linux/device.h>
 #include <linux/slab.h> // kmalloc(), kfree()
 #include <asm/uaccess.h>   // copy_to_user()
  
@@ -19,7 +20,10 @@ MODULE_SUPPORTED_DEVICE("none");
 static struct cdev *cdev = NULL;
 
 static int is_open = 0;
+static atomic_t v;
 
+static struct class *dev_class;
+static struct device *device;
 
 
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t num, loff_t *off); 
@@ -36,6 +40,10 @@ static struct file_operations fops = {
  
 static int __init mod_init(void)
 {
+    dev_t major_nummer = MKDEV(MAJORNUM, 0);
+            
+    atomic_set(&v, -1);
+
     if (register_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES, DEVNAME)) 
     {
         pr_warn("Device number 0x%x not available ...\n" , MKDEV(MAJORNUM, 0));
@@ -60,6 +68,10 @@ static int __init mod_init(void)
         pr_warn("cdev_add failed!\n");
         goto free_cdev;
     }
+
+
+    dev_class = class_create(THIS_MODULE, DEVNAME);
+    device = device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
 
     return 0;
 
@@ -110,6 +122,10 @@ static void __exit mod_exit(void)
 	if (cdev) {
 		cdev_del(cdev);
 	}
+
+    device_destroy(dev_class, MKDEV(MAJORNUM, 0));
+    class_destroy(dev_class);
+
 	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
     printk(KERN_ALERT "Goodbye, cruel world\n");
