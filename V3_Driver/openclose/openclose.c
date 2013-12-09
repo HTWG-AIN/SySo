@@ -3,7 +3,7 @@
 #include <linux/fs.h>
 #include <linux/atomic.h>
 #include <linux/cdev.h>
-#include <linux/device.h>
+#include <linux/device.h> // class_create, device_create
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
