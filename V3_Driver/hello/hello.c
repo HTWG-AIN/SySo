@@ -43,6 +43,7 @@ static int __init mod_init(void)
     dev_t major_nummer = MKDEV(MAJORNUM, 0);
             
     atomic_set(&v, -1);
+    printk(KERN_ALERT "Hello, world\n");
 
     if (register_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES, DEVNAME)) 
     {
@@ -134,7 +135,7 @@ static void __exit mod_exit(void)
     class_destroy(dev_class);
 	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
-    printk(KERN_ALERT "Goodbye, cruel world\n");
+        printk(KERN_ALERT "Goodbye, cruel world\n");
 }
  
 module_init(mod_init);

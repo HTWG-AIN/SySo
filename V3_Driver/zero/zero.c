@@ -4,6 +4,7 @@
 #include <linux/cdev.h>
 #include <linux/slab.h> // kmalloc(), kfree()
 #include <asm/uaccess.h>   // copy_to_user()
+#include <linux/device.h> // class_create, device_create
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -13,15 +14,23 @@ MODULE_SUPPORTED_DEVICE("none");
 
 #define MAJORNUM 113
 #define NUMDEVICES 2
-#define DEVNAME "t12zero"
+#define DEVNAME_0 "t12zero_0"
+#define DEVNAME_1 "t12zero_1"
 
 static struct cdev *cdev = NULL;
 
 static char hello_world[] = "Hello World\n";  
+struct class *dev_class[2];
 
 static void __exit mod_exit(void)
 {
 	printk(KERN_ALERT "Goodbye, cruel world\n");
+	
+	device_destroy(dev_class[0], MKDEV(MAJORNUM, 0));
+	class_destroy(dev_class[0]);
+	
+	device_destroy(dev_class[1], MKDEV(MAJORNUM, 1));
+	class_destroy(dev_class[1]);
 	
 	if (cdev) 
     	{
@@ -97,9 +106,20 @@ static struct file_operations fops = {
 	.release= driver_close,
 };
 
+static void create_device(dev_t dev_number, char *dev_name, int index)
+{
+	dev_class[index] = class_create(THIS_MODULE, dev_name);
+	device_create (dev_class[index], NULL, dev_number, NULL, dev_name);
+}
+
 static int __init mod_init(void)
 {
-		if (register_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES, DEVNAME)) 
+		dev_t number_min_0 = MKDEV(MAJORNUM, 0);
+		dev_t number_min_1 = MKDEV(MAJORNUM, 1);
+		
+		printk(KERN_ALERT "Hello, world\n");
+		
+		if (register_chrdev_region(number_min_0, NUMDEVICES, DEVNAME_0)) 
 		{
 			pr_warn("Device number 0x%x not available ...\n" , MKDEV(MAJORNUM, 0));
 			return -EIO ;
@@ -114,7 +134,7 @@ static int __init mod_init(void)
 			goto free_devnum;
 		}
 
-		kobject_set_name(&cdev->kobj, DEVNAME);
+		kobject_set_name(&cdev->kobj, DEVNAME_0);
 		cdev->owner = THIS_MODULE;
 		cdev_init(cdev, &fops);
 		
@@ -124,6 +144,9 @@ static int __init mod_init(void)
 			goto free_cdev;
 		}
 
+		create_device(number_min_0, DEVNAME_0, 0);
+		create_device(number_min_1, DEVNAME_1, 1);
+		
 		return 0;
 
 	free_cdev:
