@@ -27,6 +27,13 @@ static int open_device(int *in, char *file_name)
 }
 
 
+int write_values(int *fildes)
+{
+	write(fildes, "Hi", 2);
+
+
+}
+
 int main(int argc, char *argv[])
 {
 	int in1, in2, return_value; /* Dateideskriptor */
@@ -43,6 +50,9 @@ int main(int argc, char *argv[])
 		return return_value;
 	}
 	
+	write(in1, "Hi", 2);
+
+
 	return_value = open_device(&in2, argv[1]);
 
 	if (return_value < 0) {
