@@ -1,0 +1,1 @@
+cmd_/home/stemarti/git-arm/V3_Driver/treiber/treiber.ko := ~/buildroot/output/host/usr/bin/arm-linux-ld -r  -T /home/stemarti/buildroot/output/build/linux-3.10.18/scripts/module-common.lds --build-id  -o /home/stemarti/git-arm/V3_Driver/treiber/treiber.ko /home/stemarti/git-arm/V3_Driver/treiber/treiber.o /home/stemarti/git-arm/V3_Driver/treiber/treiber.mod.o

@@ -30,8 +30,8 @@ copyid:
 
 setup-modules: 
 	ssh root@$(ip) /sbin/depmod -A
-	ssh root@$(ip) /sbin/modprobe -r null openclose zero hello
-	ssh root@$(ip) /sbin/modprobe -a null openclose zero hello
+	ssh root@$(ip) /sbin/modprobe -r null openclose zero hello treiber
+	ssh root@$(ip) /sbin/modprobe -a null openclose zero hello treiber
 
 make-nod: 
 	ssh root@$(ip) /bin/mknod /dev/t12hello c 116 0

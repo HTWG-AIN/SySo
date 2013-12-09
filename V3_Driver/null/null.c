@@ -36,6 +36,8 @@ static struct file_operations fops = {
  
 static int __init mod_init(void)
 {
+    printk(KERN_ALERT "Hello, world\n");	
+
     if (register_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES, DEVNAME)) 
     {
         pr_warn("Device number 0x%x not available ...\n" , MKDEV(MAJORNUM, 0));
@@ -112,7 +114,7 @@ static void __exit mod_exit(void)
 	}
 	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
-    printk(KERN_ALERT "Goodbye, cruel world\n");
+        printk(KERN_ALERT "Goodbye, cruel world\n");
 }
  
 module_init(mod_init);

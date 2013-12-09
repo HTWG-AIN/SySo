@@ -20,10 +20,17 @@ MODULE_SUPPORTED_DEVICE("none");
 static struct cdev *cdev = NULL;
 
 static char hello_world[] = "Hello World\n";  
+struct class *dev_class[2];
 
 static void __exit mod_exit(void)
 {
 	printk(KERN_ALERT "Goodbye, cruel world\n");
+	
+	device_destroy(dev_class[0], MKDEV(MAJORNUM, 0));
+	class_destroy(dev_class[0]);
+	
+	device_destroy(dev_class[1], MKDEV(MAJORNUM, 1));
+	class_destroy(dev_class[1]);
 	
 	if (cdev) 
     	{
@@ -99,19 +106,18 @@ static struct file_operations fops = {
 	.release= driver_close,
 };
 
-static void create_device(dev_t dev_number, char *dev_name)
+static void create_device(dev_t dev_number, char *dev_name, int index)
 {
-	struct class *dev_class;
-	struct device *device;
-
-	dev_class = class_create(THIS_MODULE, dev_name);
-	device = device_create (dev_class, NULL, dev_number, NULL, dev_name);
+	dev_class[index] = class_create(THIS_MODULE, dev_name);
+	device_create (dev_class[index], NULL, dev_number, NULL, dev_name);
 }
 
 static int __init mod_init(void)
 {
 		dev_t number_min_0 = MKDEV(MAJORNUM, 0);
 		dev_t number_min_1 = MKDEV(MAJORNUM, 1);
+		
+		printk(KERN_ALERT "Hello, world\n");
 		
 		if (register_chrdev_region(number_min_0, NUMDEVICES, DEVNAME_0)) 
 		{
@@ -138,8 +144,8 @@ static int __init mod_init(void)
 			goto free_cdev;
 		}
 
-		create_device(number_min_0, DEVNAME_0);
-		create_device(number_min_1, DEVNAME_1);
+		create_device(number_min_0, DEVNAME_0, 0);
+		create_device(number_min_1, DEVNAME_1, 1);
 		
 		return 0;
 
