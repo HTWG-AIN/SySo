@@ -21,6 +21,9 @@ static struct cdev *cdev = NULL;
 
 static int is_open = 0;
 
+static struct class *dev_class;
+static struct device *device;
+
 static atomic_t v;
 
 
@@ -38,8 +41,6 @@ static struct file_operations fops = {
  
 static int __init mod_init(void)
 {
-    struct class *dev_class;
-    struct device *device;
     dev_t major_nummer = MKDEV(MAJORNUM, 0);
             
     atomic_set(&v, -1);
