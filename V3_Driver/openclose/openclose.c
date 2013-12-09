@@ -3,6 +3,7 @@
 #include <linux/fs.h>
 #include <linux/atomic.h>
 #include <linux/cdev.h>
+#include <linux/device.h>
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -10,9 +11,9 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("A dummy driver");
 MODULE_SUPPORTED_DEVICE("none");
 
-#define MAJORNUM 112
-#define NUMDEVICES 12
-#define DEVNAME "team12"
+#define MAJORNUM 117
+#define NUMDEVICES 1
+#define DEVNAME "t12openclose"
 
 static int open_count = 0;
 static atomic_t v;
@@ -85,9 +86,15 @@ static struct file_operations fops = {
 
 static int __init mod_init(void)
 {
+		struct class *dev_class;
+		struct device *device;
+		dev_t major_nummer = MKDEV(MAJORNUM, 0);
+				
 		atomic_set(&v, -1);
+
+
 		
-		if (register_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES, DEVNAME)) 
+		if (register_chrdev_region(major_nummer, NUMDEVICES, DEVNAME)) 
 		{
 			pr_warn("Device number 0x%x not available ...\n" , MKDEV(MAJORNUM, 0));
 			return -EIO ;
@@ -111,6 +118,11 @@ static int __init mod_init(void)
 			pr_warn("cdev_add failed!\n");
 			goto free_cdev;
 		}
+
+
+		dev_class = class_create(THIS_MODULE, DEVNAME);
+		device = device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
+		
 
 		return 0;
 

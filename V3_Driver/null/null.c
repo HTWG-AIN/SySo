@@ -13,7 +13,7 @@ MODULE_SUPPORTED_DEVICE("none");
 
 #define MAJORNUM 115
 #define NUMDEVICES 2
-#define DEVNAME "null"
+#define DEVNAME "t12null"
 
 
 static struct cdev *cdev = NULL;
