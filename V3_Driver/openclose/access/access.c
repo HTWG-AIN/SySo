@@ -45,6 +45,14 @@ int main(int argc, char *argv[])
 		return return_value;
 	}
 	
+	
+	return_value = open_device(&in2, argv[1]);
+
+	if (return_value < 0) {
+		fprintf(stderr, "Fehler: (errno %d: %s)\n", errno, strerror(errno));
+	}
+
+	
 	return_value = write(in1, "Hi", 2);
 	
 	if (return_value < 0) {
@@ -54,12 +62,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	return_value = open_device(&in2, argv[1]);
-
-	if (return_value < 0) {
-		close(in1);
-		return return_value;
-	}
+	
 	
 	close(in2);
 

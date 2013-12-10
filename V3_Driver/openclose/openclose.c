@@ -57,6 +57,8 @@ static int driver_open(struct inode *inode, struct file *instance)
 	{
 		pr_debug("atomic_inc_and_test: device already locked by another process!\n");
 		pr_debug("atomic_inc_and_test: %d process is accessing this file\n", open_count);
+		atomic_dec_and_test(&v);
+		
 		return -EBUSY;
 	}
 
