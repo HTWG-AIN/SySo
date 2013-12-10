@@ -37,16 +37,26 @@ static void __exit mod_exit(void)
 static int driver_open(struct inode *inode, struct file *instance)
 {
 	printk("open() called!\n");
+
+	if (open_count == 0)
+	{
+		open_count++;
+		pr_debug("open_count: device is locked by process!\n");
+	}
+	else 
+	{
+		pr_debug("open_count: device already locked by another process!\n");
+		pr_debug("open_count: %d process is accessing this file\n", open_count);
+	}
 	
 	if (atomic_inc_and_test(&v)) 
 	{
-		pr_debug("device is locked by process!\n");
-		open_count++;
+		pr_debug("atomic_inc_and_test: device is locked by process!\n");
 	} 
 	else 
 	{
-		pr_debug("device already locked by another process!\n");
-		pr_debug("%d process is accessing this file\n", open_count);
+		pr_debug("atomic_inc_and_test: device already locked by another process!\n");
+		pr_debug("atomic_inc_and_test: %d process is accessing this file\n", open_count);
 		return -EBUSY;
 	}
 
@@ -57,7 +67,7 @@ static int driver_open(struct inode *inode, struct file *instance)
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off)
 {
 
-    pr_debug("writing count = %d", count);
+    pr_debug("writing count = %d\n", count);
     return count;
 }
 
@@ -70,10 +80,13 @@ static int driver_close(struct inode *inode, struct file *instance)
 {
 	printk("close() called\n");
 	
+	open_count--;
+	
+	pr_debug("open_count: %d pending processes\n", open_count);
+	
 	if (atomic_dec_and_test(&v))
 	{
-		open_count--;
-		pr_debug("%d pending processes\n", open_count);
+		pr_debug("atomic_dec_and_test: %d pending processes\n", open_count);
 	}
 	
 	return 0;
