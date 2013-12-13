@@ -22,7 +22,10 @@ static struct cdev *cdev = NULL;
 static struct class *dev_class;
 static char buffer[BUFFER_SIZE];
 static int buffer_position = 0;
+static int buffer_length = 0;
+static wait_queue_head_t wq; 
 
+// function prototypes
 static int __init mod_init(void);
 static void __exit mod_exit(void);
 static int driver_open(struct inode *inode, struct file *instance);
@@ -54,21 +57,30 @@ static int driver_close(struct inode *inode, struct file *instance)
 
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off)
 {
-	ssize_t to_copy;
+	ssize_t to_copy, free_space;
+	char *write_pointer;
 	
-	if (count < BUFFER_SIZE) 
+	free_space = BUFFER_SIZE - buffer_length;
+	
+	if (free_space == 0)
+		return 0;
+	
+	write_pointer = &buffer[buffer_length];
+	
+	if (count < free_space) 
 	{
 		to_copy = count;
 	}
 	else
 	{
-		to_copy = BUFFER_SIZE;
+		to_copy = free_space;
 	}
 	
-	buffer_position = to_copy;
+	buffer_length += to_copy;
 	
-	strncpy(buffer, userbuf, to_copy);
-	
+	strncpy(write_pointer, userbuf, to_copy);
+
+	pr_debug("count: %zu\n", count);	
 	pr_debug("%zd bytes written\n", to_copy);
 	
 	return to_copy;
@@ -76,27 +88,38 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset)
 {
-	if (buffer_position > 0)
+	if (buffer_length > 0)
 	{
 		long not_copied, to_copy, copied;
+		char *buffer_pointer;
 		
-		if(buffer_position > count)
+		if(buffer_length > count)
 		{                                 
 			to_copy = count;
 		}
 		else
 		{
-			to_copy = buffer_position;
+			to_copy = buffer_length;
 		}
 		
-		not_copied = copy_to_user(user, buffer, to_copy);
+		buffer_pointer = &buffer[buffer_position];
+		
+		not_copied = copy_to_user(user, buffer_pointer, to_copy);
 		copied = to_copy - not_copied;
 		
-		pr_debug("Copied: %ld\n", copied);
+		buffer_position += copied;
+		buffer_length -= copied;
+		
+		if (buffer_length == 0)
+		{
+			buffer_position = 0;
+		}
+		
+		pr_debug("buffer_position %d\n", buffer_position);
+		pr_debug("%ld bytes read\n", copied);
 		
 		return copied;
 	}
-	
 	
 	return 0; //EOF
 }
