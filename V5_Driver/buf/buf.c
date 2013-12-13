@@ -6,6 +6,8 @@
 #include <asm/uaccess.h>   // copy_to_user()
 #include <linux/string.h> // strncpy()
 #include <linux/cdev.h> // cdev_alloc(), cdev_del(), ...
+#include <linux/wait.h> // wait queues
+#include <linux/sched.h> // TASK_INTERRUPTIBLE used by wake_up_interruptible()
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -76,18 +78,28 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 		to_copy = free_space;
 	}
 	
-	buffer_length += to_copy;
-	
 	strncpy(write_pointer, userbuf, to_copy);
+
+	buffer_length += to_copy;
 
 	pr_debug("count: %zu\n", count);	
 	pr_debug("%zd bytes written\n", to_copy);
+	pr_debug("Wake consumer up...\n");
+	
+	wake_up_interruptible(&wq);
 	
 	return to_copy;
 }
 
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset)
 {
+	if (buffer_length == 0)
+	{
+		pr_debug("Consumer is going to sleep...\n");
+		if(wait_event_interruptible(wq, buffer_length > 0))
+			return -ERESTART;
+	}
+	
 	if (buffer_length > 0)
 	{
 		long not_copied, to_copy, copied;
@@ -174,6 +186,7 @@ static int __init mod_init(void)
 		dev_class = class_create(THIS_MODULE, DEVNAME);
 		device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
 		
+		init_waitqueue_head(&wq);
 
 		return 0;
 
