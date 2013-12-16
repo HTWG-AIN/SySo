@@ -26,21 +26,34 @@ static struct cdev *cdev = NULL;
 static struct class *dev_class;
 static struct device *device;
 
+static int is_open = 0;
+
 static atomic_t v;
 
-static int count = 0;
-
-
+static ssize_t driver_open(struct inode *inode, struct file* file); 
+static ssize_t driver_close(struct inode *inode, struct file* file);
 
 static struct file_operations fops = {
 	.owner= THIS_MODULE,
+    .open = driver_open,
+    .release = driver_close,
 };
 
-static unsigned long tasklet_called = 0;
+static char tasklet_called[] = "my tasklet was called";
+
 
 static void tasklet_function(unsigned long data);
 
-DECLARE_TASKLET(tasklet, tasklet_function, &tasklet_called);
+
+
+DECLARE_TASKLET(tasklet, tasklet_function,(unsigned long) &tasklet_called);
+
+
+static void tasklet_function(unsigned long data) {
+    printk("%s\n", (char *)data);
+}
+
+
 
 static int __init mod_init(void)
 {
@@ -79,8 +92,6 @@ static int __init mod_init(void)
     device = device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
 
 
-    tasklet_schedule(&tasklet);
-
     return 0;
 
 free_cdev:
@@ -91,10 +102,23 @@ free_devnum:
 return -1;
 }
 
-static void tasklet_function(unsigned long data) {
-    printk(TASKLET_CALLED" %d times", data++);
+
+
+static ssize_t driver_open(struct inode *inode, struct file* file) {
+    tasklet_schedule(&tasklet);
+    is_open++;
+    try_module_get(THIS_MODULE);
+    pr_debug("Module fops:device %s was opened from device with minor no %d \n", DEVNAME , iminor(inode));
+    return 0;
 }
 
+
+static ssize_t driver_close(struct inode *inode, struct file* file) {
+    is_open--;
+    module_put(THIS_MODULE);
+    pr_debug("Module fops:device %s was closed \n", DEVNAME);
+    return 0;
+}
 
 
 
@@ -111,6 +135,7 @@ static void __exit mod_exit(void)
     class_destroy(dev_class);
 
     tasklet_kill(&tasklet);
+    tasklet_disable(&tasklet);
 	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
         printk(KERN_ALERT "Goodbye, cruel world\n");

@@ -1,7 +1,7 @@
 buildroot_dir := ~/buildroot
 gitarm_dir := ~/git-arm
 driver_dir := $(gitarm_dir)/V5_Driver
-ip := 192.168.29.154
+ip := 192.168.29.48
 
 CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
 
@@ -22,6 +22,7 @@ clean:
 	done
 
 modulecopy:
+	ssh root@$(ip) mkdir -p /lib/modules/3.10.18/kernel/drivers
 	scp -r $(driver_dir)/* root@$(ip):/lib/modules/3.10.18/kernel/drivers 
 
 copyid: 
@@ -30,8 +31,8 @@ copyid:
 
 setup-modules: 
 	ssh root@$(ip) /sbin/depmod -A
-	ssh root@$(ip) /sbin/modprobe -r buf
-	ssh root@$(ip) /sbin/modprobe -a buf
+	ssh root@$(ip) /sbin/modprobe -r buf hello2 tasklet
+	ssh root@$(ip) /sbin/modprobe -a buf hello2 tasklet
 
 
 rm-nod:
