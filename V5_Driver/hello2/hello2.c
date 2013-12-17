@@ -26,9 +26,6 @@ static int is_open = 0;
 static struct class *dev_class;
 static struct device *device;
 
-static atomic_t v;
-
-
 static ssize_t driver_read(struct file *instanz, char *buf, size_t num, loff_t *off); 
 static ssize_t driver_open(struct inode *inode, struct file* file); 
 static ssize_t driver_close(struct inode *inode, struct file* file);
@@ -53,8 +50,6 @@ static int __init mod_init(void)
 {
     dev_t major_nummer = MKDEV(MAJORNUM, 0);
             
-    atomic_set(&v, -1);
-
     if (register_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES, DEVNAME)) 
     {
         pr_warn("Device number 0x%x not available ...\n" , MKDEV(MAJORNUM, 0));
