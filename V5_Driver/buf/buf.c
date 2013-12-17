@@ -34,8 +34,9 @@ static int driver_open(struct inode *inode, struct file *instance);
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off);
 static int driver_close(struct inode *inode, struct file *instance);
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset);
-ssize_t free_space;
 
+#define free_space() (BUFFER_SIZE - write_position)
+#define max_bytes_to_read() (write_position - read_position)
 
 static struct file_operations fops = {
 	.owner= THIS_MODULE,
@@ -64,24 +65,22 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	ssize_t to_copy;
 	char *write_pointer;
 	
-	free_space = BUFFER_SIZE - write_position;
-	
-	if (free_space == 0) 
+	if (free_space() == 0) 
 	{
 		pr_debug("Producer is going to sleep...\n");
-		if(wait_event_interruptible(wq, free_space > 0))
+		if(wait_event_interruptible(wq, free_space() > 0))
 			return -ERESTART;
 	}
 	
 	write_pointer = &buffer[write_position];
 	
-	if (count < free_space) 
+	if (count < free_space()) 
 	{
 		to_copy = count;
 	}
 	else
 	{
-		to_copy = free_space;
+		to_copy = free_space();
 	}
 	
 	strncpy(write_pointer, userbuf, to_copy);
@@ -102,20 +101,20 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 	long not_copied, to_copy, copied;
 	char *read_pointer;
 
-	if (write_position == 0)
+	if (max_bytes_to_read() == 0)
 	{
 		pr_debug("Consumer is going to sleep...\n");
-		if(wait_event_interruptible(wq, write_position > 0))
+		if(wait_event_interruptible(wq, max_bytes_to_read() > 0))
 			return -ERESTART;
 	}
 
-	if(write_position > count)
+	if(max_bytes_to_read() > count)
 	{                                 
 		to_copy = count;
 	}
 	else
 	{
-		to_copy = write_position;
+		to_copy = max_bytes_to_read();
 	}
 	
 	read_pointer = &buffer[read_position];
@@ -124,13 +123,11 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 	copied = to_copy - not_copied;
 	
 	read_position += copied;
-	write_position -= copied;
 	
-	free_space = BUFFER_SIZE - write_position;
-	
-	if (write_position == 0)
+	if (read_position == write_position)
 	{
 		read_position = 0;
+		write_position = 0;
 	}
 	
 	pr_debug("read_position %d\n", read_position);

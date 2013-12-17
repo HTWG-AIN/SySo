@@ -23,7 +23,7 @@ MODULE_SUPPORTED_DEVICE("none");
 
 static struct cdev *cdev = NULL;
 static struct class *dev_class;
-static char buffer[BUFFER_SIZE];
+static char *buffer;
 static int read_position = 0;
 static int write_position = 0;
 static wait_queue_head_t wq;
@@ -35,11 +35,14 @@ static int driver_open(struct inode *inode, struct file *instance);
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off);
 static int driver_close(struct inode *inode, struct file *instance);
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset);
-ssize_t free_space;
+
+#define free_space() (BUFFER_SIZE - write_position)
+#define max_bytes_to_read() (write_position - read_position)
 
 // private data structure
 typedef struct {
 	struct task_struct *thread_id;
+	struct completion *work;
 } private_data;
 
 static struct file_operations fops = {
@@ -52,17 +55,21 @@ static struct file_operations fops = {
 
 static int driver_open(struct inode *inode, struct file *instance)
 {
+	private_data *data;
+	
 	printk("open() called!\n");
 
-	instance->private_data = kmalloc(sizeof(private_data), GFP_KERNEL);
+	data = (private_data*) instance->private_data;
 
+	kfree(data->work);
+	kfree(data);
+	
 	return 0;
 }
 
 static int driver_close(struct inode *inode, struct file *instance)
 {
 	printk("close() called\n");
-	kfree(instance->private_data);
 	
 	return 0;
 }
@@ -72,24 +79,22 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	ssize_t to_copy;
 	char *write_pointer;
 	
-	free_space = BUFFER_SIZE - write_position;
-	
-	if (free_space == 0) 
+	if (free_space() == 0) 
 	{
 		pr_debug("Producer is going to sleep...\n");
-		if(wait_event_interruptible(wq, free_space > 0))
+		if(wait_event_interruptible(wq, free_space() > 0))
 			return -ERESTART;
 	}
 	
 	write_pointer = &buffer[write_position];
 	
-	if (count < free_space) 
+	if (count < free_space()) 
 	{
 		to_copy = count;
 	}
 	else
 	{
-		to_copy = free_space;
+		to_copy = free_space();
 	}
 	
 	strncpy(write_pointer, userbuf, to_copy);
@@ -109,21 +114,21 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 {
 	long not_copied, to_copy, copied;
 	char *read_pointer;
-	
-	if (write_position == 0)
+
+	if (max_bytes_to_read() == 0)
 	{
 		pr_debug("Consumer is going to sleep...\n");
-		if(wait_event_interruptible(wq, write_position > 0))
+		if(wait_event_interruptible(wq, max_bytes_to_read() > 0))
 			return -ERESTART;
 	}
 
-	if(write_position > count)
+	if(max_bytes_to_read() > count)
 	{                                 
 		to_copy = count;
 	}
 	else
 	{
-		to_copy = write_position;
+		to_copy = max_bytes_to_read();
 	}
 	
 	read_pointer = &buffer[read_position];
@@ -132,13 +137,11 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 	copied = to_copy - not_copied;
 	
 	read_position += copied;
-	write_position -= copied;
 	
-	free_space = BUFFER_SIZE - write_position;
-	
-	if (write_position == 0)
+	if (read_position == write_position)
 	{
 		read_position = 0;
+		write_position = 0;
 	}
 	
 	pr_debug("read_position %d\n", read_position);
@@ -164,6 +167,8 @@ static void __exit mod_exit(void)
 	}
 	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
+	
+	kfree(buffer);
 }
 
 static int __init mod_init(void)
@@ -199,6 +204,13 @@ static int __init mod_init(void)
 
 		dev_class = class_create(THIS_MODULE, DEVNAME);
 		device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
+		
+		buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
+		
+		if (buffer == NULL) {
+	                pr_alert("Could not allocate memory!\n");
+        	        return -1;
+	        }
 		
 		init_waitqueue_head(&wq);
 
