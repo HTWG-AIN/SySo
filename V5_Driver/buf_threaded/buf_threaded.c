@@ -8,6 +8,7 @@
 #include <linux/cdev.h> // cdev_alloc(), cdev_del(), ...
 #include <linux/wait.h> // wait queues
 #include <linux/sched.h> // TASK_INTERRUPTIBLE used by wake_up_interruptible()
+#include <linux/slab.h> // kmalloc(), kfree()
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -15,9 +16,9 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("buffer read write :-P");
 MODULE_SUPPORTED_DEVICE("none");
 
-#define MAJORNUM 119
+#define MAJORNUM 100
 #define NUMDEVICES 1
-#define DEVNAME "t12buf"
+#define DEVNAME "t12buf_threaded"
 #define BUFFER_SIZE 10
 
 static struct cdev *cdev = NULL;
@@ -36,6 +37,10 @@ static int driver_close(struct inode *inode, struct file *instance);
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset);
 ssize_t free_space;
 
+// private data structure
+typedef struct {
+	struct task_struct *thread_id;
+} private_data;
 
 static struct file_operations fops = {
 	.owner= THIS_MODULE,
@@ -49,12 +54,15 @@ static int driver_open(struct inode *inode, struct file *instance)
 {
 	printk("open() called!\n");
 
+	instance->private_data = kmalloc(sizeof(private_data), GFP_KERNEL);
+
 	return 0;
 }
 
 static int driver_close(struct inode *inode, struct file *instance)
 {
 	printk("close() called\n");
+	kfree(instance->private_data);
 	
 	return 0;
 }
@@ -101,7 +109,7 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 {
 	long not_copied, to_copy, copied;
 	char *read_pointer;
-
+	
 	if (write_position == 0)
 	{
 		pr_debug("Consumer is going to sleep...\n");
