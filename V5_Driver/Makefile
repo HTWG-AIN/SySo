@@ -1,7 +1,7 @@
 buildroot_dir := ~/buildroot
 gitarm_dir := ~/git-arm
 driver_dir := $(gitarm_dir)/V5_Driver
-ip := 192.168.29.48
+ip := 192.168.29.154
 
 CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
 
