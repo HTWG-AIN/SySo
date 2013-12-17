@@ -9,6 +9,7 @@
 #include <linux/wait.h> // wait queues
 #include <linux/sched.h> // TASK_INTERRUPTIBLE used by wake_up_interruptible()
 #include <linux/slab.h> // kmalloc(), kfree()
+#include <linux/kthread.h>
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -32,16 +33,17 @@ static wait_queue_head_t wq;
 static int __init mod_init(void);
 static void __exit mod_exit(void);
 static int driver_open(struct inode *inode, struct file *instance);
-static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off);
+static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off);
 static int driver_close(struct inode *inode, struct file *instance);
-static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset);
+static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset);
 
 #define free_space() (BUFFER_SIZE - write_position)
 #define max_bytes_to_read() (write_position - read_position)
 
 // private data structure
 typedef struct {
-	struct task_struct *thread_id;
+	struct task_struct *thread_write;
+	struct task_struct *thread_read;
 	struct completion *work;
 } private_data;
 
@@ -53,28 +55,54 @@ static struct file_operations fops = {
 	.release= driver_close,
 };
 
+static int thread_write(void *data)
+{
+
+	return 0;
+}
+
+static int thread_read(void *data)
+{
+
+	return 0;
+}
+
 static int driver_open(struct inode *inode, struct file *instance)
 {
 	private_data *data;
 	
 	printk("open() called!\n");
 
-	data = (private_data*) instance->private_data;
+	data = kmalloc(sizeof(private_data), GFP_KERNEL);
+	
+	if (data == NULL) {
+                pr_alert("Could not allocate memory for private_data!\n");
+	        return -1;
+        }
+	
+	init_completion(data->work);
+	
+	data->thread_write = kthread_create(thread_write, NULL, "thread_write");
+	data->thread_read = kthread_create(thread_read, NULL, "thread_read");
+	
+	instance->private_data = data;
 
+	return 0;
+}
+
+static int driver_close(struct inode *inode, struct file *instance)
+{
+	private_data *data  = (private_data*) instance->private_data;
+	
+	printk("close() called\n");
+	
 	kfree(data->work);
 	kfree(data);
 	
 	return 0;
 }
 
-static int driver_close(struct inode *inode, struct file *instance)
-{
-	printk("close() called\n");
-	
-	return 0;
-}
-
-static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off)
+static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
 {
 	ssize_t to_copy;
 	char *write_pointer;
@@ -86,8 +114,6 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 			return -ERESTART;
 	}
 	
-	write_pointer = &buffer[write_position];
-	
 	if (count < free_space()) 
 	{
 		to_copy = count;
@@ -97,12 +123,12 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 		to_copy = free_space();
 	}
 	
+	write_pointer = &buffer[write_position];
 	strncpy(write_pointer, userbuf, to_copy);
 
 	write_position += to_copy;
 
-	pr_debug("count: %zu\n", count);	
-	pr_debug("%zd bytes written\n", to_copy);
+	pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
 	pr_debug("Wake consumer up...\n");
 	
 	wake_up_interruptible(&wq);
@@ -110,7 +136,7 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	return to_copy;
 }
 
-static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset)
+static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
 {
 	long not_copied, to_copy, copied;
 	char *read_pointer;
@@ -144,10 +170,9 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 		write_position = 0;
 	}
 	
-	pr_debug("read_position %d\n", read_position);
-	pr_debug("%ld bytes read\n", copied);
-	
+	pr_debug("read_position %d. %ld bytes read\n", read_position, copied);
 	pr_debug("Wake producer up...\n");
+	
 	wake_up_interruptible(&wq);
 	
 	return copied;
