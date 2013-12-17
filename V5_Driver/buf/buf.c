@@ -23,9 +23,9 @@ MODULE_SUPPORTED_DEVICE("none");
 static struct cdev *cdev = NULL;
 static struct class *dev_class;
 static char buffer[BUFFER_SIZE];
-static int buffer_position = 0;
-static int buffer_length = 0;
-static wait_queue_head_t wq; 
+static int read_position = 0;
+static int write_position = 0;
+static wait_queue_head_t wq;
 
 // function prototypes
 static int __init mod_init(void);
@@ -34,6 +34,8 @@ static int driver_open(struct inode *inode, struct file *instance);
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off);
 static int driver_close(struct inode *inode, struct file *instance);
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset);
+ssize_t free_space;
+
 
 static struct file_operations fops = {
 	.owner= THIS_MODULE,
@@ -59,15 +61,18 @@ static int driver_close(struct inode *inode, struct file *instance)
 
 static ssize_t driver_write(struct file *instanz, const char __user *userbuf, size_t count, loff_t *off)
 {
-	ssize_t to_copy, free_space;
+	ssize_t to_copy;
 	char *write_pointer;
 	
-	free_space = BUFFER_SIZE - buffer_length;
+	free_space = BUFFER_SIZE - write_position;
 	
-	if (free_space == 0)
-		return 0;
+	if (free_space == 0) {
+		pr_debug("Producer is going to sleep...\n");
+		if(wait_event_interruptible(wq, free_space > 0))
+			return -ERESTART;
+	}
 	
-	write_pointer = &buffer[buffer_length];
+	write_pointer = &buffer[write_position];
 	
 	if (count < free_space) 
 	{
@@ -80,7 +85,7 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	
 	strncpy(write_pointer, userbuf, to_copy);
 
-	buffer_length += to_copy;
+	write_position += to_copy;
 
 	pr_debug("count: %zu\n", count);	
 	pr_debug("%zd bytes written\n", to_copy);
@@ -93,47 +98,47 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 
 static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *offset)
 {
-	if (buffer_length == 0)
+	if (write_position == 0)
 	{
 		pr_debug("Consumer is going to sleep...\n");
-		if(wait_event_interruptible(wq, buffer_length > 0))
+		if(wait_event_interruptible(wq, write_position > 0))
 			return -ERESTART;
 	}
+
+	long not_copied, to_copy, copied;
+	char *buffer_pointer;
 	
-	if (buffer_length > 0)
+	if(write_position > count)
+	{                                 
+		to_copy = count;
+	}
+	else
 	{
-		long not_copied, to_copy, copied;
-		char *buffer_pointer;
-		
-		if(buffer_length > count)
-		{                                 
-			to_copy = count;
-		}
-		else
-		{
-			to_copy = buffer_length;
-		}
-		
-		buffer_pointer = &buffer[buffer_position];
-		
-		not_copied = copy_to_user(user, buffer_pointer, to_copy);
-		copied = to_copy - not_copied;
-		
-		buffer_position += copied;
-		buffer_length -= copied;
-		
-		if (buffer_length == 0)
-		{
-			buffer_position = 0;
-		}
-		
-		pr_debug("buffer_position %d\n", buffer_position);
-		pr_debug("%ld bytes read\n", copied);
-		
-		return copied;
+		to_copy = write_position;
 	}
 	
-	return 0; //EOF
+	buffer_pointer = &buffer[read_position];
+	
+	not_copied = copy_to_user(user, buffer_pointer, to_copy);
+	copied = to_copy - not_copied;
+	
+	read_position += copied;
+	write_position -= copied;
+	
+	free_space = BUFFER_SIZE - write_position;
+	
+	if (write_position == 0)
+	{
+		read_position = 0;
+	}
+	
+	pr_debug("read_position %d\n", read_position);
+	pr_debug("%ld bytes read\n", copied);
+	
+	pr_debug("Wake producer up...\n");
+	wake_up_interruptible(&wq);
+	
+	return copied;
 }
 
 
