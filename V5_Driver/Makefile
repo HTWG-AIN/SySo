@@ -1,7 +1,7 @@
 buildroot_dir := ~/buildroot
 gitarm_dir := ~/git-arm
 driver_dir := $(gitarm_dir)/V5_Driver
-ip := 192.168.29.48
+ip := $(QEMU_HOST_ADRESS)
 
 CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
 
@@ -31,8 +31,8 @@ copyid:
 
 setup-modules: 
 	ssh root@$(ip) /sbin/depmod -A
-	ssh root@$(ip) /sbin/modprobe -r buf hello2 tasklet
-	ssh root@$(ip) /sbin/modprobe -a buf hello2 tasklet
+	ssh root@$(ip) /sbin/modprobe -r buf hello2 tasklet timer
+	ssh root@$(ip) /sbin/modprobe -a buf hello2 tasklet timer
 
 
 rm-nod:

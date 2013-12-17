@@ -39,12 +39,19 @@ static struct file_operations fops = {
     .release = driver_close,
 };
 
-@TODO;
+static struct timer_list timer;
+
+static void timer_callback(unsigned long data);
+
+typedef struct timer_data_t {
+    unsigned long jiffies_stamp;
+ } timer_data;
 
 
 static int __init mod_init(void)
 {
     dev_t major_nummer = MKDEV(MAJORNUM, 0);
+    timer_data *data;
             
     atomic_set(&v, -1);
 
@@ -79,6 +86,12 @@ static int __init mod_init(void)
     device = device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
 
 
+    
+    data = kmalloc(sizeof(timer_data), GFP_KERNEL);
+    data->jiffies_stamp = 0;
+    setup_timer( &timer, timer_callback, (unsigned long) data);
+    mod_timer( &timer, jiffies + msecs_to_jiffies(2000));
+
     return 0;
 
 free_cdev:
@@ -87,6 +100,17 @@ free_cdev:
 free_devnum:
     unregister_chrdev_region(MKDEV(MAJORNUM,0), NUMDEVICES);
 return -1;
+}
+
+static void timer_callback(unsigned long data) {
+    timer_data *d = (timer_data *) data;
+    if (d->jiffies_stamp)
+        printk( "timer_callback called at (%ld) time since the last call = %d .\n", jiffies, jiffies_to_msecs(jiffies - d->jiffies_stamp));
+    else 
+        printk( "timer_callback called first time (%ld).\n", jiffies);
+
+    mod_timer( &timer, jiffies + msecs_to_jiffies(2000));
+    d->jiffies_stamp = jiffies;
 }
 
 
@@ -113,12 +137,18 @@ static ssize_t driver_close(struct inode *inode, struct file* file) {
 static void __exit mod_exit(void)
 {
 	
+    int ret;
 	if (cdev) {
 		cdev_del(cdev);
 	}
 
     device_destroy(dev_class, MKDEV(MAJORNUM, 0));
     class_destroy(dev_class);
+
+
+
+    ret = del_timer( &timer );
+    if (ret) printk("The timer is still in use...\n");
 	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
         printk(KERN_ALERT "Goodbye, cruel world\n");
