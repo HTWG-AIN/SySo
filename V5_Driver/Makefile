@@ -31,8 +31,8 @@ copyid:
 
 setup-modules: 
 	ssh root@$(ip) /sbin/depmod -A
-	ssh root@$(ip) /sbin/modprobe -r buf hello2 tasklet
-	ssh root@$(ip) /sbin/modprobe -a buf hello2 tasklet
+	ssh root@$(ip) /sbin/modprobe -r buf hello2 tasklet kthread
+	ssh root@$(ip) /sbin/modprobe -a buf hello2 tasklet kthread
 
 
 rm-nod:

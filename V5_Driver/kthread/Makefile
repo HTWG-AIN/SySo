@@ -1,4 +1,4 @@
-TARGETS=timer
+TARGETS=kthread
 BUILDROOT_OUTPUT :=~/buildroot/output
 KDIR := $(BUILDROOT_OUTPUT)/build/linux-3.10.18
 OPTIONS= -C $(KDIR) M=$(shell pwd)  ARCH=arm
@@ -10,7 +10,7 @@ OBJECTS=$(addsuffix .o, $(TARGETS))
 obj-m += $(OBJECTS)
 
 all:
-	#make $(OPTIONS) modules
+	make $(OPTIONS) modules
 
 clean:
 	make $(OPTIONS) clean

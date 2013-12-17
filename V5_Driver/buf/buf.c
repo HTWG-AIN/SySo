@@ -66,7 +66,8 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	
 	free_space = BUFFER_SIZE - write_position;
 	
-	if (free_space == 0) {
+	if (free_space == 0) 
+	{
 		pr_debug("Producer is going to sleep...\n");
 		if(wait_event_interruptible(wq, free_space > 0))
 			return -ERESTART;
