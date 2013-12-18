@@ -45,7 +45,7 @@ static int __init kthread_init(void)
 	init_waitqueue_head(&wq);
 	thread_id = kthread_create(thread_code, NULL, "MySySoKThread");
 
-	if(thread_id == 0)
+	if(thread_id == ERR_PTR(-ENOMEM))
 	{
 		pr_crit("kthread could not be created!\n");
 		return -EIO;

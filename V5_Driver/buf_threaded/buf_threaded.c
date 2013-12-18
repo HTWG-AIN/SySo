@@ -40,11 +40,36 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 #define free_space() (BUFFER_SIZE - write_position)
 #define max_bytes_to_read() (write_position - read_position)
 
-// private data structure
+#define check_if_thread_is_valid(thread) if(thread == ERR_PTR(-ENOMEM)) \
+	{ \
+		pr_crit("thread could not be created!\n"); \
+		return -EIO; \
+	}
+
+#define check_memory(pointer) if (pointer == NULL) {\
+	                pr_alert("Could not allocate memory!\n");\
+        	        return -1;\
+	        }
+
 typedef struct {
+	const char __user *userbuf;
+	size_t count;
+} write_data;
+
+typedef struct {
+	char *user;
+	size_t count;
+} read_data;
+
+typedef struct {
+
 	struct task_struct *thread_write;
+	write_data *write_data;
+	
 	struct task_struct *thread_read;
-	struct completion *work;
+	read_data *read_data;
+	
+	struct completion *on_exit;
 } private_data;
 
 static struct file_operations fops = {
@@ -55,57 +80,15 @@ static struct file_operations fops = {
 	.release= driver_close,
 };
 
-static int thread_write(void *data)
+static int thread_write(void *write_data)
 {
-
-	return 0;
-}
-
-static int thread_read(void *data)
-{
-
-	return 0;
-}
-
-static int driver_open(struct inode *inode, struct file *instance)
-{
-	private_data *data;
-	
-	printk("open() called!\n");
-
-	data = kmalloc(sizeof(private_data), GFP_KERNEL);
-	
-	if (data == NULL) {
-                pr_alert("Could not allocate memory for private_data!\n");
-	        return -1;
-        }
-	
-	init_completion(data->work);
-	
-	data->thread_write = kthread_create(thread_write, NULL, "thread_write");
-	data->thread_read = kthread_create(thread_read, NULL, "thread_read");
-	
-	instance->private_data = data;
-
-	return 0;
-}
-
-static int driver_close(struct inode *inode, struct file *instance)
-{
-	private_data *data  = (private_data*) instance->private_data;
-	
-	printk("close() called\n");
-	
-	kfree(data->work);
-	kfree(data);
-	
-	return 0;
-}
-
-static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
-{
-	ssize_t to_copy;
+	ssize_t to_copy, count;
 	char *write_pointer;
+	const char __user *userbuf;
+	private_data *data = (private_data*) write_data;
+	
+	count = data->write_data->count;
+	userbuf = data->write_data->userbuf;
 	
 	if (free_space() == 0) 
 	{
@@ -133,7 +116,74 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
 	
 	wake_up_interruptible(&wq);
 	
-	return to_copy;
+	complete_and_exit(data->on_exit, to_copy);
+}
+
+static int thread_read(void *data)
+{
+	return 0;
+}
+
+
+
+static int driver_open(struct inode *inode, struct file *instance)
+{
+	private_data *data;
+	
+	printk("open() called!\n");
+
+	data = kmalloc(sizeof(private_data), GFP_KERNEL);
+	
+	if (data == NULL) {
+                pr_alert("Could not allocate memory for private_data!\n");
+	        return -1;
+        }
+
+	// init
+	data->write_data = NULL; // Set to NULL in order to check later, if it has to be freed.
+	data->read_data = NULL; // Set to NULL in order to check later, if it has to be freed.		
+	init_completion(data->on_exit);
+	
+	data->thread_write = kthread_create(thread_write, data, "thread_write");
+	check_if_thread_is_valid(data->thread_write);
+	
+	data->thread_read = kthread_create(thread_read, data, "thread_read");
+	check_if_thread_is_valid(data->thread_read);
+	
+	instance->private_data = data;
+
+	return 0;
+}
+
+static int driver_close(struct inode *inode, struct file *instance)
+{
+	private_data *data  = (private_data*) instance->private_data;
+	
+	printk("close() called\n");
+	
+	kfree(data->on_exit);
+	kfree(data->write_data);
+	kfree(data->read_data);
+	kfree(data);
+	
+	return 0;
+}
+
+static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
+{
+	private_data *data = (private_data*) instance->private_data;
+	data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
+	
+	check_memory(data->write_data);
+	
+	data->write_data->userbuf = userbuf;
+	data->write_data->count = count;
+	
+	wake_up_process(data->thread_write);
+	
+	wait_for_completion(data->on_exit);
+	
+	return 0;
 }
 
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
@@ -149,7 +199,7 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	}
 
 	if(max_bytes_to_read() > count)
-	{                                 
+	{
 		to_copy = count;
 	}
 	else
@@ -231,11 +281,7 @@ static int __init mod_init(void)
 		device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
 		
 		buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
-		
-		if (buffer == NULL) {
-	                pr_alert("Could not allocate memory!\n");
-        	        return -1;
-	        }
+		check_memory(buffer);
 		
 		init_waitqueue_head(&wq);
 
