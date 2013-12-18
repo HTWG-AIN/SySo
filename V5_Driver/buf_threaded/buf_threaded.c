@@ -69,7 +69,9 @@ typedef struct {
 	struct task_struct *thread_read;
 	read_data *read_data;
 	
-	struct completion *on_exit;
+	struct completion on_exit;
+	
+	int ret;
 } private_data;
 
 static struct file_operations fops = {
@@ -116,81 +118,23 @@ static int thread_write(void *write_data)
 	
 	wake_up_interruptible(&wq);
 	
-	complete_and_exit(data->on_exit, to_copy);
+	data->ret = to_copy;
+	
+	complete_and_exit(&(data->on_exit), to_copy);
 }
 
-static int thread_read(void *data)
+static int thread_read(void *read_data)
 {
-	return 0;
-}
-
-
-
-static int driver_open(struct inode *inode, struct file *instance)
-{
-	private_data *data;
-	
-	printk("open() called!\n");
-
-	data = kmalloc(sizeof(private_data), GFP_KERNEL);
-	
-	if (data == NULL) {
-                pr_alert("Could not allocate memory for private_data!\n");
-	        return -1;
-        }
-
-	// init
-	data->write_data = NULL; // Set to NULL in order to check later, if it has to be freed.
-	data->read_data = NULL; // Set to NULL in order to check later, if it has to be freed.		
-	init_completion(data->on_exit);
-	
-	data->thread_write = kthread_create(thread_write, data, "thread_write");
-	check_if_thread_is_valid(data->thread_write);
-	
-	data->thread_read = kthread_create(thread_read, data, "thread_read");
-	check_if_thread_is_valid(data->thread_read);
-	
-	instance->private_data = data;
-
-	return 0;
-}
-
-static int driver_close(struct inode *inode, struct file *instance)
-{
-	private_data *data  = (private_data*) instance->private_data;
-	
-	printk("close() called\n");
-	
-	kfree(data->on_exit);
-	kfree(data->write_data);
-	kfree(data->read_data);
-	kfree(data);
-	
-	return 0;
-}
-
-static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
-{
-	private_data *data = (private_data*) instance->private_data;
-	data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
-	
-	check_memory(data->write_data);
-	
-	data->write_data->userbuf = userbuf;
-	data->write_data->count = count;
-	
-	wake_up_process(data->thread_write);
-	
-	wait_for_completion(data->on_exit);
-	
-	return 0;
-}
-
-static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
-{
-	long not_copied, to_copy, copied;
+	unsigned long not_copied, to_copy, copied;
+	ssize_t count;
 	char *read_pointer;
-
+	char *user;
+	
+	private_data *data = (private_data*) read_data;
+	
+	count = data->read_data->count;
+	user = data->read_data->user;
+	
 	if (max_bytes_to_read() == 0)
 	{
 		pr_debug("Consumer is going to sleep...\n");
@@ -208,6 +152,9 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	}
 	
 	read_pointer = &buffer[read_position];
+	buffer[write_position + 1] = '\0';// FOR DEBUG!!!
+	
+	pr_debug("read_position %d. pointer: %p. string: %s\n", read_position, read_pointer, read_pointer);
 	
 	not_copied = copy_to_user(user, read_pointer, to_copy);
 	copied = to_copy - not_copied;
@@ -220,19 +167,95 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 		write_position = 0;
 	}
 	
-	pr_debug("read_position %d. %ld bytes read\n", read_position, copied);
+	pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
+		read_position, not_copied, to_copy, count, copied);
 	pr_debug("Wake producer up...\n");
 	
 	wake_up_interruptible(&wq);
 	
-	return copied;
+	data->ret = copied;
+	
+	complete_and_exit(&(data->on_exit), copied);
+}
+
+
+
+static int driver_open(struct inode *inode, struct file *instance)
+{
+	private_data *data;
+	
+	printk("open() called!\n");
+
+	data = (private_data*) kmalloc(sizeof(private_data), GFP_KERNEL);
+	check_memory(data);
+	
+	init_completion(&(data->on_exit));
+		
+	data->thread_write = kthread_create(thread_write, data, "thread_write");
+	check_if_thread_is_valid(data->thread_write);
+	
+	data->thread_read = kthread_create(thread_read, data, "thread_read");
+	check_if_thread_is_valid(data->thread_read);
+	
+	instance->private_data = data;
+
+	return 0;
+}
+
+static int driver_close(struct inode *inode, struct file *instance)
+{
+	private_data *data  = (private_data*) instance->private_data;
+	
+	printk("close() called\n");
+	
+	kfree(data);
+	
+	return 0;
+}
+
+static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
+{
+	private_data *data = (private_data*) instance->private_data;
+	data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
+	
+	check_memory(data->write_data);
+	
+	data->write_data->userbuf = userbuf;
+	data->write_data->count = count;
+	
+	wake_up_process(data->thread_write);
+	
+	wait_for_completion(&(data->on_exit));
+	
+	kfree(data->write_data);
+	
+	return data->ret;
+}
+
+static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
+{
+	private_data *data = (private_data*) instance->private_data;
+	data->read_data = (read_data*) kmalloc(sizeof(read_data), GFP_KERNEL);
+	
+	check_memory(data->read_data);
+	
+	data->read_data->user = user;
+	data->read_data->count = count;
+	
+	wake_up_process(data->thread_read);
+	
+	wait_for_completion(&(data->on_exit));
+	
+	kfree(data->read_data);
+	
+	return data->ret;
 }
 
 
 
 static void __exit mod_exit(void)
 {
-	printk(KERN_ALERT "Goodbye, cruel world\n");
+	printk(KERN_ALERT "buf_threaded: Goodbye, cruel world\n");
 	device_destroy(dev_class, MKDEV(MAJORNUM, 0));
 	class_destroy(dev_class);
 	
@@ -250,7 +273,7 @@ static int __init mod_init(void)
 {
 		dev_t major_nummer = MKDEV(MAJORNUM, 0);
 			
-		printk(KERN_ALERT "Hello, world from buf\n");			
+		printk(KERN_ALERT "buf_threaded: Hello, world!\n");			
 				
 		if (register_chrdev_region(major_nummer, NUMDEVICES, DEVNAME)) 
 		{
