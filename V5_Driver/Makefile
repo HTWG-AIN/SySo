@@ -1,14 +1,22 @@
 buildroot_dir := ~/buildroot
 gitarm_dir := ~/git-arm
 driver_dir := $(gitarm_dir)/V5_Driver
-ip := $(QEMU_HOST_ADRESS)
+IP := $(QEMU_HOST_ADRESS)
 
 CC := $(buildroot_dir)/output/host/usr/bin/arm-linux-gcc
 
 
 all: install
 
-install: rebuild modulecopy setup-modules
+install: 
+	for i in $(driver_dir)/*; do \
+		$(MAKE) -C $$i install; \
+	done
+
+uninstall: 
+	for i in $(driver_dir)/*; do \
+		$(MAKE) -C $$i uninstall; \
+	done
 
 rebuild:
 	for i in $(driver_dir)/*; do \
@@ -21,19 +29,10 @@ clean:
 		$(MAKE) -C $$i clean; \
 	done
 
-modulecopy:
-	ssh root@$(ip) mkdir -p /lib/modules/3.10.18/kernel/drivers
-	scp -r $(driver_dir)/* root@$(ip):/lib/modules/3.10.18/kernel/drivers 
-
 copyid: 
-	([ ! -f ~/.ssh/id_rsa.pub ] && ssh-keygen); ssh-copy-id root@$(ip)
+	([ ! -f ~/.ssh/id_rsa.pub ] && ssh-keygen); ssh-copy-id root@$(IP)
 
-
-setup-modules: 
-	ssh root@$(ip) /sbin/depmod -A
-	ssh root@$(ip) /sbin/modprobe -r buf buf_threaded hello2 tasklet timer kthread workqueuee
-	ssh root@$(ip) /sbin/modprobe -a buf buf_threaded hello2 tasklet timer kthread workqueuee
 
 
 rm-nod:
-	ssh root@$(ip) rm /dev/t12*
+	ssh root@$(IP) rm /dev/t12*

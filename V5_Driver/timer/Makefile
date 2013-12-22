@@ -15,6 +15,10 @@ all:
 clean:
 	make $(OPTIONS) clean
 
-install:
-	make $(OPTIONS) INSTALL_MOD_PATH=$(BUILDROOT_OUTPUT)/target
-INSTALL_MOD_STRIP=1 modules_install
+install: all
+	ssh root@$(QEMU_HOST_ADRESS) mkdir -p  $(QEMU_HOST_KERNEL_DIR)/$(TARGETS)
+	scp -r $(TARGETS).ko root@$(QEMU_HOST_ADRESS):$(QEMU_HOST_KERNEL_DIR)/$(TARGETS)
+	ssh root@$(QEMU_HOST_ADRESS) "/sbin/depmod -A; /sbin/modprobe -r $(TARGETS); /sbin/modprobe -a $(TARGETS)"
+uninstall:
+	ssh root@$(QEMU_HOST_ADRESS) /sbin/modprobe -r $(TARGETS)
+
