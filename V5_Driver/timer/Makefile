@@ -10,7 +10,7 @@ OBJECTS=$(addsuffix .o, $(TARGETS))
 obj-m += $(OBJECTS)
 
 all:
-	#make $(OPTIONS) modules
+	make $(OPTIONS) modules
 
 clean:
 	make $(OPTIONS) clean

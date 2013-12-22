@@ -31,8 +31,8 @@ copyid:
 
 setup-modules: 
 	ssh root@$(ip) /sbin/depmod -A
-	ssh root@$(ip) /sbin/modprobe -r buf buf_threaded hello2 tasklet timer kthread
-	ssh root@$(ip) /sbin/modprobe -a buf buf_threaded hello2 tasklet timer kthread
+	ssh root@$(ip) /sbin/modprobe -r buf buf_threaded hello2 tasklet timer kthread workqueuee
+	ssh root@$(ip) /sbin/modprobe -a buf buf_threaded hello2 tasklet timer kthread workqueuee
 
 
 rm-nod:
