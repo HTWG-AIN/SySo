@@ -10,6 +10,7 @@
 #include <linux/sched.h> // TASK_INTERRUPTIBLE used by wake_up_interruptible()
 #include <linux/slab.h> // kmalloc(), kfree()
 #include <linux/kthread.h>
+#include <linux/mutex.h>
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -52,14 +53,19 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
          return -1;\
          }
 
+#define DATA_NOT_YET_READ -1
+#define DATA_NOT_YET_WRITTEN DATA_NOT_YET_READ
+
 typedef struct {
         const char __user *userbuf;
         size_t count;
+        struct mutex mutex_write;
 } write_data;
 
 typedef struct {
         char *user;
         size_t count;
+        struct mutex mutex_read;
 } read_data;
 
 typedef struct {
@@ -133,8 +139,12 @@ static int thread_read(void *read_data)
         
         private_data *data = (private_data*) read_data;
         
+        mutex_lock(&data->read_data->mutex_read);
+        
         count = data->read_data->count;
         user = data->read_data->user;
+        
+        mutex_unlock(&data->read_data->mutex_read);
         
         if (max_bytes_to_read() == 0)
         {
@@ -186,17 +196,21 @@ static int driver_open(struct inode *inode, struct file *instance)
         private_data *data;
         
         printk("open() called!\n");
-
+	
         data = (private_data*) kmalloc(sizeof(private_data), GFP_KERNEL);
         check_memory(data);
-        
+
         init_completion(&(data->on_exit));
-                
+
         data->thread_write = kthread_create(thread_write, data, "thread_write");
         check_if_thread_is_valid(data->thread_write);
-        
+
         data->thread_read = kthread_create(thread_read, data, "thread_read");
         check_if_thread_is_valid(data->thread_read);
+
+        // Do only kmalloc() on read() and write, if write_data or read_data are NULL!
+        data->write_data = NULL;
+        data->read_data = NULL;
         
         instance->private_data = data;
 
@@ -209,6 +223,18 @@ static int driver_close(struct inode *inode, struct file *instance)
         
         printk("close() called\n");
         
+        if (data->write_data != NULL)
+        {
+		mutex_destroy(&data->write_data->mutex_write);
+	        kfree(data->write_data);
+        }
+        
+        if (data->read_data != NULL)
+        {
+		mutex_destroy(&data->read_data->mutex_read);
+        	kfree(data->read_data);
+        }
+        
         kfree(data);
         
         return 0;
@@ -217,39 +243,65 @@ static int driver_close(struct inode *inode, struct file *instance)
 static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
 {
         private_data *data = (private_data*) instance->private_data;
-        data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
         
-        check_memory(data->write_data);
+        if (data->write_data == NULL)
+        {
+		data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
+		check_memory(data->write_data);
+
+		mutex_init(&data->write_data->mutex_write);
+
+		data->write_data->userbuf = userbuf;
+		data->write_data->count = count;
+		
+		pr_debug("Create producer thread for the first time...\n");
+		wake_up_process(data->thread_write);
+        }
+        else if (mutex_trylock(&data->write_data->mutex_write) && data->ret != DATA_NOT_YET_WRITTEN)
+        {
+		data->write_data->userbuf = userbuf;
+		data->write_data->count = count;
+		
+		mutex_unlock(&data->write_data->mutex_write);
+		
+		pr_debug("Create producer thread for the nth time...\n");
+		wake_up_process(data->thread_write);
+		
+		return data->ret;
+        }
         
-        data->write_data->userbuf = userbuf;
-        data->write_data->count = count;
-        
-        wake_up_process(data->thread_write);
-        
-        wait_for_completion(&(data->on_exit));
-        
-        kfree(data->write_data);
-        
-        return data->ret;
+        return -EAGAIN;
 }
 
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
 {
         private_data *data = (private_data*) instance->private_data;
-        data->read_data = (read_data*) kmalloc(sizeof(read_data), GFP_KERNEL);
         
-        check_memory(data->read_data);
+        if (data->read_data == NULL)
+        {
+		data->read_data = (read_data*) kmalloc(sizeof(read_data), GFP_KERNEL);
+		check_memory(data->read_data);
+		mutex_init(&data->read_data->mutex_read);
+		
+		data->read_data->user = user;
+		data->read_data->count = count;
+		
+		pr_debug("Create consumer thread for the first time...\n");
+		wake_up_process(data->thread_read);
+        }
+        else if (mutex_trylock(&data->read_data->mutex_read) && data->ret != DATA_NOT_YET_READ)
+        {
+        	data->read_data->user = user;
+		data->read_data->count = count;
+		
+		mutex_unlock(&data->read_data->mutex_read);
+		pr_debug("Create consumer thread for the nth time...\n");
+		wake_up_process(data->thread_read);
+		
+		return data->ret;
+        }
         
-        data->read_data->user = user;
-        data->read_data->count = count;
-        
-        wake_up_process(data->thread_read);
-        
-        wait_for_completion(&(data->on_exit));
-        
-        kfree(data->read_data);
-        
-        return data->ret;
+        return -EAGAIN;
 }
 
 

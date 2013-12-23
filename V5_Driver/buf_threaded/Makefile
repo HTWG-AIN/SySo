@@ -4,10 +4,14 @@ KDIR := $(BUILDROOT_OUTPUT)/build/linux-3.10.18
 OPTIONS= -C $(KDIR) M=$(shell pwd)  ARCH=arm
 CC := $(BUILDROOT_OUTPUT)/host/usr/bin/arm-linux-gcc
 LD := $(BUILDROOT_OUTPUT)/host/usr/bin/arm-linux-ld
+
 EXTRA_CFLAGS += -DDEBUG
 
 OBJECTS=$(addsuffix .o, $(TARGETS))
 obj-m += $(OBJECTS)
+
+debug: CC += -DDEBUG -g
+debug: all
 
 all:
 	make $(OPTIONS) modules
