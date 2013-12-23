@@ -30,7 +30,7 @@ static struct device *device;
 
 static ssize_t driver_open(struct inode *inode, struct file* file); 
 static ssize_t driver_close(struct inode *inode, struct file* file);
-
+static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset);
 
 static int MODULE_EXIT = 0;
 
@@ -41,12 +41,16 @@ DEFINE_MUTEX(open_once);
 
 static struct file_operations fops = {
 	.owner= THIS_MODULE,
-    .open = driver_open,
-    .release = driver_close
+	.open = driver_open,
+	.read= driver_read,
+	.release = driver_close
 
 };
 
-
+static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
+{
+	return 0;
+}
 
 static int __init mod_init(void)
 {
