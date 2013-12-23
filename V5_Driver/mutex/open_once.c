@@ -17,6 +17,8 @@ MODULE_DESCRIPTION("mutex");
 #define MAJORNUM 125
 #define NUMDEVICES 2
 #define DEVNAME "t12mutex"
+#define DEFAULT_SLEEP_TIME_SECONDS 10
+#define DEFAULT_SLEEP_TIME_MSECONDS 200
 
 
 
@@ -29,12 +31,8 @@ static struct device *device;
 static ssize_t driver_open(struct inode *inode, struct file* file); 
 static ssize_t driver_close(struct inode *inode, struct file* file);
 
-static struct timer_list timer;
 
-static void timer_callback(unsigned long data);
-
-
-
+static int MODULE_EXIT = 0;
 
 
 
@@ -86,7 +84,6 @@ static int __init mod_init(void)
 
 
     // Device Specific operations.
-    setup_timer( &timer, timer_callback, 0);
 
     return 0;
 
@@ -100,41 +97,32 @@ return -1;
 
 
 static ssize_t driver_open(struct inode *inode, struct file* file) {
-    pr_debug("Module fops:device %s was opened from device with minor no %d \n", DEVNAME , iminor(inode));
-    mod_timer( &timer, jiffies + msecs_to_jiffies(200));
+    pr_debug("Module fops:device %s was opened from device with minor no %d\n", DEVNAME , iminor(inode));
 
     if (mutex_trylock(&open_once)) {
-        ssleep(10);
-        try_module_get(THIS_MODULE);
+        pr_debug("Module fops:device %s got lock falling to sleep\n", DEVNAME);
+        ssleep(DEFAULT_SLEEP_TIME_SECONDS);
     } else {
-        pr_debug("Module fops:device %s is locked \n", DEVNAME);
+        unsigned long start  = jiffies;
+        while(!mutex_trylock(&open_once) && !MODULE_EXIT){
+            pr_debug("Module fops:device %s waited %d msecs till mutex is unlocked \n", DEVNAME, jiffies_to_msecs(jiffies-start));
+            msleep(DEFAULT_SLEEP_TIME_MSECONDS);
+        }
+        pr_debug("Module fops:device %s got lock after waiting %d msecs falling to sleep\n", DEVNAME, jiffies_to_msecs(jiffies-start));
+        ssleep(DEFAULT_SLEEP_TIME_SECONDS);
     }
-
-
-
     return 0;
-
 }
 
 
 static ssize_t driver_close(struct inode *inode, struct file* file) {
 
+
     mutex_unlock(&open_once);
 
-    module_put(THIS_MODULE);
     pr_debug("Module fops:device %s was closed \n", DEVNAME);
     return 0;
 
-}
-
-static void timer_callback(unsigned long data) {
-
-    if (mutex_is_locked(&open_once)) {
-        pr_debug("Module fops:device %s mutex is Locked at %ld \n", DEVNAME, jiffies);
-        
-    }
-
-    mod_timer( &timer, jiffies + msecs_to_jiffies(200));
 }
 
 
@@ -147,9 +135,17 @@ static void __exit mod_exit(void)
 		cdev_del(cdev);
 	}
 
+    MODULE_EXIT = 1;
+
+    if (mutex_is_locked(&open_once)) {
+        printk(KERN_ALERT "Mutex is still locked\n");
+        mutex_unlock(&open_once);
+
+    }
+    mutex_destroy(&open_once);
+
     device_destroy(dev_class, MKDEV(MAJORNUM, 0));
     class_destroy(dev_class);
-	                                                  
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
         printk(KERN_ALERT "Goodbye, cruel world\n");
 }
