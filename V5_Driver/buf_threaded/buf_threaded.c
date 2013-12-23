@@ -27,7 +27,8 @@ static struct class *dev_class;
 static char *buffer;
 static int read_position = 0;
 static int write_position = 0;
-static wait_queue_head_t wq;
+static wait_queue_head_t wq_read;
+static wait_queue_head_t wq_write;
 
 // function prototypes
 static int __init mod_init(void);
@@ -95,7 +96,7 @@ static int thread_write(void *write_data)
         if (free_space() == 0)
         {
                 pr_debug("Producer is going to sleep...\n");
-                if(wait_event_interruptible(wq, free_space() > 0))
+                if(wait_event_interruptible(wq_write, free_space() > 0))
                         return -ERESTART;
         }
         
@@ -116,7 +117,7 @@ static int thread_write(void *write_data)
         pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
         pr_debug("Wake consumer up...\n");
         
-        wake_up_interruptible(&wq);
+        wake_up_interruptible(&wq_read);
         
         data->ret = to_copy;
         
@@ -138,7 +139,7 @@ static int thread_read(void *read_data)
         if (max_bytes_to_read() == 0)
         {
                 pr_debug("Consumer is going to sleep...\n");
-                if(wait_event_interruptible(wq, max_bytes_to_read() > 0))
+                if(wait_event_interruptible(wq_read, max_bytes_to_read() > 0))
                         return -ERESTART;
         }
 
@@ -171,7 +172,7 @@ static int thread_read(void *read_data)
                 read_position, not_copied, to_copy, count, copied);
         pr_debug("Wake producer up...\n");
         
-        wake_up_interruptible(&wq);
+        wake_up_interruptible(&wq_write);
         
         data->ret = copied;
         
@@ -306,7 +307,8 @@ static int __init mod_init(void)
                 buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
                 check_memory(buffer);
                 
-                init_waitqueue_head(&wq);
+                init_waitqueue_head(&wq_read);
+                init_waitqueue_head(&wq_write);
 
                 return 0;
 

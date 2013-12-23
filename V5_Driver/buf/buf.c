@@ -25,7 +25,8 @@ static struct class *dev_class;
 static char buffer[BUFFER_SIZE];
 static int read_position = 0;
 static int write_position = 0;
-static wait_queue_head_t wq;
+static wait_queue_head_t wq_read;
+static wait_queue_head_t wq_write;
 
 // function prototypes
 static int __init mod_init(void);
@@ -68,7 +69,7 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	if (free_space() == 0) 
 	{
 		pr_debug("Producer is going to sleep...\n");
-		if(wait_event_interruptible(wq, free_space() > 0))
+		if(wait_event_interruptible(wq_write, free_space() > 0))
 			return -ERESTART;
 	}
 	
@@ -91,7 +92,7 @@ static ssize_t driver_write(struct file *instanz, const char __user *userbuf, si
 	pr_debug("%zd bytes written\n", to_copy);
 	pr_debug("Wake consumer up...\n");
 	
-	wake_up_interruptible(&wq);
+	wake_up_interruptible(&wq_read);
 	
 	return to_copy;
 }
@@ -104,7 +105,7 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 	if (max_bytes_to_read() == 0)
 	{
 		pr_debug("Consumer is going to sleep...\n");
-		if(wait_event_interruptible(wq, max_bytes_to_read() > 0))
+		if(wait_event_interruptible(wq_read, max_bytes_to_read() > 0))
 			return -ERESTART;
 	}
 
@@ -134,7 +135,7 @@ static ssize_t driver_read(struct file *file, char *user, size_t count, loff_t *
 	pr_debug("%ld bytes read\n", copied);
 	
 	pr_debug("Wake producer up...\n");
-	wake_up_interruptible(&wq);
+	wake_up_interruptible(&wq_write);
 	
 	return copied;
 }
@@ -189,7 +190,8 @@ static int __init mod_init(void)
 		dev_class = class_create(THIS_MODULE, DEVNAME);
 		device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
 		
-		init_waitqueue_head(&wq);
+		init_waitqueue_head(&wq_read);
+		init_waitqueue_head(&wq_write);
 
 		return 0;
 
