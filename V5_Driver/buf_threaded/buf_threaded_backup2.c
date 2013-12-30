@@ -31,9 +31,6 @@ static int write_position = 0;
 static wait_queue_head_t wq_read;
 static wait_queue_head_t wq_write;
 
-struct mutex mutex_read;
-struct mutex mutex_write;
-
 // function prototypes
 static int __init mod_init(void);
 static void __exit mod_exit(void);
@@ -56,24 +53,27 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
          return -1;\
          }
 
-typedef struct 
-{
+#define DATA_NOT_YET_READ -1
+#define DATA_NOT_YET_WRITTEN DATA_NOT_YET_READ
+
+typedef struct {
         const char __user *userbuf;
         size_t count;
-        struct task_struct *thread_write;
+        struct mutex mutex_write;
 } write_data;
 
-typedef struct 
-{
+typedef struct {
         char *user;
         size_t count;
-        struct task_struct *thread_read;
+        struct mutex mutex_read;
 } read_data;
 
-typedef struct 
-{
+typedef struct {
+
+        struct task_struct *thread_write;
         write_data *write_data;
         
+        struct task_struct *thread_read;
         read_data *read_data;
         
         struct completion on_exit;
@@ -81,8 +81,7 @@ typedef struct
         int ret;
 } private_data;
 
-static struct file_operations fops = 
-{
+static struct file_operations fops = {
         .owner= THIS_MODULE,
         .read= driver_read,
         .write = driver_write,
@@ -93,9 +92,12 @@ static struct file_operations fops =
 static int thread_write(void *write_data)
 {
         ssize_t to_copy, count;
+        char *write_pointer;
+        const char __user *userbuf;
         private_data *data = (private_data*) write_data;
         
         count = data->write_data->count;
+        userbuf = data->write_data->userbuf;
         
         if (free_space() == 0)
         {
@@ -113,6 +115,16 @@ static int thread_write(void *write_data)
                 to_copy = free_space();
         }
         
+        write_pointer = &buffer[write_position];
+        strncpy(write_pointer, userbuf, to_copy);
+
+        write_position += to_copy;
+
+        pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
+        pr_debug("Wake consumer up...\n");
+        
+        wake_up_interruptible(&wq_read);
+        
         data->ret = to_copy;
         
         complete_and_exit(&(data->on_exit), to_copy);
@@ -120,17 +132,19 @@ static int thread_write(void *write_data)
 
 static int thread_read(void *read_data)
 {
-        ssize_t to_copy;
+        unsigned long not_copied, to_copy, copied;
         ssize_t count;
-        
+        char *read_pointer;
         char *user;
         
         private_data *data = (private_data*) read_data;
         
-        mutex_lock(&mutex_read); // LOCK
+        mutex_lock(&data->read_data->mutex_read);
         
         count = data->read_data->count;
         user = data->read_data->user;
+        
+        mutex_unlock(&data->read_data->mutex_read);
         
         if (max_bytes_to_read() == 0)
         {
@@ -148,11 +162,31 @@ static int thread_read(void *read_data)
                 to_copy = max_bytes_to_read();
         }
         
-        data->ret = to_copy;
+        read_pointer = &buffer[read_position];
+        buffer[write_position + 1] = '\0';// FOR DEBUG!!!
         
-        mutex_unlock(&mutex_read); // UNLOCK
+        pr_debug("read_position %d. pointer: %p. string: %s\n", read_position, read_pointer, read_pointer);
         
-        complete_and_exit(&(data->on_exit), 0);
+        not_copied = copy_to_user(user, read_pointer, to_copy);
+        copied = to_copy - not_copied;
+        
+        read_position += copied;
+        
+        if (read_position == write_position)
+        {
+                read_position = 0;
+                write_position = 0;
+        }
+        
+        pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
+                read_position, not_copied, to_copy, count, copied);
+        pr_debug("Wake producer up...\n");
+        
+        wake_up_interruptible(&wq_write);
+        
+        data->ret = copied;
+        
+        complete_and_exit(&(data->on_exit), copied);
 }
 
 
@@ -168,6 +202,12 @@ static int driver_open(struct inode *inode, struct file *instance)
 
         init_completion(&(data->on_exit));
 
+        data->thread_write = kthread_create(thread_write, data, "thread_write");
+        check_if_thread_is_valid(data->thread_write);
+
+        data->thread_read = kthread_create(thread_read, data, "thread_read");
+        check_if_thread_is_valid(data->thread_read);
+
         // Do only kmalloc() on read() and write, if write_data or read_data are NULL!
         data->write_data = NULL;
         data->read_data = NULL;
@@ -182,20 +222,19 @@ static int driver_close(struct inode *inode, struct file *instance)
         private_data *data = (private_data*) instance->private_data;
         
         printk("close() called\n");
-
-	mutex_destroy(&mutex_read);
-        mutex_destroy(&mutex_write);
         
         if (data->write_data != NULL)
         {
+		mutex_destroy(&data->write_data->mutex_write);
 	        kfree(data->write_data);
         }
         
         if (data->read_data != NULL)
         {
+		mutex_destroy(&data->read_data->mutex_read);
         	kfree(data->read_data);
         }
-
+        
         kfree(data);
         
         return 0;
@@ -203,106 +242,66 @@ static int driver_close(struct inode *inode, struct file *instance)
 
 static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
 {
-        ssize_t to_copy;
-        char *write_pointer;
         private_data *data = (private_data*) instance->private_data;
         
         if (data->write_data == NULL)
         {
 		data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
 		check_memory(data->write_data);
-	
+
+		mutex_init(&data->write_data->mutex_write);
+
+		data->write_data->userbuf = userbuf;
+		data->write_data->count = count;
+		
 		pr_debug("Create producer thread for the first time...\n");
+		wake_up_process(data->thread_write);
         }
-        
-        if (mutex_trylock(&mutex_write))
+        else if (mutex_trylock(&data->write_data->mutex_write) && data->ret != DATA_NOT_YET_WRITTEN)
         {
 		data->write_data->userbuf = userbuf;
 		data->write_data->count = count;
 		
-		mutex_unlock(&mutex_write);
+		mutex_unlock(&data->write_data->mutex_write);
 		
-		pr_debug("Write: Call wake_up_process()\n");
+		pr_debug("Create producer thread for the nth time...\n");
+		wake_up_process(data->thread_write);
+		
+		return data->ret;
         }
-
-        data->write_data->thread_write = kthread_create(thread_write, data, "thread_write");
-        check_if_thread_is_valid(data->write_data->thread_write);
-                
-        wake_up_process(data->write_data->thread_write);
-        wait_for_completion(&data->on_exit);
         
-        to_copy = data->ret;
-                
-        write_pointer = &buffer[write_position];
-        strncpy(write_pointer, userbuf, to_copy);
-
-        write_position += to_copy;
-
-        pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
-        pr_debug("Wake consumer up...\n");
-        
-        wake_up_interruptible(&wq_read);
-        
-        return data->ret;
+        return -EAGAIN;
 }
 
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
 {
-        unsigned long not_copied, to_copy, copied;
-        char *read_pointer;
         private_data *data = (private_data*) instance->private_data;
         
         if (data->read_data == NULL)
         {
 		data->read_data = (read_data*) kmalloc(sizeof(read_data), GFP_KERNEL);
 		check_memory(data->read_data);
+		mutex_init(&data->read_data->mutex_read);
+		
+		data->read_data->user = user;
+		data->read_data->count = count;
 		
 		pr_debug("Create consumer thread for the first time...\n");
+		wake_up_process(data->thread_read);
         }
-        
-        if (mutex_trylock(&mutex_read))
+        else if (mutex_trylock(&data->read_data->mutex_read) && data->ret != DATA_NOT_YET_READ)
         {
         	data->read_data->user = user;
 		data->read_data->count = count;
 		
-		mutex_unlock(&mutex_read);
-		pr_debug("Read: Call wake_up_process()\n");
-        }
-
-	data->read_data->thread_read = kthread_create(thread_read, data, "thread_read");
-        check_if_thread_is_valid(data->read_data->thread_read);
-        
-        wake_up_process(data->read_data->thread_read);
-        wait_for_completion(&data->on_exit);
-        
-        to_copy = data->ret;
-        
-        mutex_trylock(&mutex_read); // LOCK
-        read_pointer = &buffer[read_position];
-        buffer[write_position + 1] = '\0';// FOR DEBUG!!!
-        not_copied = copy_to_user(user, read_pointer, to_copy);
-        copied = to_copy - not_copied;
-        
-        read_position += copied;
-        
-        if (read_position == write_position)
-        {
-                read_position = 0;
-                write_position = 0;
+		mutex_unlock(&data->read_data->mutex_read);
+		pr_debug("Create consumer thread for the nth time...\n");
+		wake_up_process(data->thread_read);
+		
+		return data->ret;
         }
         
-        pr_debug("read_position %d. pointer: %p. string: %s\n", read_position, read_pointer, read_pointer);
-        
-        mutex_unlock(&mutex_read); // UNLOCK
-        
-        
-        pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
-                read_position, not_copied, to_copy, count, copied);
-        pr_debug("Free space: %d. Wake producer up...\n", free_space());
-        
-        wake_up_interruptible(&wq_write);
-        
-        return copied;
+        return -EAGAIN;
 }
 
 
@@ -314,7 +313,7 @@ static void __exit mod_exit(void)
         class_destroy(dev_class);
         
         if (cdev)
-	{
+            {
                 cdev_del(cdev);
         }
         
@@ -338,7 +337,6 @@ static int __init mod_init(void)
                 pr_info("Device number 0x%x created\n", MKDEV(MAJORNUM, 0));
 
                 cdev = cdev_alloc();
-                
                 if (cdev == NULL)
                 {
                         pr_warn("cdev_alloc failed!\n");
@@ -363,9 +361,6 @@ static int __init mod_init(void)
                 
                 init_waitqueue_head(&wq_read);
                 init_waitqueue_head(&wq_write);
-
-		mutex_init(&mutex_read);
-		mutex_init(&mutex_write);
 
                 return 0;
 
