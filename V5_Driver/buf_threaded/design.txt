@@ -1,0 +1,35 @@
+1. Aufgabenstellung
+
+Das Programm buf_threaded soll einen Zugriff auf einen Puffer auf einer externen Hardware
+simulieren, welcher über einen Treiber geschieht. Der Treiber beinhaltet einen flüchtigen Puffer
+der über die Befehle read() und write() sowohl schreib- als auch lesbar ist.
+Sowohl die Schreib- als die Les-Anfragen können nicht nur über verschiedene Instanzen geschehen,
+sondern soll auch multithreaded abgearbeitet werden.
+Ist der Puffer voll und ein Schreibthread möchte weitere Daten in den Puffer schreiben, soll
+dieser sich solange schlafen legen, bis wieder Platz frei ist.
+Analag soll bei einem Lesethread vorgegangen werden: Solange es nichts zu lesen gibt, solange
+soll der Lesethread schlafen gelegen werden.
+Somit simulieren wir ein klassisches Producer-/Consumer-Verhalten, wobei zu achten ist,
+dass Schreib-Threads eine höhere Priorität haben.
+
+2. Kontrollfluss
+
+Für den Zugriff auf den internen Puffer wurde ein mutex (mutex_buffer) definiert. Immer dann,
+wenn ein Schreib-Thread ihn beschreiben oder ein Lese-Thread ihn lesen möchte, wird kurz davor
+der mutex_buffer gelockt und unmittelbar nach dem Schreiben bzw. Lesen wieder freigegeben.
+
+2.1 Schlafen legen und gegenseitiges aufwecken
+
+Die Bedingung für das Schreiben in den Puffer ist, dass freier Speicherplatz zur Verfügung steht.
+Ist diese Bedingung nicht gegeben, legt sich der Schreibthread schlafen. Dies wird mit einer
+write waitqueue gemacht, die beim Aufwecken nochmals die Bedingung überprüft und sich ggf.
+wieder schlafen legt, falls diese nicht zutrifft.
+Hat ein Lesethread alle zur Verfügung stehenden Daten gelesen, wird sowohl der Lese-, als auch
+der Schreibzeiger wieder auf 0 gesetzt und anschließend wird der Schreibthread aufgeweckt
+der die (restlichen) Daten in den Puffer schreibt.
+
+2.2 Berechnung des frei verfügbaren Speichers
+
+Der Schreibthread muss, bevor er Daten in den Puffer schreibt, wissen, wie viel Speicher noch
+zur Verfügung steht. Dieser ergibt sich aus der Differenz zwischen der Puffer-Größe und dem
+Schreibzeiger der global im Treiber deklariert ist.

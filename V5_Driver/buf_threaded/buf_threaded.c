@@ -11,6 +11,7 @@
 #include <linux/slab.h> // kmalloc(), kfree()
 #include <linux/kthread.h>
 #include <linux/mutex.h>
+#include <linux/atomic.h>
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -28,11 +29,15 @@ static struct class *dev_class;
 static char *buffer;
 static int read_position = 0;
 static int write_position = 0;
+
+static atomic_t free_space;
+static atomic_t max_bytes_to_read;
+
 static wait_queue_head_t wq_read;
 static wait_queue_head_t wq_write;
 
-struct mutex mutex_read;
-struct mutex mutex_write;
+struct mutex mutex_buffer;
+struct mutex write_lock;
 
 // function prototypes
 static int __init mod_init(void);
@@ -58,14 +63,12 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 
 typedef struct 
 {
-        const char __user *userbuf;
         size_t count;
         struct task_struct *thread_write;
 } write_data;
 
 typedef struct 
 {
-        char *user;
         size_t count;
         struct task_struct *thread_read;
 } read_data;
@@ -73,11 +76,8 @@ typedef struct
 typedef struct 
 {
         write_data *write_data;
-        
         read_data *read_data;
-        
         struct completion on_exit;
-        
         int ret;
 } private_data;
 
@@ -96,26 +96,26 @@ static int thread_write(void *write_data)
         private_data *data = (private_data*) write_data;
         
         count = data->write_data->count;
-        
-        if (free_space() == 0)
+                        
+        if (atomic_read(&free_space) == 0)
         {
                 pr_debug("Producer is going to sleep...\n");
-                if(wait_event_interruptible(wq_write, free_space() > 0))
+                if(wait_event_interruptible(wq_write, atomic_read(&free_space) > 0))
                         return -ERESTART;
         }
         
-        if (count < free_space())
+        if (count < atomic_read(&free_space))
         {
                 to_copy = count;
         }
         else
         {
-                to_copy = free_space();
+                to_copy = atomic_read(&free_space);
         }
         
         data->ret = to_copy;
         
-        complete_and_exit(&(data->on_exit), to_copy);
+        complete_and_exit(&data->on_exit, to_copy);
 }
 
 static int thread_read(void *read_data)
@@ -123,36 +123,29 @@ static int thread_read(void *read_data)
         ssize_t to_copy;
         ssize_t count;
         
-        char *user;
-        
         private_data *data = (private_data*) read_data;
         
-        mutex_lock(&mutex_read); // LOCK
-        
         count = data->read_data->count;
-        user = data->read_data->user;
-        
-        if (max_bytes_to_read() == 0)
+
+        if (atomic_read(&max_bytes_to_read) == 0)
         {
                 pr_debug("Consumer is going to sleep...\n");
-                if(wait_event_interruptible(wq_read, max_bytes_to_read() > 0))
+                if(wait_event_interruptible(wq_read, atomic_read(&max_bytes_to_read) > 0))
                         return -ERESTART;
         }
 
-        if(max_bytes_to_read() > count)
+        if(atomic_read(&max_bytes_to_read) > count)
         {
                 to_copy = count;
         }
         else
         {
-                to_copy = max_bytes_to_read();
+                to_copy = atomic_read(&max_bytes_to_read);
         }
-        
+	
         data->ret = to_copy;
         
-        mutex_unlock(&mutex_read); // UNLOCK
-        
-        complete_and_exit(&(data->on_exit), 0);
+        complete_and_exit(&data->on_exit, 0);
 }
 
 
@@ -183,8 +176,8 @@ static int driver_close(struct inode *inode, struct file *instance)
         
         printk("close() called\n");
 
-	mutex_destroy(&mutex_read);
-        mutex_destroy(&mutex_write);
+	mutex_destroy(&mutex_buffer);
+        mutex_destroy(&write_lock);
         
         if (data->write_data != NULL)
         {
@@ -215,15 +208,8 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
 		pr_debug("Create producer thread for the first time...\n");
         }
         
-        if (mutex_trylock(&mutex_write))
-        {
-		data->write_data->userbuf = userbuf;
-		data->write_data->count = count;
-		
-		mutex_unlock(&mutex_write);
-		
-		pr_debug("Write: Call wake_up_process()\n");
-        }
+	data->write_data->count = count;
+	pr_debug("Write: Call wake_up_process()\n");
 
         data->write_data->thread_write = kthread_create(thread_write, data, "thread_write");
         check_if_thread_is_valid(data->write_data->thread_write);
@@ -233,11 +219,18 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
         
         to_copy = data->ret;
                 
-        write_pointer = &buffer[write_position];
-        strncpy(write_pointer, userbuf, to_copy);
-
-        write_position += to_copy;
-
+	mutex_lock(&mutex_buffer); // BUFFER LOCK
+		write_pointer = &buffer[write_position];
+		strncpy(write_pointer, userbuf, to_copy);
+	mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
+	
+        mutex_lock(&write_lock); // WRITE LOCK
+		write_position += to_copy;
+		
+		atomic_set(&free_space, free_space());
+		atomic_set(&max_bytes_to_read, max_bytes_to_read());
+        mutex_unlock(&write_lock); // WRITE UNLOCK        
+	
         pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
         pr_debug("Wake consumer up...\n");
         
@@ -260,14 +253,8 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 		pr_debug("Create consumer thread for the first time...\n");
         }
         
-        if (mutex_trylock(&mutex_read))
-        {
-        	data->read_data->user = user;
-		data->read_data->count = count;
-		
-		mutex_unlock(&mutex_read);
-		pr_debug("Read: Call wake_up_process()\n");
-        }
+	data->read_data->count = count;
+	pr_debug("Read: Call wake_up_process()\n");
 
 	data->read_data->thread_read = kthread_create(thread_read, data, "thread_read");
         check_if_thread_is_valid(data->read_data->thread_read);
@@ -277,28 +264,32 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         
         to_copy = data->ret;
         
-        mutex_trylock(&mutex_read); // LOCK
-        read_pointer = &buffer[read_position];
-        buffer[write_position + 1] = '\0';// FOR DEBUG!!!
-        not_copied = copy_to_user(user, read_pointer, to_copy);
+        mutex_lock(&mutex_buffer); // BUFFER LOCK
+		read_pointer = &buffer[read_position];
+		not_copied = copy_to_user(user, read_pointer, to_copy);
+        mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
+        
         copied = to_copy - not_copied;
         
+        
+        
+        mutex_lock(&write_lock); // WRITE LOCK
         read_position += copied;
         
         if (read_position == write_position)
         {
                 read_position = 0;
                 write_position = 0;
+                atomic_set(&free_space, free_space());
+                atomic_set(&max_bytes_to_read, max_bytes_to_read());
         }
         
-        pr_debug("read_position %d. pointer: %p. string: %s\n", read_position, read_pointer, read_pointer);
-        
-        mutex_unlock(&mutex_read); // UNLOCK
-        
+        mutex_unlock(&write_lock); // WRITE UNLOCK
         
         pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
                 read_position, not_copied, to_copy, count, copied);
-        pr_debug("Free space: %d. Wake producer up...\n", free_space());
+                
+        pr_debug("Wake producer up...\n");
         
         wake_up_interruptible(&wq_write);
         
@@ -361,11 +352,14 @@ static int __init mod_init(void)
                 buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
                 check_memory(buffer);
                 
+                atomic_set(&free_space, free_space());
+                atomic_set(&max_bytes_to_read, max_bytes_to_read());
+                
                 init_waitqueue_head(&wq_read);
                 init_waitqueue_head(&wq_write);
 
-		mutex_init(&mutex_read);
-		mutex_init(&mutex_write);
+		mutex_init(&mutex_buffer);
+		mutex_init(&write_lock);
 
                 return 0;
 
