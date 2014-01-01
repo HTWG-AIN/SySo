@@ -274,15 +274,17 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         
         
         mutex_lock(&write_lock); // WRITE LOCK
-        read_position += copied;
-        
-        if (read_position == write_position)
-        {
-                read_position = 0;
-                write_position = 0;
-                atomic_set(&free_space, free_space());
-                atomic_set(&max_bytes_to_read, max_bytes_to_read());
-        }
+
+		read_position += copied;
+		
+		if (read_position == write_position)
+		{
+		        read_position = 0;
+		        write_position = 0;
+		        atomic_set(&free_space, free_space());
+		}
+
+		atomic_set(&max_bytes_to_read, max_bytes_to_read());
         
         mutex_unlock(&write_lock); // WRITE UNLOCK
         

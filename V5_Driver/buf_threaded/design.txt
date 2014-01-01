@@ -24,9 +24,15 @@ Die Bedingung für das Schreiben in den Puffer ist, dass freier Speicherplatz zu
 Ist diese Bedingung nicht gegeben, legt sich der Schreibthread schlafen. Dies wird mit einer
 write waitqueue gemacht, die beim Aufwecken nochmals die Bedingung überprüft und sich ggf.
 wieder schlafen legt, falls diese nicht zutrifft.
+Steht freier Speicherplatz zur Verfügung (z. B., weil der Lesethread alle zu lesenden Daten
+gelesen hat und diese wieder überschrieben werden können), schreibt der Schreibthread - mit
+Berücksichtigung der Puffergröße - seine Daten in den Puffer und weckt über eine read waitqueue
+die Lesethreads auf, die ggf. auf den Schreibthread warten.
 Hat ein Lesethread alle zur Verfügung stehenden Daten gelesen, wird sowohl der Lese-, als auch
 der Schreibzeiger wieder auf 0 gesetzt und anschließend wird der Schreibthread aufgeweckt
 der die (restlichen) Daten in den Puffer schreibt.
+Gibt es keine Daten aus dem Puffer (mehr) zu lesen, legt sich der Lesethread über eine read
+waitqueue schlafen, der dann ggf. von einem Schreibthread wieder aufgeweckt wird.
 
 2.2 Kontrollfluß des Schreibthreads
 
@@ -35,10 +41,10 @@ zur Verfügung steht. Dieser ergibt sich aus der Differenz zwischen der Puffer-G
 Schreibzeiger der global im Treiber deklariert ist. Da der Lesethread den Schreibzeiger wieder auf
 0 setzt sobald der Lesezeiger dieselbe Position wie der Schreibzeiger hat, wurde für den
 Schreibzeiger ein write mutex erstellt, der immer dann gelockt und anschließend wieder freigegeben
-wird, wenn entweder der Schreib- oder Lesethread den Schreibzeiger setzen wollen.
+wird, wenn entweder der Schreib- oder Lesethread den Schreibzeiger modifizieren wollen.
 Da beim Auslesen des freien Speicherplatzes - und somit bei der Berechnung die jedes mal geschieht -
 die Position des Schreibzeigers miteinfließt, müsste man bei jedem Auslesen ein lock um den
-Schreibzeiger machen. Dies ist jedoch verherrend, wenn der Schreibthread sich schlafen legt, wenn
+Schreibzeiger machen. Dies ist jedoch verherend, wenn der Schreibthread sich schlafen legt, wenn
 er feststellt, dass der Puffer voll ist, da dies zu einem Deadlock führen wird, wenn ein Lesethread
 den Schreibzeiger wieder auf 0 setzen möchte, um dann anschließend den Schreibthread aufzuwecken,
 was nie geschehen wird, da der Schreibthread die Ressource belegt. Um diesen Konflikt zu vermeiden
@@ -46,3 +52,17 @@ wurde eine atomic_t free_space Variable angelegt, die immer dann atomar gesetzt 
 Schreibzeiger modifiziert wird. Anschließend kann der Schreibthread beliebig oft mit atomic_read
 den zuvor berechneten freien Speicherplatz auslesen und sich ohne Gefahr schlafen legen, da nun
 kein Lock mehr nötig ist um die Datenintegrität sicher zu stellen.
+
+2.3 Kontrollfluß des Lesethreads
+
+Der Lesethread muss, bevor er Daten aus dem Puffer liest, wissen, wie viel Zeichen an Daten zu
+lesen sind. Die Anzahl ergibt sich aus der Differenz zwischen der Position des Schreib- und des
+Lesezeigers, die beide global deklariert sind. Da bei der Berechnung der zu lesenden Daten immer
+der Schreibzeiger miteinfließt auf den ebenfalls der Schreibthread zugreift und ihn modifiziert,
+müsste vor jeder Berechnung ein Lock auf den write mutex gemacht werden. Da der Lesethread sich
+jedoch schlafen legt, wenn es nichts auszulesen gibt, würde dies zu einem Deadlock führen sobald
+der Schreibthread den write mutex locken möchte. Stattdessen wird analog, wie in 2.2 schon
+geschildert, die global deklarierte atomic_t max_bytes_to_read Variable entsprechend gesetzt, sobald
+der Schreib- oder Lesezeiger modifiziert und der write mutex gelockt wird.
+Nach dem der write mutex wieder ungelocked wird, kann der Lesethread atomar herausfinden, wie viele
+Daten noch zu lesen sind.
