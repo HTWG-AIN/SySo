@@ -18,7 +18,7 @@ Für den Zugriff auf den internen Puffer wurde ein mutex (mutex_buffer) definier
 wenn ein Schreib-Thread ihn beschreiben oder ein Lese-Thread ihn lesen möchte, wird kurz davor
 der mutex_buffer gelockt und unmittelbar nach dem Schreiben bzw. Lesen wieder freigegeben.
 
-2.1 Schlafen legen und gegenseitiges aufwecken
+2.1 Schlafen legen und gegenseitiges Aufwecken
 
 Die Bedingung für das Schreiben in den Puffer ist, dass freier Speicherplatz zur Verfügung steht.
 Ist diese Bedingung nicht gegeben, legt sich der Schreibthread schlafen. Dies wird mit einer
@@ -28,8 +28,21 @@ Hat ein Lesethread alle zur Verfügung stehenden Daten gelesen, wird sowohl der 
 der Schreibzeiger wieder auf 0 gesetzt und anschließend wird der Schreibthread aufgeweckt
 der die (restlichen) Daten in den Puffer schreibt.
 
-2.2 Berechnung des frei verfügbaren Speichers
+2.2 Kontrollfluß des Schreibthreads
 
 Der Schreibthread muss, bevor er Daten in den Puffer schreibt, wissen, wie viel Speicher noch
 zur Verfügung steht. Dieser ergibt sich aus der Differenz zwischen der Puffer-Größe und dem
-Schreibzeiger der global im Treiber deklariert ist.
+Schreibzeiger der global im Treiber deklariert ist. Da der Lesethread den Schreibzeiger wieder auf
+0 setzt sobald der Lesezeiger dieselbe Position wie der Schreibzeiger hat, wurde für den
+Schreibzeiger ein write mutex erstellt, der immer dann gelockt und anschließend wieder freigegeben
+wird, wenn entweder der Schreib- oder Lesethread den Schreibzeiger setzen wollen.
+Da beim Auslesen des freien Speicherplatzes - und somit bei der Berechnung die jedes mal geschieht -
+die Position des Schreibzeigers miteinfließt, müsste man bei jedem Auslesen ein lock um den
+Schreibzeiger machen. Dies ist jedoch verherrend, wenn der Schreibthread sich schlafen legt, wenn
+er feststellt, dass der Puffer voll ist, da dies zu einem Deadlock führen wird, wenn ein Lesethread
+den Schreibzeiger wieder auf 0 setzen möchte, um dann anschließend den Schreibthread aufzuwecken,
+was nie geschehen wird, da der Schreibthread die Ressource belegt. Um diesen Konflikt zu vermeiden
+wurde eine atomic_t free_space Variable angelegt, die immer dann atomar gesetzt wird, wenn der
+Schreibzeiger modifiziert wird. Anschließend kann der Schreibthread beliebig oft mit atomic_read
+den zuvor berechneten freien Speicherplatz auslesen und sich ohne Gefahr schlafen legen, da nun
+kein Lock mehr nötig ist um die Datenintegrität sicher zu stellen.
