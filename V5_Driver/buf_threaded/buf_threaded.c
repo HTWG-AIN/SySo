@@ -259,6 +259,8 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	data->read_data->thread_read = kthread_create(thread_read, data, "thread_read");
         check_if_thread_is_valid(data->read_data->thread_read);
         
+	set_user_nice(data->read_data->thread_read, 2); // 0 is default
+
         wake_up_process(data->read_data->thread_read);
         wait_for_completion(&data->on_exit);
         
