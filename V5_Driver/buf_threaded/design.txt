@@ -1,3 +1,20 @@
+INHALTSVERZEICHNIS
+
+1. Aufgabenstellung
+
+2. Kontrollfluss
+2.1 Schlafen legen und gegenseitiges Aufwecken
+2.2 Kontrollfluß des Schreibthreads
+
+3. Modellfluß
+
+4. Analyse der gewählten Lösung
+
+5. Korrektur
+
+
+
+
 1. Aufgabenstellung
 
 Das Programm buf_threaded soll einen Zugriff auf einen Puffer auf einer externen Hardware
