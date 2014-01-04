@@ -3,7 +3,9 @@ INHALTSVERZEICHNIS
 1. Aufgabenstellung
 
 2. Kontrollfluss
+
 2.1 Schlafen legen und gegenseitiges Aufwecken
+
 2.2 Kontrollfluß des Schreibthreads
 
 3. Modellfluß
