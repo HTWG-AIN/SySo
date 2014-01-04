@@ -6,11 +6,11 @@ INHALTSVERZEICHNIS
 
 2.1 Schlafen legen und gegenseitiges Aufwecken
 
-2.2 Kontrollfluß des Schreibthreads
+2.2 Kontrollfluss des Schreibthreads
 
-3. Modellfluß
+3. Modellfluss
 
-4. Analyse der gewählten Lösung
+4. Analyse der gewaehlten Loesung
 
 5. Korrektur
 
@@ -20,120 +20,120 @@ INHALTSVERZEICHNIS
 1. Aufgabenstellung
 
 Das Programm buf_threaded soll einen Zugriff auf einen Puffer auf einer externen Hardware
-simulieren, welcher über einen Treiber geschieht. Der Treiber beinhaltet einen flüchtigen Puffer
-der über die Befehle read() und write() sowohl schreib- als auch lesbar ist.
-Sowohl die Schreib- als die Lese-Anfragen können nicht nur über verschiedene Instanzen geschehen,
+simulieren, welcher ueber einen Treiber geschieht. Der Treiber beinhaltet einen fluechtigen Puffer
+der ueber die Befehle read() und write() sowohl schreib- als auch lesbar ist.
+Sowohl die Schreib- als die Lese-Anfragen koennen nicht nur ueber verschiedene Instanzen geschehen,
 sondern soll auch multithreaded abgearbeitet werden.
-Ist der Puffer voll und ein Schreibthread möchte weitere Daten in den Puffer schreiben, soll
+Ist der Puffer voll und ein Schreibthread moechte weitere Daten in den Puffer schreiben, soll
 dieser sich solange schlafen legen, bis wieder Platz frei ist.
 Analog soll bei einem Lesethread vorgegangen werden: Solange es nichts zu lesen gibt, solange
 soll der Lesethread schlafen gelegt werden.
-Daten die schon gelesen wurden, sollen außerdem überschrieben werden.
+Daten die schon gelesen wurden, sollen ausserdem ueberschrieben werden.
 Somit simulieren wir ein klassisches Producer-/Consumer-Verhalten, wobei zu achten ist,
-dass der Schreib-Thread eine höhere Priorität hat.
+dass der Schreib-Thread eine hoehere Prioritaet hat.
 
 2. Kontrollfluss
 
-Für den Zugriff auf den internen Puffer wurde ein mutex (mutex_buffer) definiert. Immer dann,
-wenn ein Schreibthread ihn beschreiben oder ein Lesethread ihn lesen möchte, wird kurz davor
+Fuer den Zugriff auf den internen Puffer wurde ein mutex (mutex_buffer) definiert. Immer dann,
+wenn ein Schreibthread ihn beschreiben oder ein Lesethread ihn lesen moechte, wird kurz davor
 der mutex_buffer gelockt und unmittelbar nach dem Schreiben bzw. Lesen wieder freigegeben.
 
 2.1 Schlafen legen und gegenseitiges Aufwecken
 
-Die Bedingung für das Schreiben in den Puffer ist, dass freier Speicherplatz zur Verfügung steht.
+Die Bedingung fuer das Schreiben in den Puffer ist, dass freier Speicherplatz zur Verfuegung steht.
 Ist diese Bedingung nicht gegeben, legt sich der Schreibthread schlafen. Dies wird mit einer
-write waitqueue gemacht, die die Bedingung atomar prüft und beim Aufwecken nochmals die Bedingung
-überprüft und sich ggf. wieder schlafen legt, falls diese nicht zutrifft.
-Steht freier Speicherplatz zur Verfügung (z. B., weil der Lesethread alle zu lesenden Daten
-gelesen hat und diese wieder überschrieben werden können), schreibt der Schreibthread - mit
-Berücksichtigung der Puffergröße - seine Daten in den Puffer und weckt über eine read waitqueue
+write waitqueue gemacht, die die Bedingung atomar prueft und beim Aufwecken nochmals die Bedingung
+ueberprueft und sich ggf. wieder schlafen legt, falls diese nicht zutrifft.
+Steht freier Speicherplatz zur Verfuegung (z. B., weil der Lesethread alle zu lesenden Daten
+gelesen hat und diese wieder ueberschrieben werden koennen), schreibt der Schreibthread - mit
+Beruecksichtigung der Puffergroesse - seine Daten in den Puffer und weckt ueber eine read waitqueue
 die Lesethreads auf, die ggf. auf den Schreibthread warten.
-Hat ein Lesethread alle zur Verfügung stehenden Daten gelesen, wird sowohl der Lese-, als auch
-der Schreibzeiger wieder auf 0 gesetzt und anschließend wird der Schreibthread aufgeweckt
+Hat ein Lesethread alle zur Verfuegung stehenden Daten gelesen, wird sowohl der Lese-, als auch
+der Schreibzeiger wieder auf 0 gesetzt und anschliessend wird der Schreibthread aufgeweckt
 der die (restlichen) Daten in den Puffer schreibt.
-Gibt es keine Daten aus dem Puffer (mehr) zu lesen, legt sich der Lesethread über eine read
+Gibt es keine Daten aus dem Puffer (mehr) zu lesen, legt sich der Lesethread ueber eine read
 waitqueue schlafen, der dann ggf. von einem Schreibthread wieder aufgeweckt wird.
 
-2.2 Kontrollfluß des Schreibthreads
+2.2 Kontrollfluss des Schreibthreads
 
 Der Schreibthread muss, bevor er Daten in den Puffer schreibt, wissen, wie viel Speicher noch
-zur Verfügung steht. Dieser ergibt sich aus der Differenz zwischen der Puffer-Größe und dem
+zur Verfuegung steht. Dieser ergibt sich aus der Differenz zwischen der Puffer-Groesse und dem
 Schreibzeiger der global im Treiber deklariert ist. Da der Lesethread den Schreibzeiger wieder auf
-0 setzt sobald der Lesezeiger dieselbe Position wie der Schreibzeiger hat, wurde für den
-Schreibzeiger ein write mutex erstellt, der immer dann gelockt und anschließend wieder freigegeben
+0 setzt sobald der Lesezeiger dieselbe Position wie der Schreibzeiger hat, wurde fuer den
+Schreibzeiger ein write mutex erstellt, der immer dann gelockt und anschliessend wieder freigegeben
 wird, wenn entweder der Schreib- oder Lesethread den Schreibzeiger modifizieren wollen.
 Da beim Auslesen des freien Speicherplatzes - und somit bei der Berechnung die jedes mal geschieht -
-die Position des Schreibzeigers miteinfließt, müsste man bei jedem Auslesen ein lock um den
+die Position des Schreibzeigers miteinfliesst, muesste man bei jedem Auslesen ein lock um den
 Schreibzeiger machen. Dies ist jedoch verherend, wenn der Schreibthread sich schlafen legt, wenn
-er feststellt, dass der Puffer voll ist, da dies zu einem Deadlock führen wird, wenn ein Lesethread
-den Schreibzeiger wieder auf 0 setzen möchte, um dann anschließend den Schreibthread aufzuwecken,
+er feststellt, dass der Puffer voll ist, da dies zu einem Deadlock fuehren wird, wenn ein Lesethread
+den Schreibzeiger wieder auf 0 setzen moechte, um dann anschliessend den Schreibthread aufzuwecken,
 was nie geschehen wird, da der Schreibthread die Ressource belegt. Um diesen Konflikt zu vermeiden
 wurde eine atomic_t free_space Variable angelegt, die immer dann atomar gesetzt wird, wenn der
-Schreibzeiger modifiziert wird. Anschließend kann der Schreibthread beliebig oft mit atomic_read
+Schreibzeiger modifiziert wird. Anschliessend kann der Schreibthread beliebig oft mit atomic_read
 den zuvor berechneten freien Speicherplatz auslesen und sich ohne Gefahr schlafen legen, da nun
-kein Lock mehr nötig ist um die Datenintegrität sicher zu stellen.
+kein Lock mehr noetig ist um die Datenintegritaet sicher zu stellen.
 
-2.3 Kontrollfluß des Lesethreads
+2.3 Kontrollfluss des Lesethreads
 
 Der Lesethread muss, bevor er Daten aus dem Puffer liest, wissen, wie viel Zeichen an Daten zu
 lesen sind. Die Anzahl ergibt sich aus der Differenz zwischen der Position des Schreib- und des
 Lesezeigers, die beide global deklariert sind. Da bei der Berechnung der zu lesenden Daten immer
-der Schreibzeiger miteinfließt auf den ebenfalls der Schreibthread zugreift und ihn modifiziert,
-müsste vor jeder Berechnung ein Lock auf den write mutex gemacht werden. Da der Lesethread sich
-jedoch schlafen legt, wenn es nichts auszulesen gibt, würde dies zu einem Deadlock führen sobald
-der Schreibthread den write mutex locken möchte. Stattdessen wird analog, wie in 2.2 schon
+der Schreibzeiger miteinfliesst auf den ebenfalls der Schreibthread zugreift und ihn modifiziert,
+muesste vor jeder Berechnung ein Lock auf den write mutex gemacht werden. Da der Lesethread sich
+jedoch schlafen legt, wenn es nichts auszulesen gibt, wuerde dies zu einem Deadlock fuehren sobald
+der Schreibthread den write mutex locken moechte. Stattdessen wird analog, wie in 2.2 schon
 geschildert, die global deklarierte atomic_t max_bytes_to_read Variable entsprechend gesetzt, sobald
 der Schreib- oder Lesezeiger modifiziert und der write mutex gelockt wird.
 Nach dem der write mutex wieder ungelocked wird, kann der Lesethread atomar herausfinden, wie viele
 Daten noch zu lesen sind.
 
-3. Modellfluß
+3. Modellfluss
 
 Der Datenaustausch findet zwischen User- und Kernelspace in beiden Richtungen statt. Dabei ist
-zu beachten in welchem Kontext der auszuführende Code sich gerade befindet. Der Zugriff auf den
-Userspace ist nämlich nur im Prozesskontext möglich. Die Gründe dürften technischer und
+zu beachten in welchem Kontext der auszufuehrende Code sich gerade befindet. Der Zugriff auf den
+Userspace ist naemlich nur im Prozesskontext moeglich. Die Gruende duerften technischer und
 sicherheitsrelevanter Natur sein:
 
 - Memory Management: Es wird i. d. R. immer nur mit logischen Adressen operiert, da dies eine
-Voraussetzung für Swapping ist. D. h., dass verschiedene Prozesse dieselben logischen Adressen
-besitzen können.
-Da logische Adressen nicht eindeutig sind, können sie nur dem gerade laufendem Prozess zugeordnet
-werden. Ein Kernel-Thread läuft aber nicht unbedingt zur selben Zeit wie der Prozess X (unter
-Einprozessorsystemen sowieso nicht). Folglich können so nicht Daten mit einer simplen logischen
+Voraussetzung fuer Swapping ist. D. h., dass verschiedene Prozesse dieselben logischen Adressen
+besitzen koennen.
+Da logische Adressen nicht eindeutig sind, koennen sie nur dem gerade laufendem Prozess zugeordnet
+werden. Ein Kernel-Thread laeuft aber nicht unbedingt zur selben Zeit wie der Prozess X (unter
+Einprozessorsystemen sowieso nicht). Folglich koennen so nicht Daten mit einer simplen logischen
 Adresse in den Userspace des Prozesses X kopiert oder gelesen werden.
 
-- Lebenszyklus: Ein Userspace-Prozess kann schon längst beendet sein, wenn ein Kernelthread
+- Lebenszyklus: Ein Userspace-Prozess kann schon laengst beendet sein, wenn ein Kernelthread
 versucht Daten aus dem User-Space zu lesen bzw. schreiben.
 
-Aus den oben genannten Gründen wird deshalb der Befehl copy_to_user() direkt in der read-Funktion
-des Treibers aufgerufen, was natürlich eine Synchronisation mit dem entsprechenden Kernelthread
+Aus den oben genannten Gruenden wird deshalb der Befehl copy_to_user() direkt in der read-Funktion
+des Treibers aufgerufen, was natuerlich eine Synchronisation mit dem entsprechenden Kernelthread
 erfordert der lediglich berechnet wie viele Daten in den Userspace kopiert werden sollen und
 das langsamere Lesen im Vergleich zum Schreiben simulieren soll.
 
 Analog wird beim Schreiben der Daten vorgegangen. Da auch hier die Daten aus dem Userspace kommen,
-müssen die zu kopierenden Daten im Prozesskontext abgearbeitet werden. Mehr als die Berechnung
+muessen die zu kopierenden Daten im Prozesskontext abgearbeitet werden. Mehr als die Berechnung
 wie viele Daten in den Puffer kopiert werden sollen, wird im Schreibthread deswegen ebenfalls
-nicht gemacht. Anschließend werden in der write-Funktion die Daten aus dem Userspace in den Puffer
+nicht gemacht. Anschliessend werden in der write-Funktion die Daten aus dem Userspace in den Puffer
 kopiert.
 
-4. Analyse der gewählten Lösung
+4. Analyse der gewaehlten Loesung
 
 Die Synchronisation der read- und write-Funktionen mit den jeweiligen Kernelthreads verhindert
-echte Asynchronität. Anfangs wollten wir die Userspace-Prozessen mit dem Error-Code -EBUSY
-mitteilen, dass die Daten noch nicht gelesen bzw. geschrieben worden sind, bis schließlich, nach n
+echte Asynchronitaet. Anfangs wollten wir die Userspace-Prozessen mit dem Error-Code -EBUSY
+mitteilen, dass die Daten noch nicht gelesen bzw. geschrieben worden sind, bis schliesslich, nach n
 weiteren Aurufen der read bzw. write Funktion, dem Userspace-Programm mitgeteilt wird, wie viele
-bytes an Daten gelesen bzw. geschrieben wurden. Aus den im Kapitel "Modelfluß" genannten Gründen
+bytes an Daten gelesen bzw. geschrieben wurden. Aus den im Kapitel "Modelfluss" genannten Gruenden
 war diese Idee jedoch nicht umsetzbar.
-Weiter wäre unser Programm zwar mit mehreren Lese- und Schreibthreads lauffähig, allerdings würde
-dies wenig Sinn machen, da die Datenintegrität dadurch nicht gewährleistet wird, da dadurch eine
-korrekte Lese- und Schreibreihenfolge nicht gegeben wäre. Dies würde weitere Komplexität und
+Weiter waere unser Programm zwar mit mehreren Lese- und Schreibthreads lauffaehig, allerdings wuerde
+dies wenig Sinn machen, da die Datenintegritaet dadurch nicht gewaehrleistet wird, da dadurch eine
+korrekte Lese- und Schreibreihenfolge nicht gegeben waere. Dies wuerde weitere Komplexitaet und
 Synchronisationsmechanismen, die wiederum performancelastig sind, erfordern.
 
 5. Korrektur
 
-Gegen Ende des Designs hat sich zufällig ergeben, dass wait_event_interruptible() die Bedingung
-innerhalb der Funktion schon atomar prüft. Deswegen hätte man nicht zwingend eine atomare
-Integer-Variable für den freien Speicherplatz und die maximal zu lesenden Zeichen deklarieren
-müssen. Dennoch kommen diese Abfragen an mehreren Stellen des Codes vor und atomare Operationen
-dürften deutlich effizienter als ein Mutex sein, weswegen sich die Implementierung gelohnt haben
-dürfte.
+Gegen Ende des Designs hat sich zufaellig ergeben, dass wait_event_interruptible() die Bedingung
+innerhalb der Funktion schon atomar prueft. Deswegen haette man nicht zwingend eine atomare
+Integer-Variable fuer den freien Speicherplatz und die maximal zu lesenden Zeichen deklarieren
+muessen. Dennoch kommen diese Abfragen an mehreren Stellen des Codes vor und atomare Operationen
+duerften deutlich effizienter als ein Mutex sein, weswegen sich die Implementierung gelohnt haben
+duerfte.
