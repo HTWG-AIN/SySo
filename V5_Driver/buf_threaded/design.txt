@@ -128,6 +128,10 @@ Weiter waere unser Programm zwar mit mehreren Lese- und Schreibthreads lauffaehi
 dies wenig Sinn machen, da die Datenintegritaet dadurch nicht gewaehrleistet wird, da dadurch eine
 korrekte Lese- und Schreibreihenfolge nicht gegeben waere. Dies wuerde weitere Komplexitaet und
 Synchronisationsmechanismen, die wiederum performancelastig sind, erfordern.
+Fuer weitere Performanceverbesserungen waere mmap() vorstellbar. Das Programm im Userspace haette
+direkten Zugriff auf einen gemeinsam genutzten Speicherbereich, so dass keine Daten zwischen User-
+und Kernelspace hin- und her kopiert werden muessten. Allerdings muessten diese sich miteinander
+synchronisieren, was die Komplexitaet des Codes erhoehen wuerde.
 
 5. Korrektur
 
