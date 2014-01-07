@@ -27,11 +27,19 @@ MODULE_SUPPORTED_DEVICE("none");
 
 static struct cdev *cdev = NULL;
 static struct class *dev_class;
+static char *buffer;
+static int read_position = 0;
+static int write_position = 0;
+
+static atomic_t free_space;
+static atomic_t max_bytes_to_read;
 
 static wait_queue_head_t wq_read;
 static wait_queue_head_t wq_write;
 
 struct mutex mutex_buffer;
+struct mutex write_lock;
+struct mutex read_lock;
 
 static struct workqueue_struct *worker_queue;
 
@@ -43,7 +51,8 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
 static int driver_close(struct inode *inode, struct file *instance);
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset);
 
-#define max_line_size 30
+#define free_space() (BUFFER_SIZE - write_position)
+#define max_bytes_to_read() (write_position - read_position)
 
 #define check_if_thread_is_valid(thread) if(thread == ERR_PTR(-ENOMEM)) \
         { \
@@ -56,15 +65,10 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
          return -1;\
          }
 
-#define bytes_to_copy(count) (count) < max_line_size ? (count) : max_line_size
-
 typedef struct 
 {
         size_t count;
         struct task_struct *thread_write;
-        atomic_t wake_up;
-        wait_queue_head_t wait_queue;
-        char *user;
 } write_data;
 
 typedef struct 
@@ -73,7 +77,6 @@ typedef struct
         struct task_struct *thread_read;
         atomic_t wake_up;
         wait_queue_head_t wait_queue;
-        char *user;
 } read_data;
 
 typedef struct 
@@ -83,6 +86,7 @@ typedef struct
         read_data *read_data;
         struct completion on_exit;
         int ret;
+        char *user;
 } private_data;
 
 static struct file_operations fops = 
@@ -94,173 +98,103 @@ static struct file_operations fops =
         .release= driver_close,
 };
 
-#define stackTotalSize 10
-
-typedef struct {
-    void *elems;                /* Points to the objects on the stack */
-    size_t elemSize;            /* Element size of the element type */
-    int currSize;              /* The real amount of objects on the stack */
-    struct mutex mutex;
-    void (*freefn) (const void *);    /* free function for more complex data types */
-} genStack;
-
-static genStack stack;
-
-void GenStackNew(genStack *s, size_t elemSize, void (*freefn) (const void *))
-{
-	/* Default initialization */
-	s->elems = kmalloc(stackTotalSize, elemSize);
-    
-	if (s->elems == NULL) {
-		pr_alert("Could not init stack!\n");
-		return;
-	}
-    
-	mutex_init(&s->mutex);
-	s->elemSize = elemSize;
-	s->currSize = 0;
-	s->freefn = freefn;
-}
-
-int GenStackPush(genStack * s, const void *elemAddr)
-{
-    char *pTargetAddr;
-
-    mutex_lock(&s->mutex);
-
-    if (s->currSize == stackTotalSize) {
-	mutex_unlock(&s->mutex);
-        return -1;
-    }
-
-    /* Equivalent to &s->elems[s->currSize] */
-    pTargetAddr = (char *) s->elems + s->currSize * s->elemSize;
-
-    memcpy(pTargetAddr, elemAddr, s->elemSize);
-    s->currSize++;
-
-    mutex_unlock(&s->mutex);
-    
-    return 0;
-}
-
-int GenStackTryPop(genStack * s, void *elemAddr)
-{
-	char *pSourceAddr;
-	int isEmpty;
-	mutex_lock(&s->mutex);
-
-	isEmpty = s->currSize == 0;
-
-	if (isEmpty) {
-		mutex_unlock(&s->mutex);
-		return -1;
-	}
-
-	/* Equivalent to &s->elems[s->currSize - 1] */
-	pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
-
-	memcpy(elemAddr, pSourceAddr, s->elemSize);
-	s->currSize--;
-
-	mutex_unlock(&s->mutex);
-
-	return 0;
-}
-
-void GenStackPop(genStack * s, void *elemAddr)
-{
-    char *pSourceAddr;
-
-    mutex_lock(&s->mutex);
-
-    /* Equivalent to &s->elems[s->currSize - 1] */
-    pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
-
-    memcpy(elemAddr, pSourceAddr, s->elemSize);
-    s->currSize--;
-
-    mutex_unlock(&s->mutex);
-}
-
-int GenStackEmpty(const genStack *s)
-{
-    return s->currSize == 0;
-}
-
-int GenStackFull(const genStack *s)
-{
-    return s->currSize == stackTotalSize;
-}
-
-void GenStackDispose(genStack * s)
-{
-    if (s->freefn != NULL && s->currSize > 0) {
-        char *pSourceAddr;
-
-        for (; s->currSize > 0; s->currSize--) {
-            /* Equivalent to &s->elems[s->currSize - 1] */
-            pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
-
-            /* call free function of the client */
-            s->freefn(pSourceAddr);
-        }
-    }
-
-    mutex_destroy(&s->mutex);
-    kfree(s->elems);
-    s->elems = NULL;
-}
-
 static int thread_write(void *write_data)
 {
+        ssize_t to_copy, count;
         private_data *data = (private_data*) write_data;
         
-        if (GenStackFull(&stack)) // For debug added
+        count = data->write_data->count;
+                        
+        if (atomic_read(&free_space) == 0) // For debug added
         {
                 pr_debug("Producer is going to sleep...\n");
-                if(wait_event_interruptible(wq_write, GenStackFull(&stack)))
+                if(wait_event_interruptible(wq_write, atomic_read(&free_space) > 0))
                         return -ERESTART;
         }
         
-        GenStackPush(&stack, data->write_data->user);
+        mutex_lock(&write_lock); // WRITE LOCK
         
-        complete_and_exit(&data->on_exit, 0);
+        if (count < atomic_read(&free_space))
+        {
+                to_copy = count;
+        }
+        else
+        {
+                to_copy = atomic_read(&free_space);
+        }
+        
+        mutex_unlock(&write_lock); // WRITE UNLOCK
+        
+        data->ret = to_copy;
+        
+        complete_and_exit(&data->on_exit, to_copy);
 }
 
 static void thread_read(struct work_struct *work)
 {
-        size_t to_copy;
+        ssize_t to_copy;
         size_t count;
+        char *read_pointer;
         private_data *data = container_of(work, private_data, work);
         
         count = data->read_data->count;
 
-        if (GenStackEmpty(&stack))  // For debug added
+        if (atomic_read(&max_bytes_to_read) == 0)  // For debug added
         {
                 pr_debug("Consumer is going to sleep...\n");
-                if(wait_event_interruptible(wq_read, GenStackEmpty(&stack)))
+                if(wait_event_interruptible(wq_read, atomic_read(&max_bytes_to_read) > 0))
                 {
                 	data->ret = -ERESTART;
                         return;
                 }
         }
 	
-        to_copy = bytes_to_copy(count);
+        if(atomic_read(&max_bytes_to_read) > count)
+        {
+                to_copy = count;
+        }
+        else
+        {
+                to_copy = atomic_read(&max_bytes_to_read);
+        }
         
-        data->read_data->user = (char*) kmalloc(sizeof(max_line_size), GFP_KERNEL);
+        printk("to_copy: %u\n", to_copy);
         
-        if (data->read_data->user == NULL) {
+        data->user = (char*) kmalloc(sizeof(to_copy), GFP_KERNEL);
+        
+        if (data->user == NULL) {
 		pr_alert("Could not allocate memory!\n");
 		data->ret = -1;
 		return;
 	}
 	
-	GenStackPop(&stack, data->read_data->user);
+        mutex_lock(&mutex_buffer); // BUFFER LOCK
+		read_pointer = &buffer[read_position];
+		strncpy(data->user, read_pointer, to_copy);
+        mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
         
         data->ret = to_copy;
         
-        pr_debug("Wake producer and read() up...\n");
+	mutex_lock(&read_lock); // READ LOCK
+	
+
+	read_position += to_copy;
+	
+	mutex_lock(&write_lock); // WRITE LOCK
+	
+	if (read_position == write_position)
+	{
+		read_position = 0;
+		write_position = 0;
+		atomic_set(&free_space, free_space());
+	}
+			
+	atomic_set(&max_bytes_to_read, max_bytes_to_read());
+        
+        mutex_unlock(&write_lock); // WRITE UNLOCK
+        mutex_unlock(&read_lock);  // READ UNLOCK
+                
+        pr_debug("Wake producer up...\n");
         
         atomic_set(&data->read_data->wake_up, 1);
         
@@ -309,18 +243,17 @@ static int driver_close(struct inode *inode, struct file *instance)
         return 0;
 }
 
-
-
 static ssize_t driver_write(struct file *instance, const char __user *userbuf, size_t count, loff_t *off)
 {
-        unsigned long to_copy;
+        ssize_t to_copy;
+        char *write_pointer;
         private_data *data = (private_data*) instance->private_data;
         
         if (data->write_data == NULL)
         {
 		data->write_data = (write_data*) kmalloc(sizeof(write_data), GFP_KERNEL);
 		check_memory(data->write_data);
-		
+	
 		pr_debug("Create producer thread for the first time...\n");
         }
         
@@ -330,19 +263,27 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
         data->write_data->thread_write = kthread_create(thread_write, data, "thread_write");
         check_if_thread_is_valid(data->write_data->thread_write);
                 
-        to_copy = bytes_to_copy(count);
-        
-        data->write_data->user = kmalloc(sizeof(max_line_size), GFP_KERNEL);
-        check_memory(data->write_data->user);
-        
-        if (copy_from_user(data->write_data->user, userbuf, to_copy) != 0)
-        {
-        	pr_crit("Could not copy from user space!!!\n");
-        	return -1;
-        }
-        
         wake_up_process(data->write_data->thread_write);
         wait_for_completion(&data->on_exit);
+        
+        to_copy = data->ret;
+                
+        mutex_lock(&write_lock); // WRITE LOCK
+                
+	mutex_lock(&mutex_buffer); // BUFFER LOCK
+		write_pointer = &buffer[write_position];
+		strncpy(write_pointer, userbuf, to_copy);
+	mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
+	
+        
+		write_position += to_copy;
+		
+		atomic_set(&free_space, free_space());
+		atomic_set(&max_bytes_to_read, max_bytes_to_read());
+		
+		
+		pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
+        mutex_unlock(&write_lock); // WRITE UNLOCK        
         
         pr_debug("Wake consumer up...\n");
         
@@ -390,13 +331,18 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         }
         
         to_copy = data->ret;
-	not_copied = copy_to_user(user, data->read_data->user, to_copy);
-	copied = to_copy - not_copied;
-	
-	pr_debug("not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
-        	not_copied, to_copy, count, copied);
         
-        kfree(data->read_data->user);
+        
+        mutex_lock(&mutex_buffer); // BUFFER LOCK
+		not_copied = copy_to_user(user, data->user, to_copy);
+		
+		copied = to_copy - not_copied;
+		
+		pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
+                	read_position, not_copied, to_copy, count, copied);
+        mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
+        
+        kfree(data->user);
         
         return copied;
 }
@@ -417,6 +363,7 @@ static void __exit mod_exit(void)
         unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
         
         mutex_destroy(&mutex_buffer);
+        mutex_destroy(&write_lock);
         
         if(worker_queue)
 	{
@@ -424,7 +371,7 @@ static void __exit mod_exit(void)
 		pr_debug("workqueue destroyed\n");
 	}
         
-        GenStackDispose(&stack);
+        kfree(buffer);
 }
 
 static int __init mod_init(void)
@@ -462,12 +409,18 @@ static int __init mod_init(void)
                 dev_class = class_create(THIS_MODULE, DEVNAME);
                 device_create (dev_class, NULL, major_nummer, NULL, DEVNAME);
                 
-                GenStackNew(&stack, max_line_size, kfree);
+                buffer = kmalloc(BUFFER_SIZE, GFP_KERNEL);
+                check_memory(buffer);
+                
+                atomic_set(&free_space, free_space());
+                atomic_set(&max_bytes_to_read, max_bytes_to_read());
                 
                 init_waitqueue_head(&wq_read);
                 init_waitqueue_head(&wq_write);
 
 		mutex_init(&mutex_buffer);
+		mutex_init(&write_lock);
+		//mutex_init(&read_lock);
 		
 		worker_queue = create_singlethread_workqueue("bufThread");
 
