@@ -80,6 +80,7 @@ typedef struct
         read_data *read_data;
         struct completion on_exit;
         int ret;
+        char *user;
 } private_data;
 
 static struct file_operations fops = 
@@ -123,6 +124,7 @@ static int thread_read(void *read_data)
 {
         ssize_t to_copy;
         ssize_t count;
+        char *read_pointer;
         
         private_data *data = (private_data*) read_data;
         
@@ -147,10 +149,46 @@ static int thread_read(void *read_data)
                 to_copy = atomic_read(&max_bytes_to_read);
         }
         
+        mutex_unlock(&write_lock); // WRITE UNLOCK
         mutex_unlock(&read_lock); // READ LOCK
-	mutex_unlock(&write_lock); // WRITE UNLOCK
 	
+	
+	// NEU
+	
+	mutex_lock(&read_lock);  // READ LOCK
+        
+        read_pointer = &buffer[read_position];
+        strncpy(data->user, buffer, to_copy);
+        
         data->ret = to_copy;
+        
+        mutex_lock(&write_lock); // WRITE LOCK
+
+			read_position += to_copy;
+		
+			if (read_position == write_position)
+			{
+				read_position = 0;
+				write_position = 0;
+				atomic_set(&free_space, free_space());
+			}
+			
+		atomic_set(&max_bytes_to_read, max_bytes_to_read());
+        
+        mutex_unlock(&write_lock); // WRITE UNLOCK
+        
+        mutex_unlock(&read_lock);  // READ UNLOCK
+        
+        
+                
+        pr_debug("Wake producer up...\n");
+        
+        wake_up_interruptible(&wq_write);
+	
+	
+	
+	// NEU ENDE
+	
         
         complete_and_exit(&data->on_exit, 0);
 }
@@ -271,52 +309,25 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         check_if_thread_is_valid(data->read_data->thread_read);
         
 	set_user_nice(data->read_data->thread_read, 2); // 0 is default
-
+	
+	data->user = (char*) kmalloc(sizeof(count), GFP_KERNEL);
+	
         wake_up_process(data->read_data->thread_read);
         wait_for_completion(&data->on_exit);
         
         to_copy = data->ret;
         
-        mutex_lock(&read_lock);  // READ LOCK
-        
         mutex_lock(&mutex_buffer); // BUFFER LOCK
 		read_pointer = &buffer[read_position];
-		not_copied = copy_to_user(user, read_pointer, to_copy);
+		not_copied = copy_to_user(user, data->user, to_copy);
+		
+		copied = to_copy - not_copied;
+		
+		pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
+                	read_position, not_copied, to_copy, count, copied);
         mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
         
-        copied = to_copy - not_copied;
-        
-        
-        
-        mutex_lock(&write_lock); // WRITE LOCK
-
-		
-		
-			read_position += copied;
-		
-			if (read_position == write_position)
-			{
-				read_position = 0;
-				write_position = 0;
-				atomic_set(&free_space, free_space());
-			}
-			
-		
-		
-		atomic_set(&max_bytes_to_read, max_bytes_to_read());
-        
-        
-        	pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
-                read_position, not_copied, to_copy, count, copied);
-        mutex_unlock(&write_lock); // WRITE UNLOCK
-        
-        mutex_unlock(&read_lock);  // READ UNLOCK
-        
-        
-                
-        pr_debug("Wake producer up...\n");
-        
-        wake_up_interruptible(&wq_write);
+        kfree(data->user);
         
         return copied;
 }
