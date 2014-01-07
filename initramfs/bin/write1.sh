@@ -2,6 +2,6 @@
 
 for i in 1 2 3 4 5 6
 do
-  echo "Write instanz 1 : Hier ist write $i" > /dev/t12buf_threaded 
+  echo "Write instanz 1 : write $i" > /dev/t12buf_threaded 
   sleep  $(($RANDOM % 5 + 1))
 done
