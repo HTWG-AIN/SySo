@@ -39,9 +39,12 @@ static struct workqueue_struct *worker_queue;
 static int __init mod_init(void);
 static void __exit mod_exit(void);
 static int driver_open(struct inode *inode, struct file *instance);
-static ssize_t driver_write(struct file *instance, const char __user * userbuf, size_t count, loff_t * off);
+static ssize_t driver_write(struct file *instance,
+			    const char __user * userbuf, size_t count,
+			    loff_t * off);
 static int driver_close(struct inode *inode, struct file *instance);
-static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t * offset);
+static ssize_t driver_read(struct file *instance, char *user, size_t count,
+			   loff_t * offset);
 
 #define max_line_size 30
 
@@ -102,7 +105,8 @@ typedef struct {
 
 static genStack stack;
 
-void GenStackNew(genStack * s, size_t elemSize, void (*freefn) (const void *))
+void GenStackNew(genStack * s, size_t elemSize,
+		 void (*freefn) (const void *))
 {
 	/* Default initialization */
 	s->elems = kmalloc(stackTotalSize, elemSize);
@@ -196,7 +200,9 @@ void GenStackDispose(genStack * s)
 
 		for (; s->currSize > 0; s->currSize--) {
 			/* Equivalent to &s->elems[s->currSize - 1] */
-			pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
+			pSourceAddr =
+			    (char *) s->elems + (s->currSize -
+						 1) * s->elemSize;
 
 			/* call free function of the client */
 			s->freefn(pSourceAddr);
@@ -216,7 +222,8 @@ static int thread_write(void *write_data)
 	{
 		pr_debug("Producer is going to sleep...\n");
 		printk("Producer is going to sleep...\n");
-		if (wait_event_interruptible(wq_write, !GenStackFull(&stack)))
+		if (wait_event_interruptible
+		    (wq_write, !GenStackFull(&stack)))
 			return -ERESTART;
 	}
 
@@ -237,7 +244,8 @@ static void thread_read(struct work_struct *work)
 	{
 		pr_debug("Consumer is going to sleep...\n");
 		printk("Consumer is going to sleep...\n");
-		if (wait_event_interruptible(wq_read, !GenStackEmpty(&stack))) {
+		if (wait_event_interruptible
+		    (wq_read, !GenStackEmpty(&stack))) {
 			data->ret = -ERESTART;
 			return;
 		}
@@ -245,7 +253,8 @@ static void thread_read(struct work_struct *work)
 
 	to_copy = bytes_to_copy(count);
 
-	data->read_data->user = (char *) kmalloc(sizeof(max_line_size), GFP_KERNEL);
+	data->read_data->user =
+	    (char *) kmalloc(sizeof(max_line_size), GFP_KERNEL);
 
 	if (data->read_data->user == NULL) {
 		pr_alert("Could not allocate memory!\n");
@@ -306,13 +315,16 @@ static int driver_close(struct inode *inode, struct file *instance)
 
 
 
-static ssize_t driver_write(struct file *instance, const char __user * userbuf, size_t count, loff_t * off)
+static ssize_t driver_write(struct file *instance,
+			    const char __user * userbuf, size_t count,
+			    loff_t * off)
 {
 	unsigned long to_copy;
 	private_data *data = (private_data *) instance->private_data;
 
 	if (data->write_data == NULL) {
-		data->write_data = (write_data *) kmalloc(sizeof(write_data), GFP_KERNEL);
+		data->write_data =
+		    (write_data *) kmalloc(sizeof(write_data), GFP_KERNEL);
 		check_memory(data->write_data);
 
 		pr_debug("Create producer thread for the first time...\n");
@@ -321,12 +333,14 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 	data->write_data->count = count;
 	pr_debug("Write: Call wake_up_process()\n");
 
-	data->write_data->thread_write = kthread_create(thread_write, data, "thread_write");
+	data->write_data->thread_write =
+	    kthread_create(thread_write, data, "thread_write");
 	check_if_thread_is_valid(data->write_data->thread_write);
 
 	to_copy = bytes_to_copy(count);
 
-	data->write_data->user = kmalloc(sizeof(max_line_size), GFP_KERNEL);
+	data->write_data->user =
+	    kmalloc(sizeof(max_line_size), GFP_KERNEL);
 	check_memory(data->write_data->user);
 
 	if (copy_from_user(data->write_data->user, userbuf, to_copy) != 0) {
@@ -344,7 +358,8 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 	return data->ret;
 }
 
-static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t * offset)
+static ssize_t driver_read(struct file *instance, char *user, size_t count,
+			   loff_t * offset)
 {
 	unsigned long not_copied, to_copy, copied;
 	private_data *data = (private_data *) instance->private_data;
@@ -352,7 +367,8 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	atomic_t *wake_up;
 
 	if (data->read_data == NULL) {
-		data->read_data = (read_data *) kmalloc(sizeof(read_data), GFP_KERNEL);
+		data->read_data =
+		    (read_data *) kmalloc(sizeof(read_data), GFP_KERNEL);
 		check_memory(data->read_data);
 
 		init_waitqueue_head(&data->read_data->wait_queue);
@@ -382,7 +398,9 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	not_copied = copy_to_user(user, data->read_data->user, to_copy);
 	copied = to_copy - not_copied;
 
-	pr_debug("not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n", not_copied, to_copy, count, copied);
+	pr_debug
+	    ("not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
+	     not_copied, to_copy, count, copied);
 
 	kfree(data->read_data->user);
 
@@ -418,7 +436,8 @@ static int __init mod_init(void)
 	printk(KERN_ALERT "buf_threaded: Hello, world!\n");
 
 	if (register_chrdev_region(major_nummer, NUMDEVICES, DEVNAME)) {
-		pr_warn("Device number 0x%x not available ...\n", MKDEV(MAJORNUM, 0));
+		pr_warn("Device number 0x%x not available ...\n",
+			MKDEV(MAJORNUM, 0));
 		return -EIO;
 	}
 
