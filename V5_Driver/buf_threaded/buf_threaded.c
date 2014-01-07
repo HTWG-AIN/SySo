@@ -421,8 +421,6 @@ static void __exit mod_exit(void)
 
 	unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
 
-	mutex_destroy(&mutex_buffer);
-
 	if (worker_queue) {
 		destroy_workqueue(worker_queue);
 		pr_debug("workqueue destroyed\n");
@@ -468,8 +466,6 @@ static int __init mod_init(void)
 
 	init_waitqueue_head(&wq_read);
 	init_waitqueue_head(&wq_write);
-
-	mutex_init(&mutex_buffer);
 
 	worker_queue = create_singlethread_workqueue("bufThread");
 
