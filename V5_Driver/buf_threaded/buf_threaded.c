@@ -112,6 +112,8 @@ static int thread_write(void *write_data)
                         return -ERESTART;
         }
         
+        mutex_lock(&write_lock); // WRITE LOCK
+        
         if (count < atomic_read(&free_space))
         {
                 to_copy = count;
@@ -121,6 +123,8 @@ static int thread_write(void *write_data)
                 to_copy = atomic_read(&free_space);
         }
         
+        mutex_unlock(&write_lock); // WRITE UNLOCK
+        
         data->ret = to_copy;
         
         complete_and_exit(&data->on_exit, to_copy);
@@ -129,7 +133,7 @@ static int thread_write(void *write_data)
 static void thread_read(struct work_struct *work)
 {
         ssize_t to_copy;
-        ssize_t count;
+        size_t count;
         char *read_pointer;
         private_data *data = container_of(work, private_data, work);
         
@@ -144,9 +148,6 @@ static void thread_read(struct work_struct *work)
                         return;
                 }
         }
-
-	mutex_lock(&read_lock); // READ LOCK
-	mutex_lock(&write_lock); // WRITE LOCK
 	
         if(atomic_read(&max_bytes_to_read) > count)
         {
@@ -157,8 +158,16 @@ static void thread_read(struct work_struct *work)
                 to_copy = atomic_read(&max_bytes_to_read);
         }
         
+        printk("to_copy: %u\n", to_copy);
+        
         data->user = (char*) kmalloc(sizeof(to_copy), GFP_KERNEL);
-
+        
+        if (data->user == NULL) {
+		pr_alert("Could not allocate memory!\n");
+		data->ret = -1;
+		return;
+	}
+	
         mutex_lock(&mutex_buffer); // BUFFER LOCK
 		read_pointer = &buffer[read_position];
 		strncpy(data->user, read_pointer, to_copy);
@@ -166,6 +175,8 @@ static void thread_read(struct work_struct *work)
         
         data->ret = to_copy;
         
+	mutex_lock(&read_lock); // READ LOCK
+	mutex_lock(&write_lock); // WRITE LOCK
 
 	read_position += to_copy;
 
@@ -314,9 +325,9 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
                         return -ERESTART;
         
         
-        if (data->ret == -ERESTART)
+        if (data->ret < 0)
         {
-        	return -ERESTART;
+        	return data->ret;
         }
         
         to_copy = data->ret;
@@ -411,7 +422,7 @@ static int __init mod_init(void)
 		mutex_init(&write_lock);
 		mutex_init(&read_lock);
 		
-		worker_queue = create_workqueue("bufThread");
+		worker_queue = create_singlethread_workqueue("bufThread");
 
                 return 0;
 
