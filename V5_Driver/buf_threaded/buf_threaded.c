@@ -239,7 +239,7 @@ static void thread_read(struct work_struct *work)
         if (GenStackEmpty(&stack))  // For debug added
         {
                 pr_debug("Consumer is going to sleep...\n");
-                if(wait_event_interruptible(wq_read, GenStackEmpty(&stack)))
+                if(wait_event_interruptible(wq_read, !GenStackEmpty(&stack)))
                 {
                 	data->ret = -ERESTART;
                         return;
