@@ -149,31 +149,26 @@ static int thread_read(void *read_data)
                 to_copy = atomic_read(&max_bytes_to_read);
         }
         
-        mutex_unlock(&write_lock); // WRITE UNLOCK
-        mutex_unlock(&read_lock); // READ LOCK
-	
-	
-	// NEU
-	
-	mutex_lock(&read_lock);  // READ LOCK
-        
-        read_pointer = &buffer[read_position];
-        strncpy(data->user, buffer, to_copy);
+        data->user = (char*) kmalloc(sizeof(count), GFP_KERNEL);
+
+        mutex_lock(&mutex_buffer); // BUFFER LOCK
+		read_pointer = &buffer[read_position];
+		strncpy(data->user, buffer, to_copy);
+        mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
         
         data->ret = to_copy;
         
-        mutex_lock(&write_lock); // WRITE LOCK
 
-			read_position += to_copy;
-		
-			if (read_position == write_position)
-			{
-				read_position = 0;
-				write_position = 0;
-				atomic_set(&free_space, free_space());
-			}
+	read_position += to_copy;
+
+	if (read_position == write_position)
+	{
+		read_position = 0;
+		write_position = 0;
+		atomic_set(&free_space, free_space());
+	}
 			
-		atomic_set(&max_bytes_to_read, max_bytes_to_read());
+	atomic_set(&max_bytes_to_read, max_bytes_to_read());
         
         mutex_unlock(&write_lock); // WRITE UNLOCK
         
@@ -221,9 +216,6 @@ static int driver_close(struct inode *inode, struct file *instance)
         
         printk("close() called\n");
 
-	mutex_destroy(&mutex_buffer);
-        mutex_destroy(&write_lock);
-        
         if (data->write_data != NULL)
         {
 	        kfree(data->write_data);
@@ -310,8 +302,6 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         
 	set_user_nice(data->read_data->thread_read, 2); // 0 is default
 	
-	data->user = (char*) kmalloc(sizeof(count), GFP_KERNEL);
-	
         wake_up_process(data->read_data->thread_read);
         wait_for_completion(&data->on_exit);
         
@@ -346,6 +336,9 @@ static void __exit mod_exit(void)
         }
         
         unregister_chrdev_region(MKDEV(MAJORNUM, 0), NUMDEVICES);
+        
+        mutex_destroy(&mutex_buffer);
+        mutex_destroy(&write_lock);
         
         kfree(buffer);
 }
