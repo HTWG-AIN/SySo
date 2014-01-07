@@ -38,6 +38,7 @@ static wait_queue_head_t wq_write;
 
 struct mutex mutex_buffer;
 struct mutex write_lock;
+struct mutex read_lock;
 
 // function prototypes
 static int __init mod_init(void);
@@ -277,15 +278,19 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         
         mutex_lock(&write_lock); // WRITE LOCK
 
-		read_position += copied;
+		mutex_lock(&read_lock);  // READ LOCK
 		
-		if (read_position == write_position)
-		{
-		        read_position = 0;
-		        write_position = 0;
-		        atomic_set(&free_space, free_space());
-		}
-
+			read_position += copied;
+		
+			if (read_position == write_position)
+			{
+				read_position = 0;
+				write_position = 0;
+				atomic_set(&free_space, free_space());
+			}
+			
+		mutex_unlock(&read_lock);  // READ UNLOCK
+		
 		atomic_set(&max_bytes_to_read, max_bytes_to_read());
         
         mutex_unlock(&write_lock); // WRITE UNLOCK
@@ -364,6 +369,7 @@ static int __init mod_init(void)
 
 		mutex_init(&mutex_buffer);
 		mutex_init(&write_lock);
+		mutex_init(&read_lock);
 
                 return 0;
 
