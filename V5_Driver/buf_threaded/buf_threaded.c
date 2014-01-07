@@ -57,6 +57,11 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
          }
 
 #define bytes_to_copy(count) (count) < max_line_size ? (count) : max_line_size
+/*
+typedef struct {
+	char *user;
+	size_t size;
+} stack_element;*/
 
 typedef struct {
 	size_t count;
@@ -243,7 +248,11 @@ static void thread_read(struct work_struct *work)
 
 	to_copy = bytes_to_copy(count);
 
+	pr_debug("thread_read: VOR kmalloc\n");
+
 	data->read_data->user = (char *) kmalloc(sizeof(max_line_size), GFP_KERNEL);
+
+	pr_debug("thread_read: NACH kmalloc\n");
 
 	if (data->read_data->user == NULL) {
 		pr_alert("Could not allocate memory!\n");
@@ -252,7 +261,9 @@ static void thread_read(struct work_struct *work)
 	}
 
 	GenStackPop(&stack, data->read_data->user);
-
+	
+	to_copy = strlen(data->read_data->user);
+	
 	data->ret = to_copy;
 
 	pr_debug("Wake producer and read() up...\n");
@@ -323,10 +334,18 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 	check_if_thread_is_valid(data->write_data->thread_write);
 
 	to_copy = bytes_to_copy(count);
-
+	
+	pr_debug("Write: bytes to copy: %lu\n", to_copy);
+	
 	data->write_data->user = kmalloc(sizeof(max_line_size), GFP_KERNEL);
 	check_memory(data->write_data->user);
-
+	
+	if (to_copy < max_line_size) {
+		data->write_data->user[to_copy] = '\0';
+	} else {
+		data->write_data->user[max_line_size - 1] = '\0';
+	}
+	
 	if (copy_from_user(data->write_data->user, userbuf, to_copy) != 0) {
 		pr_crit("Could not copy from user space!!!\n");
 		return -1;
