@@ -267,6 +267,8 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         
         to_copy = data->ret;
         
+        mutex_lock(&read_lock);  // READ LOCK
+        
         mutex_lock(&mutex_buffer); // BUFFER LOCK
 		read_pointer = &buffer[read_position];
 		not_copied = copy_to_user(user, read_pointer, to_copy);
@@ -278,7 +280,7 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         
         mutex_lock(&write_lock); // WRITE LOCK
 
-		mutex_lock(&read_lock);  // READ LOCK
+		
 		
 			read_position += copied;
 		
@@ -289,11 +291,13 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 				atomic_set(&free_space, free_space());
 			}
 			
-		mutex_unlock(&read_lock);  // READ UNLOCK
+		
 		
 		atomic_set(&max_bytes_to_read, max_bytes_to_read());
         
         mutex_unlock(&write_lock); // WRITE UNLOCK
+        
+        mutex_unlock(&read_lock);  // READ UNLOCK
         
         pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
                 read_position, not_copied, to_copy, count, copied);
