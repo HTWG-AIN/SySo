@@ -110,7 +110,7 @@ static genStack stack;
 void GenStackNew(genStack * s, size_t elemSize, void (*freefn) (const void *))
 {
 	/* Default initialization */
-	s->elems = kmalloc(stackTotalSize * elemSize, GFP_KERNEL);
+	s->elems = kmalloc(stackTotalSize, elemSize);
 
 	if (s->elems == NULL) {
 		pr_alert("Could not init stack!\n");
@@ -224,7 +224,7 @@ static int thread_write(void *write_data)
 			return -ERESTART;
 	}
 
-	GenStackPush(&stack, data->write_data->user);
+	GenStackPush(&stack, &data->write_data->user);
 
 	complete_and_exit(&data->on_exit, 0);
 }
@@ -333,11 +333,11 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 	data->write_data->thread_write = kthread_create(thread_write, data, "thread_write");
 	check_if_thread_is_valid(data->write_data->thread_write);
 
-	to_copy = bytes_to_copy(count);
+//	to_copy = bytes_to_copy(count);
 	
-	pr_debug("Write: bytes to copy: %lu\n", to_copy);
+	pr_debug("Write: bytes to copy: %lu\n", count);
 	
-	data->write_data->user = kmalloc(sizeof(max_line_size), GFP_KERNEL);
+	data->write_data->user = kmalloc(sizeof(count), GFP_KERNEL);
 	check_memory(data->write_data->user);
 	
 	if (to_copy < max_line_size) {
@@ -460,7 +460,7 @@ static int __init mod_init(void)
 	dev_class = class_create(THIS_MODULE, DEVNAME);
 	device_create(dev_class, NULL, major_nummer, NULL, DEVNAME);
 
-	GenStackNew(&stack, max_line_size, kfree);
+	GenStackNew(&stack, sizeof(char*), kfree);
 
 	init_waitqueue_head(&wq_read);
 	init_waitqueue_head(&wq_write);
@@ -479,4 +479,3 @@ static int __init mod_init(void)
 
 module_init(mod_init);
 module_exit(mod_exit);
-
