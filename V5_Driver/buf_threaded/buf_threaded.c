@@ -12,6 +12,7 @@
 #include <linux/kthread.h>
 #include <linux/mutex.h>
 #include <linux/atomic.h>
+#include <linux/workqueue.h>
 
 // Metainformation
 MODULE_AUTHOR("Stefano Di Martno");
@@ -39,6 +40,8 @@ static wait_queue_head_t wq_write;
 struct mutex mutex_buffer;
 struct mutex write_lock;
 struct mutex read_lock;
+
+static struct workqueue_struct *worker_queue;
 
 // function prototypes
 static int __init mod_init(void);
@@ -72,10 +75,13 @@ typedef struct
 {
         size_t count;
         struct task_struct *thread_read;
+        atomic_t wake_up;
+        wait_queue_head_t wait_queue;
 } read_data;
 
 typedef struct 
 {
+	struct work_struct work;
         write_data *write_data;
         read_data *read_data;
         struct completion on_exit;
@@ -120,13 +126,12 @@ static int thread_write(void *write_data)
         complete_and_exit(&data->on_exit, to_copy);
 }
 
-static int thread_read(void *read_data)
+static void thread_read(struct work_struct *work)
 {
         ssize_t to_copy;
         ssize_t count;
         char *read_pointer;
-        
-        private_data *data = (private_data*) read_data;
+        private_data *data = container_of(work, private_data, work);
         
         count = data->read_data->count;
 
@@ -134,7 +139,10 @@ static int thread_read(void *read_data)
         {
                 pr_debug("Consumer is going to sleep...\n");
                 if(wait_event_interruptible(wq_read, atomic_read(&max_bytes_to_read) > 0))
-                        return -ERESTART;
+                {
+                	data->ret = -ERESTART;
+                        return;
+                }
         }
 
 	mutex_lock(&read_lock); // READ LOCK
@@ -149,7 +157,7 @@ static int thread_read(void *read_data)
                 to_copy = atomic_read(&max_bytes_to_read);
         }
         
-        data->user = (char*) kmalloc(sizeof(count), GFP_KERNEL);
+        data->user = (char*) kmalloc(sizeof(to_copy), GFP_KERNEL);
 
         mutex_lock(&mutex_buffer); // BUFFER LOCK
 		read_pointer = &buffer[read_position];
@@ -171,21 +179,14 @@ static int thread_read(void *read_data)
 	atomic_set(&max_bytes_to_read, max_bytes_to_read());
         
         mutex_unlock(&write_lock); // WRITE UNLOCK
-        
         mutex_unlock(&read_lock);  // READ UNLOCK
-        
-        
                 
         pr_debug("Wake producer up...\n");
         
-        wake_up_interruptible(&wq_write);
-	
-	
-	
-	// NEU ENDE
-	
+        atomic_set(&data->read_data->wake_up, 1);
         
-        complete_and_exit(&data->on_exit, 0);
+        wake_up_interruptible(&data->read_data->wait_queue);
+        wake_up_interruptible(&wq_write);
 }
 
 
@@ -284,27 +285,42 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 {
         unsigned long not_copied, to_copy, copied;
         private_data *data = (private_data*) instance->private_data;
+        wait_queue_head_t *wait_queue;
+        atomic_t *wake_up;
         
         if (data->read_data == NULL)
         {
 		data->read_data = (read_data*) kmalloc(sizeof(read_data), GFP_KERNEL);
 		check_memory(data->read_data);
 		
+		init_waitqueue_head(&data->read_data->wait_queue);
+		INIT_WORK(&data->work, thread_read);
 		pr_debug("Create consumer thread for the first time...\n");
         }
         
+        // Init read_data
 	data->read_data->count = count;
-	pr_debug("Read: Call wake_up_process()\n");
-
-	data->read_data->thread_read = kthread_create(thread_read, data, "thread_read");
-        check_if_thread_is_valid(data->read_data->thread_read);
+        wait_queue = &data->read_data->wait_queue;
+        wake_up = &data->read_data->wake_up;
         
-	set_user_nice(data->read_data->thread_read, 2); // 0 is default
-	
-        wake_up_process(data->read_data->thread_read);
-        wait_for_completion(&data->on_exit);
+        atomic_set(wake_up, 0);
+        
+	if(!queue_work(worker_queue, &data->work)) 
+	{
+		pr_crit( "queue_work not successful ...\n");
+	}
+        
+        if(wait_event_interruptible(*wait_queue, atomic_read(wake_up)))
+                        return -ERESTART;
+        
+        
+        if (data->ret == -ERESTART)
+        {
+        	return -ERESTART;
+        }
         
         to_copy = data->ret;
+        
         
         mutex_lock(&mutex_buffer); // BUFFER LOCK
 		not_copied = copy_to_user(user, data->user, to_copy);
@@ -337,6 +353,12 @@ static void __exit mod_exit(void)
         
         mutex_destroy(&mutex_buffer);
         mutex_destroy(&write_lock);
+        
+        if(worker_queue)
+	{
+		destroy_workqueue(worker_queue);
+		pr_debug("workqueue destroyed\n");
+	}
         
         kfree(buffer);
 }
@@ -388,6 +410,8 @@ static int __init mod_init(void)
 		mutex_init(&mutex_buffer);
 		mutex_init(&write_lock);
 		mutex_init(&read_lock);
+		
+		worker_queue = create_workqueue("bufThread");
 
                 return 0;
 
