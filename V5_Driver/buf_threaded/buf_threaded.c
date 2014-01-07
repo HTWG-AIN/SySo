@@ -215,7 +215,6 @@ static int thread_write(void *write_data)
 	if (GenStackFull(&stack))	// For debug added
 	{
 		pr_debug("Producer is going to sleep...\n");
-		printk("Producer is going to sleep...\n");
 		if (wait_event_interruptible(wq_write, !GenStackFull(&stack)))
 			return -ERESTART;
 	}
@@ -236,7 +235,6 @@ static void thread_read(struct work_struct *work)
 	if (GenStackEmpty(&stack))	// For debug added
 	{
 		pr_debug("Consumer is going to sleep...\n");
-		printk("Consumer is going to sleep...\n");
 		if (wait_event_interruptible(wq_read, !GenStackEmpty(&stack))) {
 			data->ret = -ERESTART;
 			return;
@@ -341,7 +339,7 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 
 	wake_up_interruptible(&wq_read);
 
-	return data->ret;
+	return to_copy;
 }
 
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t * offset)
