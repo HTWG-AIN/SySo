@@ -135,6 +135,9 @@ static int thread_read(void *read_data)
                         return -ERESTART;
         }
 
+	mutex_lock(&read_lock); // READ LOCK
+	mutex_lock(&write_lock); // WRITE LOCK
+	
         if(atomic_read(&max_bytes_to_read) > count)
         {
                 to_copy = count;
@@ -143,6 +146,9 @@ static int thread_read(void *read_data)
         {
                 to_copy = atomic_read(&max_bytes_to_read);
         }
+        
+        mutex_unlock(&read_lock); // READ LOCK
+	mutex_unlock(&write_lock); // WRITE UNLOCK
 	
         data->ret = to_copy;
         
@@ -232,9 +238,11 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
 		
 		atomic_set(&free_space, free_space());
 		atomic_set(&max_bytes_to_read, max_bytes_to_read());
+		
+		
+		pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
         mutex_unlock(&write_lock); // WRITE UNLOCK        
-	
-        pr_debug("count: %zu. %zd bytes written\n", count, to_copy);
+        
         pr_debug("Wake consumer up...\n");
         
         wake_up_interruptible(&wq_read);
@@ -297,12 +305,14 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 		
 		atomic_set(&max_bytes_to_read, max_bytes_to_read());
         
+        
+        	pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
+                read_position, not_copied, to_copy, count, copied);
         mutex_unlock(&write_lock); // WRITE UNLOCK
         
         mutex_unlock(&read_lock);  // READ UNLOCK
         
-        pr_debug("read_position %d. not_copied: %lu to_copy: %lu. count %d. %lu bytes read\n",
-                read_position, not_copied, to_copy, count, copied);
+        
                 
         pr_debug("Wake producer up...\n");
         
