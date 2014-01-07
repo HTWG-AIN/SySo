@@ -153,7 +153,7 @@ static int thread_read(void *read_data)
 
         mutex_lock(&mutex_buffer); // BUFFER LOCK
 		read_pointer = &buffer[read_position];
-		strncpy(data->user, buffer, to_copy);
+		strncpy(data->user, read_pointer, to_copy);
         mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
         
         data->ret = to_copy;
@@ -283,7 +283,6 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t *offset)
 {
         unsigned long not_copied, to_copy, copied;
-        char *read_pointer;
         private_data *data = (private_data*) instance->private_data;
         
         if (data->read_data == NULL)
@@ -308,7 +307,6 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
         to_copy = data->ret;
         
         mutex_lock(&mutex_buffer); // BUFFER LOCK
-		read_pointer = &buffer[read_position];
 		not_copied = copy_to_user(user, data->user, to_copy);
 		
 		copied = to_copy - not_copied;
