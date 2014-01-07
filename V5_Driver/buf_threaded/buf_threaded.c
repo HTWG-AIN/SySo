@@ -22,7 +22,7 @@ MODULE_SUPPORTED_DEVICE("none");
 #define MAJORNUM 100
 #define NUMDEVICES 1
 #define DEVNAME "t12buf_threaded"
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 350
 
 static struct cdev *cdev = NULL;
 static struct class *dev_class;
