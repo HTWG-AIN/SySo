@@ -219,7 +219,7 @@ static int thread_write(void *write_data)
         if (GenStackFull(&stack)) // For debug added
         {
                 pr_debug("Producer is going to sleep...\n");
-                if(wait_event_interruptible(wq_write, GenStackFull(&stack)))
+                if(wait_event_interruptible(wq_write, !GenStackFull(&stack)))
                         return -ERESTART;
         }
         
