@@ -220,12 +220,14 @@ static ssize_t driver_write(struct file *instance, const char __user *userbuf, s
         
         to_copy = data->ret;
                 
+        mutex_lock(&write_lock); // WRITE LOCK
+                
 	mutex_lock(&mutex_buffer); // BUFFER LOCK
 		write_pointer = &buffer[write_position];
 		strncpy(write_pointer, userbuf, to_copy);
 	mutex_unlock(&mutex_buffer); // BUFFER UNLOCK
 	
-        mutex_lock(&write_lock); // WRITE LOCK
+        
 		write_position += to_copy;
 		
 		atomic_set(&free_space, free_space());
