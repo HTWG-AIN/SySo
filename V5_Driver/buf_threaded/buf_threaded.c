@@ -42,8 +42,6 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 static int driver_close(struct inode *inode, struct file *instance);
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t * offset);
 
-#define max_line_size 30
-
 #define check_if_thread_is_valid(thread) if(thread == ERR_PTR(-ENOMEM)) \
         { \
                 pr_crit("thread could not be created!\n"); \
