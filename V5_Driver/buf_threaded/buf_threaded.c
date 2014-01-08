@@ -23,7 +23,6 @@ MODULE_SUPPORTED_DEVICE("none");
 #define MAJORNUM 100
 #define NUMDEVICES 1
 #define DEVNAME "t12buf_threaded"
-#define BUFFER_SIZE 350
 
 static struct cdev *cdev = NULL;
 static struct class *dev_class;
@@ -56,24 +55,13 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
          return -1;\
          }
 
-#define bytes_to_copy(count) (count) < max_line_size ? (count) : max_line_size
-/*
-typedef struct {
-	char *user;
-	size_t size;
-} stack_element;*/
-
 typedef struct {
 	size_t count;
 	struct task_struct *thread_write;
-	atomic_t wake_up;
-	wait_queue_head_t wait_queue;
 	char *user;
 } write_data;
 
 typedef struct {
-	size_t count;
-	struct task_struct *thread_read;
 	atomic_t wake_up;
 	wait_queue_head_t wait_queue;
 	char *user;
@@ -145,30 +133,6 @@ int GenStackPush(genStack * s, const void *elemAddr)
 	return 0;
 }
 
-int GenStackTryPop(genStack * s, void *elemAddr)
-{
-	char *pSourceAddr;
-	int isEmpty;
-	mutex_lock(&s->mutex);
-
-	isEmpty = s->currSize == 0;
-
-	if (isEmpty) {
-		mutex_unlock(&s->mutex);
-		return -1;
-	}
-
-	/* Equivalent to &s->elems[s->currSize - 1] */
-	pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
-
-	memcpy(elemAddr, pSourceAddr, s->elemSize);
-	s->currSize--;
-
-	mutex_unlock(&s->mutex);
-
-	return 0;
-}
-
 void GenStackPop(genStack * s, void *elemAddr)
 {
 	char *pSourceAddr;
@@ -224,18 +188,14 @@ static int thread_write(void *write_data)
 			return -ERESTART;
 	}
 
-	GenStackPush(&stack, data->write_data->user);
+	GenStackPush(&stack, &data->write_data->user);
 
 	complete_and_exit(&data->on_exit, 0);
 }
 
 static void thread_read(struct work_struct *work)
 {
-	size_t to_copy;
-	size_t count;
 	private_data *data = container_of(work, private_data, work);
-
-	count = data->read_data->count;
 
 	if (GenStackEmpty(&stack))	// For debug added
 	{
@@ -246,25 +206,9 @@ static void thread_read(struct work_struct *work)
 		}
 	}
 
-	to_copy = bytes_to_copy(count);
-
-	pr_debug("thread_read: VOR kmalloc\n");
-
-	data->read_data->user = (char *) kmalloc(sizeof(max_line_size), GFP_KERNEL);
-
-	pr_debug("thread_read: NACH kmalloc\n");
-
-	if (data->read_data->user == NULL) {
-		pr_alert("Could not allocate memory!\n");
-		data->ret = -1;
-		return;
-	}
-
-	GenStackPop(&stack, data->read_data->user);
+	GenStackPop(&stack, &data->read_data->user);
 	
-	to_copy = strlen(data->read_data->user);
-	
-	data->ret = to_copy;
+	data->ret = strlen(data->read_data->user);
 
 	pr_debug("Wake producer and read() up...\n");
 
@@ -317,7 +261,6 @@ static int driver_close(struct inode *inode, struct file *instance)
 
 static ssize_t driver_write(struct file *instance, const char __user * userbuf, size_t count, loff_t * off)
 {
-	unsigned long to_copy;
 	private_data *data = (private_data *) instance->private_data;
 
 	if (data->write_data == NULL) {
@@ -333,23 +276,17 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 	data->write_data->thread_write = kthread_create(thread_write, data, "thread_write");
 	check_if_thread_is_valid(data->write_data->thread_write);
 
-	to_copy = bytes_to_copy(count);
+	pr_debug("Write: bytes to copy: %d\n", count);
 	
-	pr_debug("Write: bytes to copy: %lu\n", to_copy);
-	
-	data->write_data->user = kmalloc(sizeof(max_line_size), GFP_KERNEL);
+	data->write_data->user = kmalloc(count + 1, GFP_KERNEL);
 	check_memory(data->write_data->user);
 	
-	if (to_copy < max_line_size) {
-		data->write_data->user[to_copy] = '\0';
-	} else {
-		data->write_data->user[max_line_size - 1] = '\0';
-	}
-	
-	if (copy_from_user(data->write_data->user, userbuf, to_copy) != 0) {
+	if (copy_from_user(data->write_data->user, userbuf, count) != 0) {
 		pr_crit("Could not copy from user space!!!\n");
 		return -1;
 	}
+
+	data->write_data->user[count] = '\0';
 
 	wake_up_process(data->write_data->thread_write);
 	wait_for_completion(&data->on_exit);
@@ -358,7 +295,7 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 
 	wake_up_interruptible(&wq_read);
 
-	return to_copy;
+	return count;
 }
 
 static ssize_t driver_read(struct file *instance, char *user, size_t count, loff_t * offset)
@@ -377,7 +314,6 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 		pr_debug("Create consumer thread for the first time...\n");
 	}
 	// Init read_data
-	data->read_data->count = count;
 	wait_queue = &data->read_data->wait_queue;
 	wake_up = &data->read_data->wake_up;
 
@@ -460,7 +396,7 @@ static int __init mod_init(void)
 	dev_class = class_create(THIS_MODULE, DEVNAME);
 	device_create(dev_class, NULL, major_nummer, NULL, DEVNAME);
 
-	GenStackNew(&stack, max_line_size, kfree);
+	GenStackNew(&stack, sizeof(char**), kfree);
 
 	init_waitqueue_head(&wq_read);
 	init_waitqueue_head(&wq_write);
@@ -479,4 +415,3 @@ static int __init mod_init(void)
 
 module_init(mod_init);
 module_exit(mod_exit);
-
