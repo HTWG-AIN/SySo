@@ -6,7 +6,7 @@ INHALTSVERZEICHNIS
 
 2.1 Schlafen legen und gegenseitiges Aufwecken
 
-2.2 Kontrollfluss des Schreibthreads
+2.2 Spezialbehandlung der Lesethreads
 
 3. Modellfluss
 
@@ -33,8 +33,9 @@ dass der Schreib-Thread eine hoehere Prioritaet hat.
 
 Fuer den Zugriff auf den internen Puffer wurde ein generischer Stack erstellt. Immer dann,
 wenn ein Schreibthread auf den Stack etwas pushen oder ein Lesethread etwas poppen moechte,
-wird innerhalb der genstack-Funktion ein mutex_buffer gelockt und kurz vor der Rueckgabe wieder
-entlockt.
+wird innerhalb der genstack-Funktion, wenn auf den internen Stack zugegriffen wird, ein mutex_buffer
+gelockt und kurz vor der Rueckgabe wieder entlockt, da mehrere Threads gleichzeitig pushen und
+poppen koennten.
 
 2.1 Schlafen legen und gegenseitiges Aufwecken
 
@@ -48,7 +49,8 @@ seine Daten in den Puffer und weckt ueber eine read waitqueue die Lesethreads au
 den Schreibthread warten.
 Sobald ein Lesethread ein Datum aus dem Stack gelesen hat, werden die Schreibthreads geweckt.
 Gibt es keine Daten aus dem Stack (mehr) zu lesen, legt sich der Lesethread ueber eine read
-waitqueue schlafen, der dann ggf. von einem Schreibthread wieder aufgeweckt wird.
+waitqueue schlafen, der dann ggf. von einem Schreibthread wieder aufgeweckt wird sobald wieder
+Daten im Stack liegen.
 
 2.2 Spezialbehandlung der Lesethreads
 
@@ -66,6 +68,10 @@ Die Workqueue wird immer bei der read-Funktion angestoßen. Damit ein Lesethread
 aus dem Stack der read-Funktion zurueckgeben kann, braucht es eine Synchronisation. Dies wird mit
 einer waitqueue gemacht die auf eine atomare wake_up-Variable schlaeft und vom Lesethread gesetzt
 wird. Anschließend weckt dieser die Task, die sich gerade in der read-Funktion befindet, auf.
+
+Aehnliches gilt bei den Schreibthreads. Hier wird in der write-Funktion auf einem completion-Objekt,
+die pro Instanz existiert, geschlafen der vom Schreibthread kurz vor Ende seiner Abarbeitung
+inkrementiert wird, was den Task, der sich im write() befindet, dazu veranlasst aufzuwachen.
 
 3. Modellfluss
 
@@ -108,3 +114,9 @@ Fuer weitere Performanceverbesserungen waere mmap() vorstellbar. Das Programm im
 direkten Zugriff auf einen gemeinsam genutzten Speicherbereich, so dass keine Daten zwischen User-
 und Kernelspace hin- und her kopiert werden muessten. Allerdings muessten diese sich miteinander
 synchronisieren, was die Komplexitaet des Codes erhoehen wuerde.
+
+4.1 Kritik
+
+Als Kritik unserer Loesung ist anzumerken, dass gepoppte Daten unwiderruflich verloren gehen.
+D. h., falls der Puffer aus dem Userspace nur n Bytes groß ist, das gepoppte Datum jedoch n + x
+(x > 0), dann sind x Bytes unwiderruflich verloren gegangen.
