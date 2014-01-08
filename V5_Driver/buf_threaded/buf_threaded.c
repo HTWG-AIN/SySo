@@ -86,86 +86,86 @@ static struct file_operations fops = {
 #define stackTotalSize 10
 
 typedef struct {
-	void *elems;		/* Points to the objects on the stack */
-	size_t elemSize;	/* Element size of the element type */
-	int currSize;		/* The real amount of objects on the stack */
+	void *stack;		/* Points to the objects on the stack */
+	size_t stack_size;	/* Element size of the element type */
+	int current_size;		/* The real amount of objects on the stack */
 	struct mutex mutex;
 	void (*freefn) (const void *);	/* free function for more complex data types */
-} genStack;
+} genstack;
 
-static genStack stack;
+static genstack stack;
 
-void GenStackNew(genStack * s, size_t elemSize, void (*freefn) (const void *))
+void init_genstack(genstack *s, size_t stack_size, void (*freefn) (const void *))
 {
 	/* Default initialization */
-	s->elems = kmalloc(stackTotalSize * elemSize, GFP_KERNEL);
+	s->stack = kmalloc(stackTotalSize * stack_size, GFP_KERNEL);
 
-	if (s->elems == NULL) {
+	if (s->stack == NULL) {
 		pr_alert("Could not init stack!\n");
 		return;
 	}
 
 	mutex_init(&s->mutex);
-	s->elemSize = elemSize;
-	s->currSize = 0;
+	s->stack_size = stack_size;
+	s->current_size = 0;
 	s->freefn = freefn;
 }
 
-int GenStackPush(genStack * s, const void *elemAddr)
+int genstack_push(genstack *s, const void *elem_addr)
 {
-	char *pTargetAddr;
+	char *ptarget_addr;
 
 	mutex_lock(&s->mutex);
 
-	if (s->currSize == stackTotalSize) {
+	if (s->current_size == stackTotalSize) {
 		mutex_unlock(&s->mutex);
 		return -1;
 	}
 
-	/* Equivalent to &s->elems[s->currSize] */
-	pTargetAddr = (char *) s->elems + s->currSize * s->elemSize;
+	/* Equivalent to &s->stack[s->current_size] */
+	ptarget_addr = (char *) s->stack + s->current_size * s->stack_size;
 
-	memcpy(pTargetAddr, elemAddr, s->elemSize);
-	s->currSize++;
+	memcpy(ptarget_addr, elem_addr, s->stack_size);
+	s->current_size++;
 
 	mutex_unlock(&s->mutex);
 
 	return 0;
 }
 
-void GenStackPop(genStack * s, void *elemAddr)
+void genstack_pop(genstack *s, void *elem_addr)
 {
 	char *pSourceAddr;
 
 	mutex_lock(&s->mutex);
 
-	/* Equivalent to &s->elems[s->currSize - 1] */
-	pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
+	/* Equivalent to &s->stack[s->current_size - 1] */
+	pSourceAddr = (char *) s->stack + (s->current_size - 1) * s->stack_size;
 
-	memcpy(elemAddr, pSourceAddr, s->elemSize);
-	s->currSize--;
+	memcpy(elem_addr, pSourceAddr, s->stack_size);
+	s->current_size--;
 
 	mutex_unlock(&s->mutex);
 }
 
-int GenStackEmpty(const genStack * s)
+int genstack_empty(const genstack *s)
 {
-	return s->currSize == 0;
+	return s->current_size == 0;
 }
 
-int GenStackFull(const genStack * s)
+int genstack_full(const genstack *s)
 {
-	return s->currSize == stackTotalSize;
+	return s->current_size == stackTotalSize;
 }
 
-void GenStackDispose(genStack * s)
+void genstack_dispose(genstack *s)
 {
-	if (s->freefn != NULL && s->currSize > 0) {
+	if (s->freefn != NULL && s->current_size > 0) {
 		char *pSourceAddr;
 
-		for (; s->currSize > 0; s->currSize--) {
-			/* Equivalent to &s->elems[s->currSize - 1] */
-			pSourceAddr = (char *) s->elems + (s->currSize - 1) * s->elemSize;
+		for (; s->current_size > 0; s->current_size--) {
+			/* Equivalent to &s->stack[s->current_size - 1] */
+			pSourceAddr = (char *) s->stack + (s->current_size - 1) * s->stack_size;
 
 			/* call free function of the client */
 			s->freefn(pSourceAddr);
@@ -173,22 +173,22 @@ void GenStackDispose(genStack * s)
 	}
 
 	mutex_destroy(&s->mutex);
-	kfree(s->elems);
-	s->elems = NULL;
+	kfree(s->stack);
+	s->stack = NULL;
 }
 
 static int thread_write(void *write_data)
 {
 	private_data *data = (private_data *) write_data;
 
-	if (GenStackFull(&stack))	// For debug added
+	if (genstack_full(&stack))	// For debug added
 	{
 		pr_debug("Producer is going to sleep...\n");
-		if (wait_event_interruptible(wq_write, !GenStackFull(&stack)))
+		if (wait_event_interruptible(wq_write, !genstack_full(&stack)))
 			return -ERESTART;
 	}
 
-	GenStackPush(&stack, &data->write_data->user);
+	genstack_push(&stack, &data->write_data->user);
 
 	complete_and_exit(&data->on_exit, 0);
 }
@@ -197,16 +197,16 @@ static void thread_read(struct work_struct *work)
 {
 	private_data *data = container_of(work, private_data, work);
 
-	if (GenStackEmpty(&stack))	// For debug added
+	if (genstack_empty(&stack))	// For debug added
 	{
 		pr_debug("Consumer is going to sleep...\n");
-		if (wait_event_interruptible(wq_read, !GenStackEmpty(&stack))) {
+		if (wait_event_interruptible(wq_read, !genstack_empty(&stack))) {
 			data->ret = -ERESTART;
 			return;
 		}
 	}
 
-	GenStackPop(&stack, &data->read_data->user);
+	genstack_pop(&stack, &data->read_data->user);
 	
 	data->ret = strlen(data->read_data->user);
 
@@ -256,8 +256,6 @@ static int driver_close(struct inode *inode, struct file *instance)
 
 	return 0;
 }
-
-
 
 static ssize_t driver_write(struct file *instance, const char __user * userbuf, size_t count, loff_t * off)
 {
@@ -342,8 +340,6 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count, loff
 	return copied;
 }
 
-
-
 static void __exit mod_exit(void)
 {
 	printk(KERN_ALERT "buf_threaded: Goodbye, cruel world\n");
@@ -361,7 +357,7 @@ static void __exit mod_exit(void)
 		pr_debug("workqueue destroyed\n");
 	}
 
-	GenStackDispose(&stack);
+	genstack_dispose(&stack);
 }
 
 static int __init mod_init(void)
@@ -396,7 +392,7 @@ static int __init mod_init(void)
 	dev_class = class_create(THIS_MODULE, DEVNAME);
 	device_create(dev_class, NULL, major_nummer, NULL, DEVNAME);
 
-	GenStackNew(&stack, sizeof(char**), kfree);
+	init_genstack(&stack, sizeof(char**), kfree);
 
 	init_waitqueue_head(&wq_read);
 	init_waitqueue_head(&wq_write);
