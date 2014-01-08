@@ -1,5 +1,0 @@
-echo "Hallo Welt 0123456789" > /dev/t12buf_threaded &
-
-write1.sh & write.sh & read.sh & read1.sh &
-
-indent -kr -i8 -l120

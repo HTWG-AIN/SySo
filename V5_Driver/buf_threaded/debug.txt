@@ -1,8 +1,0 @@
-# dmesg -c
-bad magic number for tty struct (5:0) in tty_ioctl
--sh: can't set tty process group (Invalid argument)
-bad magic number for tty struct (5:0) in tty_ioctl
--sh: can't set tty process group (Invalid argument)
-[5]+  Done(2)                    dmesg -c
-[2]-  Done                       write1.sh
-[1]-  Done                       write.sh
