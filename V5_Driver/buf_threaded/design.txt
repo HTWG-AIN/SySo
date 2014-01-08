@@ -86,13 +86,15 @@ Adresse in den Userspace des Prozesses X kopiert oder gelesen werden.
 versucht Daten aus dem User-Space zu lesen bzw. schreiben.
 
 Aus den oben genannten Gruenden wird deshalb der Befehl copy_to_user() direkt in der read-Funktion
-des Treibers aufgerufen, was natuerlich eine Synchronisation mit dem entsprechenden Kernelthread
-erfordert das die Daten aus dem Puffer liest.
+des Treibers aufgerufen, was natuerlich eine Synchronisation mit dem entsprechenden Lesethread
+erfordert das die Daten aus dem Puffer liest. Der Lesethread kopiert dabei ein Datum aus dem Stack
+in einer von read() uebergebenen Struktur, weckt diesen auf, woraufhin dann read() anschliessend
+das Datum in den Userspace kopiert.
 
 Analog wird beim Schreiben der Daten vorgegangen. Da auch hier die Daten aus dem Userspace kommen,
-muessen die zu kopierenden Daten im Prozesskontext, also im write, abgearbeitet werden.
-Anschliessend werden nach dem write-kthread-Aufruf in der write-Funktion die Daten aus dem Userspace
-in den Puffer kopiert.
+muessen die zu kopierenden Daten im Prozesskontext, also im write(), in einem Zwischenpuffer
+(Struktur) kopiert und anschließend dem write-Thread uebergeben werden. Dieser pusht dann die Daten
+in den Stack.
 
 4. Analyse der gewaehlten Loesung
 
