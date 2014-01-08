@@ -12,6 +12,8 @@ INHALTSVERZEICHNIS
 
 4. Analyse der gewaehlten Loesung
 
+4.1 Kritik
+
 
 
 1. Aufgabenstellung
@@ -20,12 +22,12 @@ Das Programm buf_threaded soll einen Zugriff auf einen Puffer auf einer externen
 simulieren, welcher ueber einen Treiber geschieht. Der Treiber beinhaltet einen fluechtigen Puffer
 der ueber die Befehle read() und write() sowohl schreib- als auch lesbar ist.
 Sowohl die Schreib- als die Lese-Anfragen koennen nicht nur ueber verschiedene Instanzen geschehen,
-sondern soll auch multithreaded abgearbeitet werden.
+sondern sollen auch multithreaded abgearbeitet werden.
 Ist der Puffer voll und ein Schreibthread moechte weitere Daten in den Puffer schreiben, soll
 dieser sich solange schlafen legen, bis wieder Platz frei ist.
 Analog soll bei einem Lesethread vorgegangen werden: Solange es nichts zu lesen gibt, solange
 soll der Lesethread schlafen gelegt werden.
-Daten die schon gelesen wurden, sollen ausserdem ueberschrieben werden.
+Daten, die schon gelesen wurden, sollen ausserdem ueberschrieben werden.
 Somit simulieren wir ein klassisches Producer-/Consumer-Verhalten, wobei zu achten ist,
 dass der Schreib-Thread eine hoehere Prioritaet hat.
 
@@ -44,9 +46,9 @@ Ist diese Bedingung nicht gegeben, legt sich der Schreibthread schlafen. Dies wi
 write waitqueue gemacht, die die Bedingung atomar prueft und beim Aufwecken nochmals die Bedingung
 ueberprueft und sich ggf. wieder schlafen legt, falls diese nicht zutrifft.
 Steht freier Speicherplatz zur Verfuegung (z. B., weil der Lesethread alle zu lesenden Daten
-gelesen hat und diese wieder ueberschrieben werden koennen), pusht der Schreibthread 
-seine Daten in den Puffer und weckt ueber eine read waitqueue die Lesethreads auf, die ggf. auf
-den Schreibthread warten.
+gelesen hat und diese wieder ueberschrieben werden koennen), pusht der Schreibthread seine Daten
+in den Puffer und weckt ueber eine read waitqueue die Lesethreads auf, die ggf. auf den
+Schreibthread warten.
 Sobald ein Lesethread ein Datum aus dem Stack gelesen hat, werden die Schreibthreads geweckt.
 Gibt es keine Daten aus dem Stack (mehr) zu lesen, legt sich der Lesethread ueber eine read
 waitqueue schlafen, der dann ggf. von einem Schreibthread wieder aufgeweckt wird sobald wieder
@@ -61,17 +63,21 @@ eine Single-Thread-Workqueue. Dies hat folgende Vorteile:
   Workqueue abgearbeitet werden.
   
 - Dadurch, dass die Lesethreads nacheinander abgearbeitet werden, hat man schon automatisch eine
-  Synchronisation zwischen den Lesethreads. Es können nicht mehrere Lesethreads auf den Stack
+  Synchronisation zwischen den Lesethreads. Es koennen nicht mehrere Lesethreads auf den Stack
   zugreifen.
 
 Die Workqueue wird immer bei der read-Funktion angestoßen. Damit ein Lesethread das gelesene Datum
 aus dem Stack der read-Funktion zurueckgeben kann, braucht es eine Synchronisation. Dies wird mit
 einer waitqueue gemacht die auf eine atomare wake_up-Variable schlaeft und vom Lesethread gesetzt
-wird. Anschließend weckt dieser die Task, die sich gerade in der read-Funktion befindet, auf.
+wird. Anschließend weckt dieser die Task, die sich gerade in der read-Funktion befindet, auf, der
+danach prueft, ob die wake_up-Variable gesetzt wurde. Falls nicht (weil bspw. ein Kill-Befehl an
+die Task gesendet wurde), legt sie sich wieder schlafen, falls ja, wird die wake_up-Variable wieder
+auf 0 gesetzt, so dass ein mehrfacher read-Aufruf problemslos verlaeuft.
 
 Aehnliches gilt bei den Schreibthreads. Hier wird in der write-Funktion auf einem completion-Objekt,
 die pro Instanz existiert, geschlafen der vom Schreibthread kurz vor Ende seiner Abarbeitung
 inkrementiert wird, was den Task, der sich im write() befindet, dazu veranlasst aufzuwachen.
+Allerdings werden beim write() kthreads aufgerufen und werden normal vom Scheduler verarbeitet.
 
 3. Modellfluss
 
@@ -94,7 +100,7 @@ versucht Daten aus dem User-Space zu lesen bzw. schreiben.
 Aus den oben genannten Gruenden wird deshalb der Befehl copy_to_user() direkt in der read-Funktion
 des Treibers aufgerufen, was natuerlich eine Synchronisation mit dem entsprechenden Lesethread
 erfordert das die Daten aus dem Puffer liest. Der Lesethread kopiert dabei ein Datum aus dem Stack
-in einer von read() uebergebenen Struktur, weckt diesen auf, woraufhin dann read() anschliessend
+in einer von read() uebergebenen Struktur und weckt diesen auf, woraufhin dann read() anschliessend
 das Datum in den Userspace kopiert.
 
 Analog wird beim Schreiben der Daten vorgegangen. Da auch hier die Daten aus dem Userspace kommen,
