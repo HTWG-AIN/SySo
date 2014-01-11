@@ -1,0 +1,36 @@
+# /etc/inittab
+#
+# Copyright (C) 2001 Erik Andersen <andersen@codepoet.org>
+#
+# Note: BusyBox init doesn't support runlevels.  The runlevels field is
+# completely ignored by BusyBox init. If you want runlevels, use
+# sysvinit.
+#
+# Format for each entry: <id>:<runlevels>:<action>:<process>
+#
+# id        == tty to run on, or empty for /dev/console
+# runlevels == ignored
+# action    == one of sysinit, respawn, askfirst, wait, and once
+# process   == program to run
+
+# Startup the system
+ttyAMA0::sysinit:/bin/mount -t proc proc /proc
+ttyAMA0::sysinit:/bin/mount -o remount,rw / # REMOUNT_ROOTFS_RW
+ttyAMA0::sysinit:/bin/mkdir -p /dev/pts
+ttyAMA0::sysinit:/bin/mkdir -p /dev/shm
+ttyAMA0::sysinit:/bin/mount -a
+ttyAMA0::sysinit:/bin/hostname -F /etc/hostname
+# now run any rc scripts
+ttyAMA0::sysinit:/etc/init.d/rcS
+
+# Put a getty on the serial port
+ttyAMA0::respawn:/sbin/getty -L ttyAMA0 115200 vt100 # GENERIC_SERIAL
+
+# Stuff to do for the 3-finger salute
+::ctrlaltdel:/sbin/reboot
+
+# Stuff to do before rebooting
+ttyAMA0::shutdown:/etc/init.d/rcK
+ttyAMA0::shutdown:/bin/umount -a -r
+ttyAMA0::shutdown:/sbin/swapoff -a
+
