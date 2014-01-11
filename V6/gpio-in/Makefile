@@ -33,7 +33,9 @@ clean:
 	$(RM) $(TARGETS) *.o core* tmp*
 
 install: clean all
+	scp gpio-in.sh root@$(RPI_HOST):/bin/
 	scp switch root@$(RPI_HOST):/bin/
+	ssh root@$(RPI_HOST) gpio-in.sh
 
 
 copyid: 
