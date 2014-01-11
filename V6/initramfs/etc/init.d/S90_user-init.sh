@@ -1,15 +1,32 @@
 #!/bin/sh
 
-#tmp vollschreiben
-mkdir /tmp/blub
-mkdir /tmp/bla
+# Disable kernel message to print to console
+echo 0 > /proc/sys/kernel/printk
 
-#Gerätedateien sollen automatisch angelegt werden.
-echo "/sbin/mdev" > /proc/sys/kernel/hotplug
+echo "
 
-loadkmap < /etc/keymaps/keymap_de_DE &
+       ____.       __        ___.           
+      |    |____  |  | ____ _\_ |__   ______
+      |    \__  \ |  |/ /  |  \ __ \ /  ___/
+  /\__|    |/ __ \|    <|  |  / \_\ \\___ \ 
+  \________(____  /__|_ \____/|___  /____  >
+                \/     \/         \/     \/ 
+    _________                           .__  .__                     
+   /   _____/__ ________   ___________  |  | |__| ____  __ _____  ___
+   \_____  \|  |  \____ \_/ __ \_  __ \ |  | |  |/    \|  |  \  \/  /
+   /        \  |  /  |_> >  ___/|  | \/ |  |_|  |   |  \  |  />    < 
+  /_______  /____/|   __/ \___  >__|    |____/__|___|  /____//__/\_ \\
+          \/      |__|        \/                     \/            \/
 
-udhcpc -i eth0 -s /etc/udhcpc/simple.script
+"
+
 httpd -h /www/
+
+
+udhcpc -i eth0 -s /etc/udhcpc/simple.script &>/var/log/udhcpc
+
+telnetd &>/var/log/telnet
+
+httpd -h /www/ &>/var/log/httpd
 
 sysinfo-printer
