@@ -3,7 +3,7 @@ CROSS_COMPILE=$(TOOLCHAIN)/bin/arm-linux-gnueabihf-
 CC=gcc
 # Options
 ARCH=arm
-CFLAGS = -W -Wall -g  -I $(TOOLCHAIN)/arm-linux-gnueabihf/include/ -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6 -mtune=arm1176jzf-s -marm -L /$(TOOLCHAIN)/arm-linux-gnueabihf/lib/
+CFLAGS = -W -Wall -g  -I $(TOOLCHAIN)/arm-linux-gnueabihf/include/ -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6 -mtune=arm1176jzf-s -marm -L /$(TOOLCHAIN)/arm-linux-gnueabihf/lib/ -lpthread -lrt
 
 
 STATIC = -static # For static lib binding.
