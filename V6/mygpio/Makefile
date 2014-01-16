@@ -24,23 +24,27 @@ RPI_HOST_KERNEL_DIR:=/lib/modules/3.12.6/kernel
 OBJECTS=$(addsuffix .o, $(TARGETS))
 obj-m += $(OBJECTS)
 
-all: led250
+all: led250 ledmax
 	make $(OPTIONS) modules
 
 
 $(TARGETS): $(SOURCES)
 	$(GENERIC_CROSS_COMPILE)$(GENERIC_CC) $(GENERIC_CFLAGS) $@.c -o $@
 
-led250-clean:
+led-clean:
 	rm led250
+	rm ledmax
+
+led-install: led-clean led250 ledmax
+	scp -r led250 root@$(RPI_HOST):/bin
+	scp -r ledmax root@$(RPI_HOST):/bin
 
 
-clean: led250-clean
+clean: led-clean
 	make $(OPTIONS) clean
 
 install: clean all
 	ssh root@$(RPI_HOST) mkdir -p  $(RPI_HOST_KERNEL_DIR)/mygio
-	scp -r led250 root@$(RPI_HOST):/bin
 	scp -r mygpio.ko root@$(RPI_HOST):$(RPI_HOST_KERNEL_DIR)/mygio
 	ssh root@$(RPI_HOST) "/sbin/depmod -A; /sbin/modprobe -r mygpio; /sbin/modprobe -a mygpio"
 uninstall:

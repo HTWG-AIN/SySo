@@ -89,7 +89,6 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count,
 {
     u32 *ptr_port_button = (u32*) GPLEV0;
     u32 old_value_button = readl(ptr_port_button);
-    rmb();
 
     char data[5];
 
@@ -117,14 +116,11 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
     if (ptr_port_led == NULL) {
         return count;
     }
-    u32 old_value_led = 0x00000000;
+    u32 old_value_led = (0x00000000) | (1 << 18);
 
 
-    wmb();
-    writel(turn_on_bit(old_value_led, 18), ptr_port_led);
+    writel(old_value_led, ptr_port_led);
 
-
-    u32 rread = readl(ptr_port_led);
     
     return count - not_copied;
 }
