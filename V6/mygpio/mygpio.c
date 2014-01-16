@@ -95,7 +95,6 @@ static ssize_t driver_read(struct file *instance, char *user, size_t count,
 
     int size = sprintf(data, "%d\n", read_bit(old_value_button, 25));
 
-
 	int not_copied = copy_to_user(user, data , size);
 
 
@@ -126,8 +125,6 @@ static ssize_t driver_write(struct file *instance, const char __user * userbuf, 
 
 
     u32 rread = readl(ptr_port_led);
-    printk("Read from port 0x%08x\n", rread);
-
     
     return count - not_copied;
 }
@@ -149,7 +146,6 @@ static ssize_t driver_open(struct inode *inode, struct file *file)
     u32 cleared_ports = old_value_button & 0xFFFC7FFF;
 
     // writing 
-    printk("Cleared ports: 0x%08x, ptr-button: %p\n", cleared_ports, ptr_port_button);
     wmb();
     writel(cleared_ports, ptr_port_button);
 
@@ -162,7 +158,6 @@ static ssize_t driver_open(struct inode *inode, struct file *file)
     // clear its fuer port 18 = F8FFFFFF
     u32 cleared_ports_led = old_value_led & 0xF8FFFFFF;
     u32 new_ports_led = cleared_ports_led | 0x01000000;
-    printk("Cleared ports: 0x%08x, new-ports: 0x%08x ptr-led: %p\n", cleared_ports, new_ports_led, ptr_port_led);
     wmb();
     writel(new_ports_led, ptr_port_led);
     
