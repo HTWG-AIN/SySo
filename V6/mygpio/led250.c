@@ -27,6 +27,7 @@ int main()
 
 
     FILE *mygpio = NULL;
+    mygpio_write(1);
 
 
     while(1) {
@@ -48,11 +49,11 @@ int main()
                         printf("creation of blinkenrasp thread failed");
                     }
                     led_blinkenrasp_running = 1;
-                    printf("started blinking \n");
                 } else {
                     pthread_cancel(led_blinkenrasp_thread);
                     pthread_join(led_blinkenrasp_thread, NULL);
                     led_blinkenrasp_running = 0;
+                    mygpio_write(1);
                     printf("stoped blinking\n");
 
                 }
@@ -72,6 +73,16 @@ int main()
 
 
 void *led_blinkenrasp(void * data) {
+
+
+    printf("for reference switching led to on\n");
+    // on
+    mygpio_write(0);
+    sleep(2);
+
+
+
+    printf("Starting to blink with 250HZ\n");
     while(1) {
         // on
         mygpio_write(0);
@@ -82,6 +93,8 @@ void *led_blinkenrasp(void * data) {
         nssleep(4000000);
         
     }
+    mygpio_write(1);
+    return 0;
 }
 
 int mygpio_write(int value){
