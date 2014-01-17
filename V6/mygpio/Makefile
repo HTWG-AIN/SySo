@@ -24,7 +24,7 @@ RPI_HOST_KERNEL_DIR:=/lib/modules/3.12.6/kernel
 OBJECTS=$(addsuffix .o, $(TARGETS))
 obj-m += $(OBJECTS)
 
-all: led250 ledmax
+all: led250 ledmax ledflip
 	make $(OPTIONS) modules
 
 
@@ -34,10 +34,12 @@ $(TARGETS): $(SOURCES)
 led-clean:
 	rm led250
 	rm ledmax
+	rm ledflip
 
-led-install: led-clean led250 ledmax
+led-install:  led250 ledmax ledflip
 	scp -r led250 root@$(RPI_HOST):/bin
 	scp -r ledmax root@$(RPI_HOST):/bin
+	scp -r ledflip root@$(RPI_HOST):/bin
 
 
 clean: led-clean
