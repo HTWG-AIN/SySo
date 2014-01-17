@@ -30,7 +30,7 @@ int main()
 
     
     long long nsec_average = 0;
-    mygpio_write(1);
+    mygpio_write("1");
 
     pid_t pod = getpid();
     struct sched_param param;
