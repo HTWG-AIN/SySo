@@ -29,12 +29,12 @@ all: led250 ledmax ledflip
 
 
 $(TARGETS): $(SOURCES)
-	$(GENERIC_CROSS_COMPILE)$(GENERIC_CC) $(GENERIC_CFLAGS) $@.c -o $@
+	$(GENERIC_CROSS_COMPILE)$(GENERIC_CC) $(GENERIC_CFLAGS) $@.c  -o $@
 
 led-clean:
-	rm led250
-	rm ledmax
-	rm ledflip
+	$(RM) led250
+	$(RM) ledmax
+	$(RM) ledflip
 
 led-install:  led250 ledmax ledflip
 	scp -r led250 root@$(RPI_HOST):/bin
@@ -45,7 +45,7 @@ led-install:  led250 ledmax ledflip
 clean: led-clean
 	make $(OPTIONS) clean
 
-install: clean all
+install: clean all led-install
 	ssh root@$(RPI_HOST) mkdir -p  $(RPI_HOST_KERNEL_DIR)/mygio
 	scp -r mygpio.ko root@$(RPI_HOST):$(RPI_HOST_KERNEL_DIR)/mygio
 	ssh root@$(RPI_HOST) "/sbin/depmod -A; /sbin/modprobe -r mygpio; /sbin/modprobe -a mygpio"

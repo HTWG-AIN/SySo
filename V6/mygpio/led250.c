@@ -12,7 +12,7 @@
 #define SEC_IN_NSEC 1000000000
 
 
-void *led_blinkenrasp(void *);
+void *led_blinkenrasp();
 int mygpio_write(int value);
 int mygpio_read();
 
@@ -72,7 +72,7 @@ int main()
 
 
 
-void *led_blinkenrasp(void * data) {
+void *led_blinkenrasp() {
 
 
     printf("for reference switching led to on\n");

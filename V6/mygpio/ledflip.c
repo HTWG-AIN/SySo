@@ -89,6 +89,7 @@ int main()
                         printf("creation of blinkenrasp thread failed with frequency %lld", data);
                     }
                     blinkenrasp_running=1;
+                    selected_state++;
 
                 } else {
                     pthread_cancel(led_blinkenrasp_thread);
@@ -99,7 +100,6 @@ int main()
                     blinkenrasp_running=0;
 
                 }
-                selected_state++;
             }
             trigger_temp = atoi(read_text);
         }
