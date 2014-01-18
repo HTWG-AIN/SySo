@@ -27,3 +27,4 @@ telnetd &>/var/log/telnet
 httpd -h /www/ &>/var/log/httpd
 
 depmod -A
+modprobe -a mygpio
