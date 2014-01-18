@@ -25,3 +25,5 @@ udhcpc -i eth0 -s /etc/udhcpc/simple.script &>/var/log/udhcpc
 telnetd &>/var/log/telnet
 
 httpd -h /www/ &>/var/log/httpd
+
+depmod -A
