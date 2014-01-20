@@ -8,3 +8,6 @@ webinstall:
 
 copyid: 
 	  ([ ! -f ~/.ssh/id_rsa.pub ] && ssh-keygen); ssh-copy-id root@$(RPI_HOST)
+
+terminal:
+	ltsp-localapps xterm 
