@@ -2,7 +2,7 @@
 %%Title: zero/zero.c
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Fri Jan 24 20:08:39 2014
+%%CreationDate: Tue Jan 28 13:12:38 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -148,309 +148,272 @@ F0 sf
 F1 sf
 (zero/zero.c                                                                   Page 1)59.5 792.4 ms
 F0 sf
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 772.4 ms
 0 g
 (<linux/init.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 762.4 ms
 0 g
 (<linux/module.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 752.4 ms
 0 g
 (<linux/fs.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 742.4 ms
 0 g
 (<linux/cdev.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 732.4 ms
 0 g
-(<linux/slab.h> )s
-0 1 1 r
-(// kmalloc\(\), kfree\(\))s
-0.502 0.502 0 r
+(<linux/slab.h>     // kmalloc\(\), kfree\(\))s
+0 0 0.376 r
 (#include )59.5 722.4 ms
 0 g
-(<asm/uaccess.h>   )s
-0 1 1 r
-(// copy_to_user\(\))s
-0.502 0.502 0 r
+(<asm/uaccess.h>    // copy_to_user\(\))s
+0 0 0.376 r
 (#include )59.5 712.4 ms
 0 g
-(<linux/device.h> )s
-0 1 1 r
-(// class_create, device_create)s
+(<linux/device.h>   // class_create, device_create)s
 (// Metainformation)59.5 692.4 ms
-0 g
 (MODULE_AUTHOR\("Stefano Di Martno"\);)59.5 682.4 ms
 (MODULE_LICENSE\("GPL"\);)59.5 672.4 ms
 (MODULE_DESCRIPTION\("A dummy driver"\);)59.5 662.4 ms
 (MODULE_SUPPORTED_DEVICE\("none"\);)59.5 652.4 ms
-0 0 0.753 r
+0 0 0.376 r
 (#define MAJORNUM )59.5 632.4 ms
-0.753 g
+0 g
 (113)s
-0 0 0.753 r
+0 0 0.376 r
 (#define NUMDEVICES )59.5 622.4 ms
-0.753 g
+0 g
 (2)s
-0 0 0.753 r
+0 0 0.376 r
 (#define DEVNAME_0 )59.5 612.4 ms
 0 g
 ("t12zero_0")s
-0 0 0.753 r
+0 0 0.376 r
 (#define DEVNAME_1 )59.5 602.4 ms
 0 g
 ("t12zero_1")s
-(static )59.5 582.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 582.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( cdev *cdev = )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(static )59.5 562.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 562.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( hello_world[] = "Hello World)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(";  )s
-0 0 0.753 r
+(";)s
+0.188 0.188 0.498 r
 (struct)59.5 552.4 ms
 0 g
-( class *dev_class[)s
-0.753 g
-(2)s
+( class *dev_class[2];)s
+0.188 0.188 0.498 r
+(static)59.5 532.4 ms
 0 g
-(];)s
-(static )59.5 532.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit mod_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
 ({)59.5 522.4 ms
 (    printk\(KERN_ALERT "Goodbye, cruel world)59.5 512.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    )59.5 502.4 ms
-(    device_destroy\(dev_class[)59.5 492.4 ms
-0.753 g
-(0)s
-0 g
-(], MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(    class_destroy\(dev_class[)59.5 482.4 ms
-0.753 g
-(0)s
-0 g
-(]\);)s
-(    )59.5 472.4 ms
-(    device_destroy\(dev_class[)59.5 462.4 ms
-0.753 g
-(1)s
-0 g
-(], MKDEV\(MAJORNUM, )s
-0.753 g
-(1)s
-0 g
-(\)\);)s
-(    class_destroy\(dev_class[)59.5 452.4 ms
-0.753 g
-(1)s
-0 g
-(]\);)s
-(    )59.5 442.4 ms
+(    device_destroy\(dev_class[0], MKDEV\(MAJORNUM, 0\)\);)59.5 492.4 ms
+(    class_destroy\(dev_class[0]\);)59.5 482.4 ms
+(    device_destroy\(dev_class[1], MKDEV\(MAJORNUM, 1\)\);)59.5 462.4 ms
+(    class_destroy\(dev_class[1]\);)59.5 452.4 ms
 (    )59.5 432.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(cdev\) )s
-(        {)59.5 422.4 ms
-(        cdev_del\(cdev\);)59.5 412.4 ms
-(    })59.5 402.4 ms
-(                                                      )59.5 392.4 ms
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM, )59.5 382.4 ms
-0.753 g
-(0)s
+( \(cdev\) {)s
+(        cdev_del\(cdev\);)59.5 422.4 ms
+(    })59.5 412.4 ms
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 392.4 ms
+(})59.5 382.4 ms
+0.188 0.188 0.498 r
+(static)59.5 362.4 ms
 0 g
-(\), NUMDEVICES\);)s
-(})59.5 372.4 ms
-(static )59.5 352.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\))s
-({)59.5 342.4 ms
-(    )59.5 332.4 ms
-0 0 0.753 r
+({)59.5 352.4 ms
+(    )59.5 342.4 ms
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( minor = iminor\(inode\);)s
-(    instance->private_data = kmalloc\( )59.5 312.4 ms
-0 0 0.753 r
+(    instance->private_data = kmalloc\()59.5 322.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 (\), GFP_KERNEL\);)s
 (    )59.5 302.4 ms
-(    )59.5 292.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(instance->private_data == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        pr_alert\("Could not allocate memory!)59.5 282.4 ms
+(        pr_alert\("Could not allocate memory!)59.5 292.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 272.4 ms
+(        )59.5 282.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
-(    })59.5 262.4 ms
-(    *\(\()59.5 252.4 ms
-0 0 0.753 r
+( -1;)s
+(    })59.5 272.4 ms
+(    *\(\()59.5 262.4 ms
+0.188 0.188 0.498 r
 (int)s
 0 g
-(*\) \(instance->private_data\)\) = minor;)s
-(    )59.5 232.4 ms
+( *\)\(instance->private_data\)\) = minor;)s
+(    )59.5 242.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 232.4 ms
+0.188 0.188 0.498 r
+(static)59.5 212.4 ms
 0 g
-(;)s
-(})59.5 222.4 ms
-(static )59.5 202.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( count, loff_t *)s
-(offset\))59.5 192.4 ms
-({)59.5 182.4 ms
-(    )59.5 172.4 ms
-0 0 0.753 r
+( count,)s
+(               loff_t * offset\))59.5 202.4 ms
+({)59.5 192.4 ms
+(    )59.5 182.4 ms
+0.188 0.188 0.498 r
 (long)s
 0 g
 ( not_copied, to_copy, minor, sent, copied;)s
-(    )59.5 162.4 ms
-0 0 0.753 r
+(    )59.5 172.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *data;)s
-(    )59.5 152.4 ms
-(    minor = *\(\()59.5 142.4 ms
-0 0 0.753 r
+(    minor = *\(\()59.5 152.4 ms
+0.188 0.188 0.498 r
 (int)s
 0 g
-(*\)\(instance->private_data\)\);)s
+( *\)\(instance->private_data\)\);)s
 (    )59.5 132.4 ms
-(    )59.5 122.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(minor == )s
-0.753 g
-(0)s
-0 g
-(\))s
-(    {)59.5 112.4 ms
-(        to_copy = )59.5 102.4 ms
-0.753 g
-(1)s
-0 g
-(;)s
-(        data = "0";)59.5 92.4 ms
-(    })59.5 82.4 ms
-(    )59.5 72.4 ms
+( \(minor == 0\) {)s
+(        to_copy = 1;)59.5 122.4 ms
+(        data = "0";)59.5 112.4 ms
+(    } )59.5 102.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (else)s
 F0 sf
 0 g
 ( )s
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(minor == )s
-0.753 g
-(1)s
+( \(minor == 1\) {)s
+(        to_copy = strlen\(hello_world\);)59.5 92.4 ms
+(        data = hello_world;)59.5 82.4 ms
+(    } )59.5 72.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(else)s
+F0 sf
 0 g
-(\))s
-(    {)59.5 62.4 ms
-(        to_copy = strlen\(hello_world\);)59.5 52.4 ms
+(        )59.5 62.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(return)s
+F0 sf
+0 g
+( -1;  // TODO richtige Fehlermeldung!)s
 re sp
 %%PageTrailer
 %%Page: 2 2
@@ -462,312 +425,274 @@ F0 sf
 F1 sf
 (zero/zero.c                                                                   Page 2)59.5 792.4 ms
 F0 sf
-(        data = hello_world;)59.5 772.4 ms
-(    })59.5 762.4 ms
-(    )59.5 752.4 ms
+(    )59.5 772.4 ms
 F1 sf
-0 0 0.753 r
-(else)s
-F0 sf
-0 g
-(        )59.5 742.4 ms
-F1 sf
-0 0 0.753 r
-(return)s
-F0 sf
-0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(; )s
-0 1 1 r
-(// )s
-F1 sf
-0.753 g
-(TODO)s
-F0 sf
-0 1 1 r
-( richtige Fehlermeldung!)s
-0 g
-(    )59.5 732.4 ms
-(    )59.5 722.4 ms
-F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-(\(to_copy > count\)                                  )s
-(        to_copy = count;)59.5 712.4 ms
-(        )59.5 702.4 ms
-(    not_copied = copy_to_user\(user, data, to_copy\);)59.5 692.4 ms
-(    )59.5 682.4 ms
-(    sent = to_copy - not_copied;)59.5 672.4 ms
-(    copied = to_copy - not_copied;)59.5 662.4 ms
-(    )59.5 652.4 ms
-(    pr_debug\("Module  zero: sent )59.5 642.4 ms
+( \(to_copy > count\))s
+(        to_copy = count;)59.5 762.4 ms
+(    not_copied = copy_to_user\(user, data, to_copy\);)59.5 742.4 ms
+(    sent = to_copy - not_copied;)59.5 722.4 ms
+(    copied = to_copy - not_copied;)59.5 712.4 ms
+(    pr_debug)59.5 692.4 ms
+(        \("Module  zero: sent )59.5 682.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%ld)s
 F0 sf
 0 g
 ( bytes to user space )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 (Not copied: )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%ld)s
 F0 sf
 0 g
 ( bytes)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 (",)s
-(            sent, not_copied\);)59.5 632.4 ms
-(            )59.5 622.4 ms
-(    pr_debug\("Copied: )59.5 612.4 ms
+(         sent, not_copied\);)59.5 672.4 ms
+(    pr_debug\("Copied: )59.5 652.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%ld\\n)s
 F0 sf
 0 g
 (", copied\);)s
-(    )59.5 602.4 ms
-(    )59.5 592.4 ms
+(    )59.5 632.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( copied;   )s
-(})59.5 582.4 ms
-(static )59.5 562.4 ms
-0 0 0.753 r
+( copied;)s
+(})59.5 622.4 ms
+0.188 0.188 0.498 r
+(static)59.5 602.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_close\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\))s
-({)59.5 552.4 ms
-(    kfree\(instance->private_data\);)59.5 542.4 ms
-(    printk\("close\(\) called)59.5 532.4 ms
+({)59.5 592.4 ms
+(    kfree\(instance->private_data\);)59.5 582.4 ms
+(    printk\("close\(\) called)59.5 572.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    )59.5 522.4 ms
-(    )59.5 512.4 ms
+(    )59.5 552.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 542.4 ms
+0.188 0.188 0.498 r
+(static)59.5 522.4 ms
 0 g
-(;)s
-(})59.5 502.4 ms
-(static )59.5 482.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file_operations fops = {)s
-(    .owner= THIS_MODULE,)59.5 472.4 ms
-(    .read= driver_read,)59.5 462.4 ms
-(    .open= driver_open, )59.5 452.4 ms
-(    .release= driver_close,)59.5 442.4 ms
-(};)59.5 432.4 ms
-(static )59.5 412.4 ms
-0 0 0.753 r
+(    .owner = THIS_MODULE,)59.5 512.4 ms
+(    .read = driver_read,)59.5 502.4 ms
+(    .open = driver_open,)59.5 492.4 ms
+(    .release = driver_close,)59.5 482.4 ms
+(};)59.5 472.4 ms
+0.188 0.188 0.498 r
+(static)59.5 452.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( create_device\(dev_t dev_number, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *dev_name, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( index\))s
-({)59.5 402.4 ms
-(    dev_class[index] = class_create\(THIS_MODULE, dev_name\);)59.5 392.4 ms
-(    device_create \(dev_class[index], )59.5 382.4 ms
+({)59.5 442.4 ms
+(    dev_class[index] = class_create\(THIS_MODULE, dev_name\);)59.5 432.4 ms
+(    device_create\(dev_class[index], )59.5 422.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, dev_number, )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, dev_name\);)s
-(})59.5 372.4 ms
-(static )59.5 352.4 ms
-0 0 0.753 r
+(})59.5 412.4 ms
+0.188 0.188 0.498 r
+(static)59.5 392.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init mod_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
-({)59.5 342.4 ms
-(        dev_t number_min_0 = MKDEV\(MAJORNUM, )59.5 332.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
-(        dev_t number_min_1 = MKDEV\(MAJORNUM, )59.5 322.4 ms
-0.753 g
-(1)s
-0 g
-(\);)s
-(        )59.5 312.4 ms
-(        printk\(KERN_ALERT "Hello, world)59.5 302.4 ms
+({)59.5 382.4 ms
+(    dev_t number_min_0 = MKDEV\(MAJORNUM, 0\);)59.5 372.4 ms
+(    dev_t number_min_1 = MKDEV\(MAJORNUM, 1\);)59.5 362.4 ms
+(    printk\(KERN_ALERT "Hello, world)59.5 342.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 292.4 ms
-(        )59.5 282.4 ms
+(    )59.5 322.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(register_chrdev_region\(number_min_0, NUMDEVICES, DEVNAME_0\)\) )s
-(        {)59.5 272.4 ms
-(            pr_warn\("Device number 0x)59.5 262.4 ms
+( \(register_chrdev_region\(number_min_0, NUMDEVICES, DEVNAME_0\)\) {)s
+(        pr_warn\("Device number 0x)59.5 312.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( not available ...)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(" , MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(            )59.5 252.4 ms
+(",)s
+(            MKDEV\(MAJORNUM, 0\)\);)59.5 302.4 ms
+(        )59.5 292.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -)s
 F1 sf
-0.753 g
+0 0 0.376 r
+18 ul
 (EIO)s
 F0 sf
 0 g
-( ;)s
-(        } )59.5 242.4 ms
-(        pr_info\("Device number 0x)59.5 222.4 ms
+(;)s
+(    })59.5 282.4 ms
+(    pr_info\("Device number 0x)59.5 262.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( created)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(        cdev = cdev_alloc\(\);)59.5 202.4 ms
-(        )59.5 192.4 ms
+(", MKDEV\(MAJORNUM, 0\)\);)s
+(    cdev = cdev_alloc\(\);)59.5 242.4 ms
+(    )59.5 232.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(cdev == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
-(\) )s
-(        {)59.5 182.4 ms
-(            pr_warn\("cdev_alloc failed!)59.5 172.4 ms
+(\) {)s
+(        pr_warn\("cdev_alloc failed!)59.5 222.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(            )59.5 162.4 ms
+(        )59.5 212.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
 ( free_devnum;)s
-(        })59.5 152.4 ms
-(        kobject_set_name\(&cdev->kobj, DEVNAME_0\);)59.5 132.4 ms
-(        cdev->owner = THIS_MODULE;)59.5 122.4 ms
-(        cdev_init\(cdev, &fops\);)59.5 112.4 ms
-(        )59.5 102.4 ms
-(        )59.5 92.4 ms
+(    })59.5 202.4 ms
+(    kobject_set_name\(&cdev->kobj, DEVNAME_0\);)59.5 182.4 ms
+(    cdev->owner = THIS_MODULE;)59.5 172.4 ms
+(    cdev_init\(cdev, &fops\);)59.5 162.4 ms
+(    )59.5 142.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(cdev_add\(cdev, MKDEV\(MAJORNUM,)s
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\)\) )s
-(        {)59.5 82.4 ms
-(            pr_warn\("cdev_add failed!)59.5 72.4 ms
+( \(cdev_add\(cdev, MKDEV\(MAJORNUM, 0\), NUMDEVICES\)\) {)s
+(        pr_warn\("cdev_add failed!)59.5 132.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(            )59.5 62.4 ms
+(        )59.5 122.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
 ( free_cdev;)s
-(        })59.5 52.4 ms
+(    })59.5 112.4 ms
+(    create_device\(number_min_0, DEVNAME_0, 0\);)59.5 92.4 ms
+(    create_device\(number_min_1, DEVNAME_1, 1\);)59.5 82.4 ms
+(    )59.5 62.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(return)s
+F0 sf
+0 g
+( 0;)s
 re sp
 %%PageTrailer
 %%Page: 3 3
@@ -779,65 +704,40 @@ F0 sf
 F1 sf
 (zero/zero.c                                                                   Page 3)59.5 792.4 ms
 F0 sf
-(        create_device\(number_min_0, DEVNAME_0, )59.5 762.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
-(        create_device\(number_min_1, DEVNAME_1, )59.5 752.4 ms
-0.753 g
-(1)s
-0 g
-(\);)s
-(        )59.5 742.4 ms
-(        )59.5 732.4 ms
+( )59.5 772.4 ms
 F1 sf
-0 0 0.753 r
-(return)s
+0.498 0.125 0.498 r
+(free_cdev)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
-(    )59.5 712.4 ms
-0.753 0 0.753 r
-(free_cdev)s
-0 g
 (:)s
-(        kobject_put\(&cdev->kobj\);)59.5 702.4 ms
-(        cdev = )59.5 692.4 ms
+(    kobject_put\(&cdev->kobj\);)59.5 762.4 ms
+(    cdev = )59.5 752.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(    )59.5 682.4 ms
-0.753 0 0.753 r
+( )59.5 742.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (free_devnum)s
+F0 sf
 0 g
 (:)s
-(        unregister_chrdev_region\(MKDEV\(MAJORNUM,)59.5 672.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
-(    )59.5 662.4 ms
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 732.4 ms
+(    )59.5 722.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
-(})59.5 652.4 ms
-(module_init\(mod_init\);)59.5 632.4 ms
-(module_exit\(mod_exit\);)59.5 622.4 ms
+( -1;)s
+(})59.5 712.4 ms
+(module_init\(mod_init\);)59.5 692.4 ms
+(module_exit\(mod_exit\);)59.5 682.4 ms
 re sp
 %%PageTrailer
 %%Trailer
