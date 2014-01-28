@@ -2,7 +2,7 @@
 %%Title: kthread/kthread.c
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Fri Jan 24 20:09:55 2014
+%%CreationDate: Tue Jan 28 13:19:26 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -148,29 +148,27 @@ F0 sf
 F1 sf
 (kthread/kthread.c                                                             Page 1)59.5 792.4 ms
 F0 sf
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 772.4 ms
 0 g
 (<linux/module.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 762.4 ms
 0 g
 (<linux/version.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 752.4 ms
 0 g
 (<linux/init.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 742.4 ms
 0 g
 (<linux/completion.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 732.4 ms
 0 g
-(<linux/sched.h> )s
-0 1 1 r
-(// TASK_INTERRUPTIBLE used by wake_up_interruptible\(\))s
-0.502 0.502 0 r
+(<linux/sched.h> // TASK_INTERRUPTIBLE used by wake_up_interruptible\(\))s
+0 0 0.376 r
 (#include )59.5 722.4 ms
 0 g
 (<linux/kthread.h>)s
@@ -178,78 +176,73 @@ F0 sf
 (MODULE_AUTHOR\("Stefano Di Martno"\);)59.5 692.4 ms
 (MODULE_DESCRIPTION\("kthread sample"\);)59.5 682.4 ms
 (MODULE_SUPPORTED_DEVICE\("none"\);)59.5 672.4 ms
-(static )59.5 652.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 652.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( task_struct *thread_id;)s
-(static wait_queue_head_t wq;)59.5 642.4 ms
-(static DECLARE_COMPLETION\(on_exit\);)59.5 632.4 ms
-(static )59.5 612.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 642.4 ms
+0 g
+( wait_queue_head_t wq;)s
+0.188 0.188 0.498 r
+(static)59.5 632.4 ms
+0 g
+( DECLARE_COMPLETION\(on_exit\);)s
+0.188 0.188 0.498 r
+(static)59.5 612.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( thread_code\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( *data\))s
 ({)59.5 602.4 ms
 (    )59.5 592.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (unsigned)s
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (long)s
 0 g
 ( timeout;)s
-(    )59.5 572.4 ms
-0 1 1 r
-(//daemonize\("MySySoKThread"\);)s
-0 g
+(    //daemonize\("MySySoKThread"\);)59.5 572.4 ms
 (    allow_signal\()59.5 562.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+42 ul
 (SIGTERM)s
 F0 sf
 0 g
 (\);)s
 (    )59.5 542.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (while)s
 F0 sf
 0 g
-( \(kthread_should_stop\(\) == )s
-0.753 g
-(0)s
-0 g
-(\) )s
+( \(kthread_should_stop\(\) == 0\) )s
 (    {)59.5 532.4 ms
-(        timeout = )59.5 522.4 ms
-0.753 g
-(2)s
-0 g
-( * HZ; )s
-0 1 1 r
-(// wait 2 second)s
-0 g
-(        timeout = wait_event_interruptible_timeout\(wq, \(timeout == )59.5 512.4 ms
-0.753 g
-(0)s
-0 g
-(\), timeout\);)s
+(        timeout = 2 * HZ; // wait 2 second)59.5 522.4 ms
+(        timeout = wait_event_interruptible_timeout\(wq, \(timeout == 0\), timeout\);)59.5 512.4 ms
 (        pr_debug\("thread_code: woke up ...)59.5 492.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (        )59.5 472.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
@@ -257,39 +250,38 @@ F0 sf
 (        {)59.5 462.4 ms
 (            pr_info\("got signal, break)59.5 452.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (            )59.5 442.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (break)s
 F0 sf
 0 g
 (;)s
 (        })59.5 432.4 ms
 (    })59.5 422.4 ms
-(    complete_and_exit\(&on_exit, )59.5 402.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
+(    complete_and_exit\(&on_exit, 0\);)59.5 402.4 ms
 (})59.5 392.4 ms
-(static )59.5 372.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 372.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init kthread_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
 ({)59.5 362.4 ms
 (    printk\(KERN_ALERT "kthread: Hello, world)59.5 352.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
@@ -297,20 +289,22 @@ F0 sf
 (    init_waitqueue_head\(&wq\);)59.5 332.4 ms
 (    thread_id = kthread_create\(thread_code, )59.5 322.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, "MySySoKThread"\);)s
 (    )59.5 302.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 (\(thread_id == ERR_PTR\(-)s
 F1 sf
-0.753 g
+0 0 0.376 r
+36 ul
 (ENOMEM)s
 F0 sf
 0 g
@@ -318,20 +312,21 @@ F0 sf
 (    {)59.5 292.4 ms
 (        pr_crit\("kthread could not be created!)59.5 282.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (        )59.5 272.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -)s
 F1 sf
-0.753 g
+0 0 0.376 r
+18 ul
 (EIO)s
 F0 sf
 0 g
@@ -341,42 +336,38 @@ F0 sf
 (    )59.5 232.4 ms
 (    )59.5 222.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
+( 0;)s
 (})59.5 212.4 ms
-(static )59.5 192.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 192.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit kthread_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
 ({)59.5 182.4 ms
 (    kill_pid\(task_pid\(thread_id\), )59.5 172.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+42 ul
 (SIGTERM)s
 F0 sf
 0 g
-(, )s
-0.753 g
-(1)s
-0 g
-(\);)s
+(, 1\);)s
 (    wait_for_completion\(&on_exit\);)59.5 162.4 ms
 (    )59.5 152.4 ms
 (    printk\(KERN_ALERT "kthread: Goodbye, cruel world)59.5 142.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g

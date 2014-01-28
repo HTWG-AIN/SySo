@@ -2,7 +2,7 @@
 %%Title: buf_threaded/buf_threaded.c
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Fri Jan 24 20:09:33 2014
+%%CreationDate: Tue Jan 28 13:19:44 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -148,330 +148,352 @@ F0 sf
 F1 sf
 (buf_threaded/buf_threaded.c                                                   Page 1)59.5 792.4 ms
 F0 sf
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 772.4 ms
 0 g
 (<linux/init.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 762.4 ms
 0 g
 (<linux/module.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 752.4 ms
 0 g
-(<linux/fs.h>       )s
-0 1 1 r
-(//struct file_operations)s
-0.502 0.502 0 r
+(<linux/fs.h>       //struct file_operations)s
+0 0 0.376 r
 (#include )59.5 742.4 ms
 0 g
-(<linux/device.h>   )s
-0 1 1 r
-(// class_create, device_create)s
-0.502 0.502 0 r
+(<linux/device.h>   // class_create, device_create)s
+0 0 0.376 r
 (#include )59.5 732.4 ms
 0 g
-(<linux/errno.h>    )s
-0 1 1 r
-(// ERESTART: Interrupted system call should be restarted)s
-0.502 0.502 0 r
+(<linux/errno.h>    // ERESTART: Interrupted system call should be restarted)s
+0 0 0.376 r
 (#include )59.5 722.4 ms
 0 g
-(<asm/uaccess.h>    )s
-0 1 1 r
-(// copy_to_user\(\))s
-0.502 0.502 0 r
+(<asm/uaccess.h>    // copy_to_user\(\))s
+0 0 0.376 r
 (#include )59.5 712.4 ms
 0 g
-(<linux/string.h>   )s
-0 1 1 r
-(// strncpy\(\))s
-0.502 0.502 0 r
+(<linux/string.h>   // strncpy\(\))s
+0 0 0.376 r
 (#include )59.5 702.4 ms
 0 g
-(<linux/cdev.h>     )s
-0 1 1 r
-(// cdev_alloc\(\), cdev_del\(\), ...)s
-0.502 0.502 0 r
+(<linux/cdev.h>     // cdev_alloc\(\), cdev_del\(\), ...)s
+0 0 0.376 r
 (#include )59.5 692.4 ms
 0 g
-(<linux/wait.h>     )s
-0 1 1 r
-(// wait queues)s
-0.502 0.502 0 r
+(<linux/wait.h>     // wait queues)s
+0 0 0.376 r
 (#include )59.5 682.4 ms
 0 g
-(<linux/sched.h>    )s
-0 1 1 r
-(// TASK_INTERRUPTIBLE used by wake_up_interruptible\(\))s
-0.502 0.502 0 r
+(<linux/sched.h>    // TASK_INTERRUPTIBLE used by wake_up_interruptible\(\))s
+0 0 0.376 r
 (#include )59.5 672.4 ms
 0 g
-(<linux/slab.h>     )s
-0 1 1 r
-(// kmalloc\(\), kfree\(\))s
-0.502 0.502 0 r
+(<linux/slab.h>     // kmalloc\(\), kfree\(\))s
+0 0 0.376 r
 (#include )59.5 662.4 ms
 0 g
 (<linux/kthread.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 652.4 ms
 0 g
 (<linux/mutex.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 642.4 ms
 0 g
 (<linux/atomic.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 632.4 ms
 0 g
 (<linux/workqueue.h>)s
-0 1 1 r
 (// Metainformation)59.5 612.4 ms
-0 g
 (MODULE_AUTHOR\("Stefano Di Martno"\);)59.5 602.4 ms
 (MODULE_LICENSE\("GPL"\);)59.5 592.4 ms
 (MODULE_DESCRIPTION\("buffer read write :-P"\);)59.5 582.4 ms
 (MODULE_SUPPORTED_DEVICE\("none"\);)59.5 572.4 ms
-0 0 0.753 r
+0 0 0.376 r
 (#define MAJORNUM )59.5 552.4 ms
-0.753 g
+0 g
 (100)s
-0 0 0.753 r
+0 0 0.376 r
 (#define NUMDEVICES )59.5 542.4 ms
-0.753 g
+0 g
 (1)s
-0 0 0.753 r
+0 0 0.376 r
 (#define DEVNAME )59.5 532.4 ms
 0 g
 ("t12buf_threaded")s
-(static )59.5 512.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 512.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( cdev *cdev = )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(static )59.5 502.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 502.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( class *dev_class;)s
-(static wait_queue_head_t wq_read;)59.5 482.4 ms
-(static wait_queue_head_t wq_write;)59.5 472.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 482.4 ms
+0 g
+( wait_queue_head_t wq_read;)s
+0.188 0.188 0.498 r
+(static)59.5 472.4 ms
+0 g
+( wait_queue_head_t wq_write;)s
+0.188 0.188 0.498 r
 (struct)59.5 452.4 ms
 0 g
 ( mutex mutex_buffer;)s
-(static )59.5 432.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 432.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( workqueue_struct *worker_queue;)s
-0 1 1 r
 (// function prototypes)59.5 412.4 ms
+0.188 0.188 0.498 r
+(static)59.5 402.4 ms
 0 g
-(static )59.5 402.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init mod_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\);)s
-(static )59.5 392.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 392.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit mod_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\);)s
-(static )59.5 382.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 382.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\);)s
-(static )59.5 372.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 372.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_write\()s
-0 0 0.753 r
-(struct)s
-0 g
-( file *instance, const )s
-0 0 0.753 r
-(char)s
-0 g
-( __user * userbuf, )s
-0 0 0.753 r
-(size)s
-(_t)59.5 362.4 ms
-0 g
-( count, loff_t * off\);)s
-(static )59.5 352.4 ms
-0 0 0.753 r
-(int)s
-0 g
-( driver_close\()s
-0 0 0.753 r
-(struct)s
-0 g
-( inode *inode, )s
-0 0 0.753 r
-(struct)s
-0 g
-( file *instance\);)s
-(static )59.5 342.4 ms
-0 0 0.753 r
-(ssize_t)s
-0 g
-( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
+(const)s
+0 g
+( )s
+0.188 0.188 0.498 r
+(char)s
+0 g
+( __user * userbuf,)s
+(                )59.5 362.4 ms
+0.188 0.188 0.498 r
+(size_t)s
+0 g
+( count, loff_t * off\);)s
+0.188 0.188 0.498 r
+(static)59.5 352.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
+(int)s
+0 g
+( driver_close\()s
+0.188 0.188 0.498 r
+(struct)s
+0 g
+( inode *inode, )s
+0.188 0.188 0.498 r
+(struct)s
+0 g
+( file *instance\);)s
+0.188 0.188 0.498 r
+(static)59.5 342.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
+(ssize_t)s
+0 g
+( driver_read\()s
+0.188 0.188 0.498 r
+(struct)s
+0 g
+( file *instance, )s
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( count, loff_t *)s
-( offset\);)59.5 332.4 ms
-0 0 0.753 r
+( count,)s
+(               loff_t * offset\);)59.5 332.4 ms
+0 0 0.376 r
 (#define check_if_thread_is_valid\(thread\) )59.5 312.4 ms
 F1 sf
+0.498 0.125 0.498 r
 (if)s
 F0 sf
+0 0 0.376 r
 (\(thread == ERR_PTR\(-)s
 F1 sf
-0.753 g
+36 ul
 (ENOMEM)s
 F0 sf
-0 0 0.753 r
 (\)\) \\)s
 (        { \\)59.5 302.4 ms
 (                pr_crit\()59.5 292.4 ms
 0 g
 ("thread could not be created!)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 (")s
-0 0 0.753 r
+0 0 0.376 r
 (\); \\)s
 (                )59.5 282.4 ms
 F1 sf
+0.498 0.125 0.498 r
 (return)s
 F0 sf
+0 0 0.376 r
 ( -)s
 F1 sf
-0.753 g
+18 ul
 (EIO)s
 F0 sf
-0 0 0.753 r
 (; \\)s
 (        })59.5 272.4 ms
 (#define check_memory\(pointer\) )59.5 252.4 ms
 F1 sf
+0.498 0.125 0.498 r
 (if)s
 F0 sf
+0 0 0.376 r
 ( \(pointer == )s
 F1 sf
-0.753 g
+24 ul
 (NULL)s
 F0 sf
-0 0 0.753 r
 (\) {\\)s
 (         pr_alert\()59.5 242.4 ms
 0 g
 ("Could not allocate memory!)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 (")s
-0 0 0.753 r
+0 0 0.376 r
 (\);\\)s
 (         )59.5 232.4 ms
 F1 sf
+0.498 0.125 0.498 r
 (return)s
 F0 sf
+0 0 0.376 r
 ( -)s
-0.753 g
+0 g
 (1)s
-0 0 0.753 r
+0 0 0.376 r
 (;\\)s
 (         })59.5 222.4 ms
+0.188 0.188 0.498 r
 (typedef)59.5 202.4 ms
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( {)s
 (    )59.5 192.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
 ( count;)s
 (    )59.5 182.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( task_struct *thread_write;)s
 (    )59.5 172.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user;)s
 (} write_data;)59.5 162.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (typedef)59.5 142.4 ms
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( {)s
 (    atomic_t wake_up;)59.5 132.4 ms
 (    wait_queue_head_t wait_queue;)59.5 122.4 ms
 (    )59.5 112.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user;)s
 (} read_data;)59.5 102.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (typedef)59.5 82.4 ms
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( {)s
 (    )59.5 72.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( work_struct work;)s
@@ -489,18 +511,21 @@ F1 sf
 (buf_threaded/buf_threaded.c                                                   Page 2)59.5 792.4 ms
 F0 sf
 (    )59.5 772.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( completion on_exit;)s
 (    )59.5 762.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( ret;)s
 (} private_data;)59.5 752.4 ms
-(static )59.5 732.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 732.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file_operations fops = {)s
@@ -510,209 +535,188 @@ F0 sf
 (    .open = driver_open,)59.5 692.4 ms
 (    .release = driver_close,)59.5 682.4 ms
 (};)59.5 672.4 ms
-0 0 0.753 r
+0 0 0.376 r
 (#define stackTotalSize )59.5 652.4 ms
-0.753 g
+0 g
 (10)s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (typedef)59.5 632.4 ms
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( {)s
 (    )59.5 622.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
-( *stack;        )s
-0 1 1 r
-(/* Points to the objects on the stack */)s
-0 g
+( *stack;        /* Points to the objects on the stack */)s
 (    )59.5 612.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( stack_size;  )s
-0 1 1 r
-(/* Element size of the element type */)s
-0 g
+( stack_size;  /* Element size of the element type */)s
 (    )59.5 602.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
-( current_size;       )s
-0 1 1 r
-(/* The real amount of objects on the stack */)s
-0 g
+( current_size;   /* The real amount of objects on the stack */)s
 (    )59.5 592.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( mutex mutex;)s
 (    )59.5 582.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
-( \(*freefn\) \(const )s
-0 0 0.753 r
+( \(*freefn\) \()s
+0.188 0.188 0.498 r
+(const)s
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
-( *\);  )s
-0 1 1 r
-(/* free function for more complex data types */)s
-0 g
+( *\);  /* free function for more complex data types */)s
 (} genstack;)59.5 572.4 ms
-(static genstack stack;)59.5 552.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 552.4 ms
+0 g
+( genstack stack;)s
+0.188 0.188 0.498 r
 (void)59.5 532.4 ms
 0 g
-( init_genstack\(genstack *s, )s
-0 0 0.753 r
+( init_genstack\(genstack * s, )s
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( stack_size, )s
-0 0 0.753 r
+( stack_size,)s
+(           )59.5 522.4 ms
+0.188 0.188 0.498 r
 (void)s
 0 g
-( \(*freefn\) \(const )s
-0 0 0.753 r
+( \(*freefn\) \()s
+0.188 0.188 0.498 r
+(const)s
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( *\)\))s
-({)59.5 522.4 ms
-(    )59.5 512.4 ms
-0 1 1 r
-(/* Default initialization */)s
-0 g
-(    s->stack = kmalloc\(stackTotalSize * stack_size, GFP_KERNEL\);)59.5 502.4 ms
-(    )59.5 482.4 ms
+({)59.5 512.4 ms
+(    /* Default initialization */)59.5 502.4 ms
+(    s->stack = kmalloc\(stackTotalSize * stack_size, GFP_KERNEL\);)59.5 492.4 ms
+(    )59.5 472.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(s->stack == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        pr_alert\("Could not init stack!)59.5 472.4 ms
+(        pr_alert\("Could not init stack!)59.5 462.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 462.4 ms
+(        )59.5 452.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 (;)s
-(    })59.5 452.4 ms
-(    mutex_init\(&s->mutex\);)59.5 432.4 ms
-(    s->stack_size = stack_size;)59.5 422.4 ms
-(    s->current_size = )59.5 412.4 ms
-0.753 g
-(0)s
+(    })59.5 442.4 ms
+(    mutex_init\(&s->mutex\);)59.5 422.4 ms
+(    s->stack_size = stack_size;)59.5 412.4 ms
+(    s->current_size = 0;)59.5 402.4 ms
+(    s->freefn = freefn;)59.5 392.4 ms
+(})59.5 382.4 ms
+0.188 0.188 0.498 r
+(int)59.5 362.4 ms
 0 g
-(;)s
-(    s->freefn = freefn;)59.5 402.4 ms
-(})59.5 392.4 ms
-0 0 0.753 r
-(int)59.5 372.4 ms
+( genstack_push\(genstack * s, )s
+0.188 0.188 0.498 r
+(const)s
 0 g
-( genstack_push\(genstack *s, const )s
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( *elem_addr\))s
-({)59.5 362.4 ms
-(    )59.5 352.4 ms
-0 0 0.753 r
+({)59.5 352.4 ms
+(    )59.5 342.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *ptarget_addr;)s
-(    mutex_lock\(&s->mutex\);)59.5 332.4 ms
-(    )59.5 312.4 ms
+(    mutex_lock\(&s->mutex\);)59.5 322.4 ms
+(    )59.5 302.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(s->current_size == stackTotalSize\) {)s
-(        mutex_unlock\(&s->mutex\);)59.5 302.4 ms
-(        )59.5 292.4 ms
+(        mutex_unlock\(&s->mutex\);)59.5 292.4 ms
+(        )59.5 282.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
-(    })59.5 282.4 ms
-(    )59.5 262.4 ms
-0 1 1 r
-(/* Equivalent to &s->stack[s->current_size] */)s
-0 g
-(    ptarget_addr = \()59.5 252.4 ms
-0 0 0.753 r
+( -1;)s
+(    })59.5 272.4 ms
+(    /* Equivalent to &s->stack[s->current_size] */)59.5 252.4 ms
+(    ptarget_addr = \()59.5 242.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
-( *\) s->stack + s->current_size * s->stack_size;)s
-(    memcpy\(ptarget_addr, elem_addr, s->stack_size\);)59.5 232.4 ms
-(    s->current_size++;)59.5 222.4 ms
-(    mutex_unlock\(&s->mutex\);)59.5 202.4 ms
-(    )59.5 182.4 ms
+( *\)s->stack + s->current_size * s->stack_size;)s
+(    memcpy\(ptarget_addr, elem_addr, s->stack_size\);)59.5 222.4 ms
+(    s->current_size++;)59.5 212.4 ms
+(    mutex_unlock\(&s->mutex\);)59.5 192.4 ms
+(    )59.5 172.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 162.4 ms
+0.188 0.188 0.498 r
+(void)59.5 142.4 ms
 0 g
-(;)s
-(})59.5 172.4 ms
-0 0 0.753 r
-(void)59.5 152.4 ms
-0 g
-( genstack_pop\(genstack *s, )s
-0 0 0.753 r
+( genstack_pop\(genstack * s, )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( *elem_addr\))s
-({)59.5 142.4 ms
-(    )59.5 132.4 ms
-0 0 0.753 r
+({)59.5 132.4 ms
+(    )59.5 122.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *pSourceAddr;)s
-(    mutex_lock\(&s->mutex\);)59.5 112.4 ms
-(    )59.5 92.4 ms
-0 1 1 r
-(/* Equivalent to &s->stack[s->current_size - 1] */)s
-0 g
-(    pSourceAddr = \()59.5 82.4 ms
-0 0 0.753 r
+(    mutex_lock\(&s->mutex\);)59.5 102.4 ms
+(    /* Equivalent to &s->stack[s->current_size - 1] */)59.5 82.4 ms
+(    pSourceAddr = \()59.5 72.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
-( *\) s->stack + \(s->current_size - )s
-0.753 g
-(1)s
-0 g
-(\) * s->stack_size;)s
-(    memcpy\(elem_addr, pSourceAddr, s->stack_size\);)59.5 62.4 ms
-(    s->current_size--;)59.5 52.4 ms
+( *\)s->stack + \(s->current_size - 1\) * s->stack_size;)s
+(    memcpy\(elem_addr, pSourceAddr, s->stack_size\);)59.5 52.4 ms
 re sp
 %%PageTrailer
 %%Page: 3 3
@@ -724,221 +728,200 @@ F0 sf
 F1 sf
 (buf_threaded/buf_threaded.c                                                   Page 3)59.5 792.4 ms
 F0 sf
-(    mutex_unlock\(&s->mutex\);)59.5 762.4 ms
-(})59.5 752.4 ms
-0 0 0.753 r
-(int)59.5 732.4 ms
+(    s->current_size--;)59.5 772.4 ms
+(    mutex_unlock\(&s->mutex\);)59.5 752.4 ms
+(})59.5 742.4 ms
+0.188 0.188 0.498 r
+(int)59.5 722.4 ms
 0 g
-( genstack_empty\(const genstack *s\))s
-({)59.5 722.4 ms
-(    )59.5 712.4 ms
+( genstack_empty\()s
+0.188 0.188 0.498 r
+(const)s
+0 g
+( genstack * s\))s
+({)59.5 712.4 ms
+(    )59.5 702.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( s->current_size == )s
-0.753 g
-(0)s
+( s->current_size == 0;)s
+(})59.5 692.4 ms
+0.188 0.188 0.498 r
+(int)59.5 672.4 ms
 0 g
-(;)s
-(})59.5 702.4 ms
-0 0 0.753 r
-(int)59.5 682.4 ms
+( genstack_full\()s
+0.188 0.188 0.498 r
+(const)s
 0 g
-( genstack_full\(const genstack *s\))s
-({)59.5 672.4 ms
-(    )59.5 662.4 ms
+( genstack * s\))s
+({)59.5 662.4 ms
+(    )59.5 652.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( s->current_size == stackTotalSize;)s
-(})59.5 652.4 ms
-0 0 0.753 r
-(void)59.5 632.4 ms
+(})59.5 642.4 ms
+0.188 0.188 0.498 r
+(void)59.5 622.4 ms
 0 g
-( genstack_dispose\(genstack *s\))s
-({)59.5 622.4 ms
-(    )59.5 612.4 ms
+( genstack_dispose\(genstack * s\))s
+({)59.5 612.4 ms
+(    )59.5 602.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(s->freefn != )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
-( && s->current_size > )s
-0.753 g
-(0)s
-0 g
-(\) {)s
-(        )59.5 602.4 ms
-0 0 0.753 r
+( && s->current_size > 0\) {)s
+(        )59.5 592.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *pSourceAddr;)s
-(        )59.5 582.4 ms
+(        )59.5 572.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (for)s
 F0 sf
 0 g
-( \(; s->current_size > )s
-0.753 g
-(0)s
-0 g
-(; s->current_size--\) {)s
-(            )59.5 572.4 ms
-0 1 1 r
-(/* Equivalent to &s->stack[s->current_size - 1] */)s
-0 g
-(            pSourceAddr = \()59.5 562.4 ms
-0 0 0.753 r
+( \(; s->current_size > 0; s->current_size--\) {)s
+(            /* Equivalent to &s->stack[s->current_size - 1] */)59.5 562.4 ms
+(            pSourceAddr =)59.5 552.4 ms
+(                \()59.5 542.4 ms
+0.188 0.188 0.498 r
 (char)s
 0 g
-( *\) s->stack + \(s->current_size - )s
-0.753 g
-(1)s
-0 g
-(\) * s->stack_size;)s
-(            )59.5 542.4 ms
-0 1 1 r
-(/* call free function of the client */)s
-0 g
-(            s->freefn\(pSourceAddr\);)59.5 532.4 ms
-(        })59.5 522.4 ms
-(    })59.5 512.4 ms
-(    mutex_destroy\(&s->mutex\);)59.5 492.4 ms
-(    kfree\(s->stack\);)59.5 482.4 ms
-(    s->stack = )59.5 472.4 ms
+( *\)s->stack + \(s->current_size -)s
+(                        1\) * s->stack_size;)59.5 532.4 ms
+(            /* call free function of the client */)59.5 512.4 ms
+(            s->freefn\(pSourceAddr\);)59.5 502.4 ms
+(        })59.5 492.4 ms
+(    })59.5 482.4 ms
+(    mutex_destroy\(&s->mutex\);)59.5 462.4 ms
+(    kfree\(s->stack\);)59.5 452.4 ms
+(    s->stack = )59.5 442.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(})59.5 462.4 ms
-(static )59.5 442.4 ms
-0 0 0.753 r
+(})59.5 432.4 ms
+0.188 0.188 0.498 r
+(static)59.5 412.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( thread_write\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( *write_data\))s
-({)59.5 432.4 ms
-(    private_data *data = \(private_data *\) write_data;)59.5 422.4 ms
-(    )59.5 402.4 ms
+({)59.5 402.4 ms
+(    private_data *data = \(private_data *\) write_data;)59.5 392.4 ms
+(    )59.5 372.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(genstack_full\(&stack\)\)  )s
-0 1 1 r
-(// For debug added)s
-0 g
-(    {)59.5 392.4 ms
-(        pr_debug\("Producer is going to sleep...)59.5 382.4 ms
+( \(genstack_full\(&stack\)\)  // For debug added)s
+(    {)59.5 362.4 ms
+(        pr_debug\("Producer is going to sleep...)59.5 352.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 372.4 ms
+(        )59.5 342.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(wait_event_interruptible\(wq_write, !genstack_full\(&stack\)\)\))s
-(            )59.5 362.4 ms
+(            )59.5 332.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -ERESTART;)s
-(    })59.5 352.4 ms
-(    genstack_push\(&stack, &data->write_data->user\);)59.5 332.4 ms
-(    complete_and_exit\(&data->on_exit, )59.5 312.4 ms
-0.753 g
-(0)s
+(    })59.5 322.4 ms
+(    genstack_push\(&stack, &data->write_data->user\);)59.5 302.4 ms
+(    complete_and_exit\(&data->on_exit, 0\);)59.5 282.4 ms
+(})59.5 272.4 ms
+0.188 0.188 0.498 r
+(static)59.5 252.4 ms
 0 g
-(\);)s
-(})59.5 302.4 ms
-(static )59.5 282.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( thread_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( work_struct *work\))s
-({)59.5 272.4 ms
-(    private_data *data = container_of\(work, private_data, work\);)59.5 262.4 ms
-(    )59.5 242.4 ms
+({)59.5 242.4 ms
+(    private_data *data = container_of\(work, private_data, work\);)59.5 232.4 ms
+(    )59.5 212.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(genstack_empty\(&stack\)\) )s
-0 1 1 r
-(// For debug added)s
-0 g
-(    {)59.5 232.4 ms
-(        pr_debug\("Consumer is going to sleep...)59.5 222.4 ms
+( \(genstack_empty\(&stack\)\) // For debug added)s
+(    {)59.5 202.4 ms
+(        pr_debug\("Consumer is going to sleep...)59.5 192.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 212.4 ms
+(        )59.5 182.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(wait_event_interruptible\(wq_read, !genstack_empty\(&stack\)\)\) {)s
-(            data->ret = -ERESTART;)59.5 202.4 ms
-(            )59.5 192.4 ms
+(            data->ret = -ERESTART;)59.5 172.4 ms
+(            )59.5 162.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 (;)s
-(        })59.5 182.4 ms
-(    })59.5 172.4 ms
-(    genstack_pop\(&stack, &data->read_data->user\);)59.5 152.4 ms
-(    )59.5 142.4 ms
-(    data->ret = strlen\(data->read_data->user\);)59.5 132.4 ms
-(    pr_debug\("Wake producer and read\(\) up...)59.5 112.4 ms
+(        })59.5 152.4 ms
+(    })59.5 142.4 ms
+(    genstack_pop\(&stack, &data->read_data->user\);)59.5 122.4 ms
+(    data->ret = strlen\(data->read_data->user\);)59.5 102.4 ms
+(    pr_debug\("Wake producer and read\(\) up...)59.5 82.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    atomic_set\(&data->read_data->wake_up, )59.5 92.4 ms
-0.753 g
-(1)s
-0 g
-(\);)s
-(    wake_up_interruptible\(&data->read_data->wait_queue\);)59.5 72.4 ms
-(    wake_up_interruptible\(&wq_write\);)59.5 62.4 ms
-(})59.5 52.4 ms
+(    atomic_set\(&data->read_data->wake_up, 1\);)59.5 62.4 ms
 re sp
 %%PageTrailer
 %%Page: 4 4
@@ -950,243 +933,235 @@ F0 sf
 F1 sf
 (buf_threaded/buf_threaded.c                                                   Page 4)59.5 792.4 ms
 F0 sf
-(static )59.5 762.4 ms
-0 0 0.753 r
+(    wake_up_interruptible\(&data->read_data->wait_queue\);)59.5 772.4 ms
+(    wake_up_interruptible\(&wq_write\);)59.5 762.4 ms
+(})59.5 752.4 ms
+0.188 0.188 0.498 r
+(static)59.5 732.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\))s
-({)59.5 752.4 ms
-(    private_data *data;)59.5 742.4 ms
-(    printk\("open\(\) called!)59.5 722.4 ms
+({)59.5 722.4 ms
+(    private_data *data;)59.5 712.4 ms
+(    printk\("open\(\) called!)59.5 692.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    data = \(private_data *\) kmalloc\()59.5 702.4 ms
-0 0 0.753 r
+(    data = \(private_data *\) kmalloc\()59.5 672.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\(private_data\), GFP_KERNEL\);)s
-(    check_memory\(data\);)59.5 692.4 ms
-(    init_completion\(&\(data->on_exit\)\);)59.5 672.4 ms
-(    )59.5 652.4 ms
-0 1 1 r
-(// Do only kmalloc\(\) on read\(\) and write, if write_data or read_data are NULL!)s
-0 g
-(    data->write_data = )59.5 642.4 ms
+(    check_memory\(data\);)59.5 662.4 ms
+(    init_completion\(&\(data->on_exit\)\);)59.5 642.4 ms
+(    // Do only kmalloc\(\) on read\(\) and write, if write_data or read_data are NULL!)59.5 622.4 ms
+(    data->write_data = )59.5 612.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(    data->read_data = )59.5 632.4 ms
+(    data->read_data = )59.5 602.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(    instance->private_data = data;)59.5 612.4 ms
-(    )59.5 592.4 ms
+(    instance->private_data = data;)59.5 582.4 ms
+(    )59.5 562.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 552.4 ms
+0.188 0.188 0.498 r
+(static)59.5 532.4 ms
 0 g
-(;)s
-(})59.5 582.4 ms
-(static )59.5 562.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_close\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\))s
-({)59.5 552.4 ms
-(    private_data *data = \(private_data *\) instance->private_data;)59.5 542.4 ms
-(    printk\("close\(\) called)59.5 522.4 ms
+({)59.5 522.4 ms
+(    private_data *data = \(private_data *\) instance->private_data;)59.5 512.4 ms
+(    printk\("close\(\) called)59.5 492.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    )59.5 502.4 ms
+(    )59.5 472.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(data->write_data != )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        kfree\(data->write_data\);)59.5 492.4 ms
-(    })59.5 482.4 ms
-(    )59.5 462.4 ms
+(        kfree\(data->write_data\);)59.5 462.4 ms
+(    })59.5 452.4 ms
+(    )59.5 432.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(data->read_data != )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        kfree\(data->read_data\);)59.5 452.4 ms
-(    })59.5 442.4 ms
-(    kfree\(data\);)59.5 422.4 ms
-(    )59.5 402.4 ms
+(        kfree\(data->read_data\);)59.5 422.4 ms
+(    })59.5 412.4 ms
+(    kfree\(data\);)59.5 392.4 ms
+(    )59.5 372.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 362.4 ms
+0.188 0.188 0.498 r
+(static)59.5 342.4 ms
 0 g
-(;)s
-(})59.5 392.4 ms
-(static )59.5 372.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_write\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file *instance, const )s
-0 0 0.753 r
+( file *instance, )s
+0.188 0.188 0.498 r
+(const)s
+0 g
+( )s
+0.188 0.188 0.498 r
 (char)s
 0 g
-( __user * userbuf, )s
-0 0 0.753 r
-(size)s
-(_t)59.5 362.4 ms
+( __user * userbuf,)s
+(                )59.5 332.4 ms
+0.188 0.188 0.498 r
+(size_t)s
 0 g
 ( count, loff_t * off\))s
-({)59.5 352.4 ms
-(    private_data *data = \(private_data *\) instance->private_data;)59.5 342.4 ms
-(    )59.5 322.4 ms
+({)59.5 322.4 ms
+(    private_data *data = \(private_data *\) instance->private_data;)59.5 312.4 ms
+(    )59.5 292.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(data->write_data == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        data->write_data = \(write_data *\) kmalloc\()59.5 312.4 ms
-0 0 0.753 r
+(        data->write_data =)59.5 282.4 ms
+(            \(write_data *\) kmalloc\()59.5 272.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\(write_data\), GFP_KERNEL\);)s
-(        check_memory\(data->write_data\);)59.5 302.4 ms
-(        pr_debug\("Create producer thread for the first time...)59.5 282.4 ms
+(        check_memory\(data->write_data\);)59.5 262.4 ms
+(        pr_debug\("Create producer thread for the first time...)59.5 242.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    })59.5 272.4 ms
-(    data->write_data->count = count;)59.5 252.4 ms
-(    pr_debug\("Write: Call wake_up_process\(\))59.5 242.4 ms
+(    })59.5 232.4 ms
+(    data->write_data->count = count;)59.5 212.4 ms
+(    pr_debug\("Write: Call wake_up_process\(\))59.5 202.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    data->write_data->thread_write = kthread_create\(thread_write, data, "thread_writ)59.5 222.4 ms
-(e"\);)59.5 212.4 ms
-(    check_if_thread_is_valid\(data->write_data->thread_write\);)59.5 202.4 ms
-(    pr_debug\("Write: bytes to copy: )59.5 182.4 ms
+(    data->write_data->thread_write =)59.5 182.4 ms
+(        kthread_create\(thread_write, data, "thread_write"\);)59.5 172.4 ms
+(    check_if_thread_is_valid\(data->write_data->thread_write\);)59.5 162.4 ms
+(    pr_debug\("Write: bytes to copy: )59.5 142.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d\\n)s
 F0 sf
 0 g
 (", count\);)s
-(    )59.5 172.4 ms
-(    data->write_data->user = kmalloc\(count + )59.5 162.4 ms
-0.753 g
-(1)s
-0 g
-(, GFP_KERNEL\);)s
-(    check_memory\(data->write_data->user\);)59.5 152.4 ms
-(    )59.5 142.4 ms
-(    )59.5 132.4 ms
+(    data->write_data->user = kmalloc\(count + 1, GFP_KERNEL\);)59.5 122.4 ms
+(    check_memory\(data->write_data->user\);)59.5 112.4 ms
+(    )59.5 92.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(copy_from_user\(data->write_data->user, userbuf, count\) != )s
-0.753 g
-(0)s
-0 g
-(\) {)s
-(        pr_crit\("Could not copy from user space!!!)59.5 122.4 ms
+( \(copy_from_user\(data->write_data->user, userbuf, count\) != 0\) {)s
+(        pr_crit\("Could not copy from user space!!!)59.5 82.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 112.4 ms
+(        )59.5 72.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
-(    })59.5 102.4 ms
-(    data->write_data->user[count] = )59.5 82.4 ms
-F1 sf
-0 0 0.753 r
-('\\0')s
-F0 sf
-0 g
-(;)s
-(    wake_up_process\(data->write_data->thread_write\);)59.5 62.4 ms
-(    wait_for_completion\(&data->on_exit\);)59.5 52.4 ms
+( -1;)s
+(    })59.5 62.4 ms
 re sp
 %%PageTrailer
 %%Page: 5 5
@@ -1198,240 +1173,237 @@ F0 sf
 F1 sf
 (buf_threaded/buf_threaded.c                                                   Page 5)59.5 792.4 ms
 F0 sf
-(    pr_debug\("Wake consumer up...)59.5 762.4 ms
+(    data->write_data->user[count] = )59.5 772.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
+('\\0')s
+F0 sf
+0 g
+(;)s
+(    wake_up_process\(data->write_data->thread_write\);)59.5 752.4 ms
+(    wait_for_completion\(&data->on_exit\);)59.5 742.4 ms
+(    pr_debug\("Wake consumer up...)59.5 722.4 ms
+F1 sf
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    wake_up_interruptible\(&wq_read\);)59.5 742.4 ms
-(    )59.5 722.4 ms
+(    wake_up_interruptible\(&wq_read\);)59.5 702.4 ms
+(    )59.5 682.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( count;)s
-(})59.5 712.4 ms
-(static )59.5 692.4 ms
-0 0 0.753 r
+(})59.5 672.4 ms
+0.188 0.188 0.498 r
+(static)59.5 652.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( count, loff_t *)s
-( offset\))59.5 682.4 ms
-({)59.5 672.4 ms
-(    )59.5 662.4 ms
-0 0 0.753 r
+( count,)s
+(               loff_t * offset\))59.5 642.4 ms
+({)59.5 632.4 ms
+(    )59.5 622.4 ms
+0.188 0.188 0.498 r
 (unsigned)s
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (long)s
 0 g
 ( not_copied, to_copy, copied;)s
-(    private_data *data = \(private_data *\) instance->private_data;)59.5 652.4 ms
-(    wait_queue_head_t *wait_queue;)59.5 642.4 ms
-(    atomic_t *wake_up;)59.5 632.4 ms
-(    )59.5 612.4 ms
+(    private_data *data = \(private_data *\) instance->private_data;)59.5 612.4 ms
+(    wait_queue_head_t *wait_queue;)59.5 602.4 ms
+(    atomic_t *wake_up;)59.5 592.4 ms
+(    )59.5 572.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(data->read_data == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        data->read_data = \(read_data *\) kmalloc\()59.5 602.4 ms
-0 0 0.753 r
+(        data->read_data =)59.5 562.4 ms
+(            \(read_data *\) kmalloc\()59.5 552.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\(read_data\), GFP_KERNEL\);)s
-(        check_memory\(data->read_data\);)59.5 592.4 ms
-(        init_waitqueue_head\(&data->read_data->wait_queue\);)59.5 572.4 ms
-(        INIT_WORK\(&data->work, thread_read\);)59.5 562.4 ms
-(        pr_debug\("Create consumer thread for the first time...)59.5 552.4 ms
+(        check_memory\(data->read_data\);)59.5 542.4 ms
+(        init_waitqueue_head\(&data->read_data->wait_queue\);)59.5 522.4 ms
+(        INIT_WORK\(&data->work, thread_read\);)59.5 512.4 ms
+(        pr_debug\("Create consumer thread for the first time...)59.5 502.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    })59.5 542.4 ms
-(    )59.5 532.4 ms
-0 1 1 r
-(// Init read_data)s
-0 g
-(    wait_queue = &data->read_data->wait_queue;)59.5 522.4 ms
-(    wake_up = &data->read_data->wake_up;)59.5 512.4 ms
-(    atomic_set\(wake_up, )59.5 492.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
-(    )59.5 472.4 ms
+(    })59.5 492.4 ms
+(    // Init read_data)59.5 482.4 ms
+(    wait_queue = &data->read_data->wait_queue;)59.5 472.4 ms
+(    wake_up = &data->read_data->wake_up;)59.5 462.4 ms
+(    atomic_set\(wake_up, 0\);)59.5 442.4 ms
+(    )59.5 422.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(!queue_work\(worker_queue, &data->work\)\) {)s
-(        pr_crit\("queue_work not successful ...)59.5 462.4 ms
+(        pr_crit\("queue_work not successful ...)59.5 412.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    })59.5 452.4 ms
-(    )59.5 432.4 ms
+(    })59.5 402.4 ms
+(    )59.5 382.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(wait_event_interruptible\(*wait_queue, atomic_read\(wake_up\)\)\))s
-(        )59.5 422.4 ms
+(        )59.5 372.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -ERESTART;)s
-(    )59.5 392.4 ms
+(    )59.5 352.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(data->ret < )s
-0.753 g
-(0)s
-0 g
-(\) {)s
-(        )59.5 382.4 ms
+( \(data->ret < 0\) {)s
+(        )59.5 342.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( data->ret;)s
-(    })59.5 372.4 ms
-(    to_copy = data->ret;)59.5 352.4 ms
-(    not_copied = copy_to_user\(user, data->read_data->user, to_copy\);)59.5 342.4 ms
-(    copied = to_copy - not_copied;)59.5 332.4 ms
-(    pr_debug\("not_copied: )59.5 312.4 ms
+(    })59.5 332.4 ms
+(    to_copy = data->ret;)59.5 312.4 ms
+(    not_copied = copy_to_user\(user, data->read_data->user, to_copy\);)59.5 302.4 ms
+(    copied = to_copy - not_copied;)59.5 292.4 ms
+(    pr_debug\("not_copied: )59.5 272.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%lu)s
 F0 sf
 0 g
 ( to_copy: )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%lu)s
 F0 sf
 0 g
 (. count )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d)s
 F0 sf
 0 g
 (. )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%lu)s
 F0 sf
 0 g
 ( bytes read)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", not_copied,)s
-( to_copy, count, copied\);)59.5 302.4 ms
-(    kfree\(data->read_data->user\);)59.5 282.4 ms
-(    )59.5 262.4 ms
+(",)s
+(         not_copied, to_copy, count, copied\);)59.5 262.4 ms
+(    kfree\(data->read_data->user\);)59.5 242.4 ms
+(    )59.5 222.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( copied;)s
-(})59.5 252.4 ms
-(static )59.5 232.4 ms
-0 0 0.753 r
+(})59.5 212.4 ms
+0.188 0.188 0.498 r
+(static)59.5 192.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit mod_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
-({)59.5 222.4 ms
-(    printk\(KERN_ALERT "buf_threaded: Goodbye, cruel world)59.5 212.4 ms
+({)59.5 182.4 ms
+(    printk\(KERN_ALERT "buf_threaded: Goodbye, cruel world)59.5 172.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    device_destroy\(dev_class, MKDEV\(MAJORNUM, )59.5 202.4 ms
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(    class_destroy\(dev_class\);)59.5 192.4 ms
-(    )59.5 172.4 ms
+(    device_destroy\(dev_class, MKDEV\(MAJORNUM, 0\)\);)59.5 162.4 ms
+(    class_destroy\(dev_class\);)59.5 152.4 ms
+(    )59.5 132.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(cdev\) {)s
-(        cdev_del\(cdev\);)59.5 162.4 ms
-(    })59.5 152.4 ms
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM, )59.5 132.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
-(    )59.5 112.4 ms
+(        cdev_del\(cdev\);)59.5 122.4 ms
+(    })59.5 112.4 ms
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 92.4 ms
+(    )59.5 72.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(worker_queue\) {)s
-(        destroy_workqueue\(worker_queue\);)59.5 102.4 ms
-(        pr_debug\("workqueue destroyed)59.5 92.4 ms
+(        destroy_workqueue\(worker_queue\);)59.5 62.4 ms
+(        pr_debug\("workqueue destroyed)59.5 52.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    })59.5 82.4 ms
-(    genstack_dispose\(&stack\);)59.5 62.4 ms
-(})59.5 52.4 ms
 re sp
 %%PageTrailer
 %%Page: 6 6
@@ -1443,215 +1415,205 @@ F0 sf
 F1 sf
 (buf_threaded/buf_threaded.c                                                   Page 6)59.5 792.4 ms
 F0 sf
-(static )59.5 762.4 ms
-0 0 0.753 r
+(    })59.5 772.4 ms
+(    genstack_dispose\(&stack\);)59.5 752.4 ms
+(})59.5 742.4 ms
+0.188 0.188 0.498 r
+(static)59.5 722.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init mod_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
-({)59.5 752.4 ms
-(    dev_t major_nummer = MKDEV\(MAJORNUM, )59.5 742.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
-(    printk\(KERN_ALERT "buf_threaded: Hello, world!)59.5 722.4 ms
+({)59.5 712.4 ms
+(    dev_t major_nummer = MKDEV\(MAJORNUM, 0\);)59.5 702.4 ms
+(    printk\(KERN_ALERT "buf_threaded: Hello, world!)59.5 682.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    )59.5 702.4 ms
+(    )59.5 662.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(register_chrdev_region\(major_nummer, NUMDEVICES, DEVNAME\)\) {)s
-(        pr_warn\("Device number 0x)59.5 692.4 ms
+(        pr_warn\("Device number 0x)59.5 652.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( not available ...)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(        )59.5 682.4 ms
+(",)s
+(            MKDEV\(MAJORNUM, 0\)\);)59.5 642.4 ms
+(        )59.5 632.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -)s
 F1 sf
-0.753 g
+0 0 0.376 r
+18 ul
 (EIO)s
 F0 sf
 0 g
 (;)s
-(    })59.5 672.4 ms
-(    pr_info\("Device number 0x)59.5 652.4 ms
+(    })59.5 622.4 ms
+(    pr_info\("Device number 0x)59.5 602.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( created)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(    cdev = cdev_alloc\(\);)59.5 632.4 ms
-(    )59.5 612.4 ms
+(", MKDEV\(MAJORNUM, 0\)\);)s
+(    cdev = cdev_alloc\(\);)59.5 582.4 ms
+(    )59.5 562.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(cdev == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
-(        pr_warn\("cdev_alloc failed!)59.5 602.4 ms
+(        pr_warn\("cdev_alloc failed!)59.5 552.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 592.4 ms
+(        )59.5 542.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
 ( free_devnum;)s
-(    })59.5 582.4 ms
-(    kobject_set_name\(&cdev->kobj, DEVNAME\);)59.5 562.4 ms
-(    cdev->owner = THIS_MODULE;)59.5 552.4 ms
-(    cdev_init\(cdev, &fops\);)59.5 542.4 ms
-(    )59.5 522.4 ms
+(    })59.5 532.4 ms
+(    kobject_set_name\(&cdev->kobj, DEVNAME\);)59.5 512.4 ms
+(    cdev->owner = THIS_MODULE;)59.5 502.4 ms
+(    cdev_init\(cdev, &fops\);)59.5 492.4 ms
+(    )59.5 472.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(cdev_add\(cdev, MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\)\) {)s
-(        pr_warn\("cdev_add failed!)59.5 512.4 ms
+( \(cdev_add\(cdev, MKDEV\(MAJORNUM, 0\), NUMDEVICES\)\) {)s
+(        pr_warn\("cdev_add failed!)59.5 462.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 502.4 ms
+(        )59.5 452.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
 ( free_cdev;)s
-(    })59.5 492.4 ms
-(    dev_class = class_create\(THIS_MODULE, DEVNAME\);)59.5 472.4 ms
-(    device_create\(dev_class, )59.5 462.4 ms
+(    })59.5 442.4 ms
+(    dev_class = class_create\(THIS_MODULE, DEVNAME\);)59.5 422.4 ms
+(    device_create\(dev_class, )59.5 412.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, major_nummer, )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, DEVNAME\);)s
-(    init_genstack\(&stack, )59.5 442.4 ms
-0 0 0.753 r
+(    init_genstack\(&stack, )59.5 392.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
-(**\), kfree\);)s
-(    init_waitqueue_head\(&wq_read\);)59.5 422.4 ms
-(    init_waitqueue_head\(&wq_write\);)59.5 412.4 ms
-(    worker_queue = create_singlethread_workqueue\("bufThread"\);)59.5 392.4 ms
-(    )59.5 372.4 ms
+( **\), kfree\);)s
+(    init_waitqueue_head\(&wq_read\);)59.5 372.4 ms
+(    init_waitqueue_head\(&wq_write\);)59.5 362.4 ms
+(    worker_queue = create_singlethread_workqueue\("bufThread"\);)59.5 342.4 ms
+(    )59.5 322.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
-(      )59.5 352.4 ms
-0.753 0 0.753 r
+( 0;)s
+( )59.5 302.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (free_cdev)s
+F0 sf
 0 g
 (:)s
-(    kobject_put\(&cdev->kobj\);)59.5 342.4 ms
-(    cdev = )59.5 332.4 ms
+(    kobject_put\(&cdev->kobj\);)59.5 292.4 ms
+(    cdev = )59.5 282.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(      )59.5 322.4 ms
-0.753 0 0.753 r
+( )59.5 272.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (free_devnum)s
+F0 sf
 0 g
 (:)s
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM, )59.5 312.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
-(    )59.5 302.4 ms
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 262.4 ms
+(    )59.5 252.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
-(})59.5 292.4 ms
-(module_init\(mod_init\);)59.5 272.4 ms
-(module_exit\(mod_exit\);)59.5 262.4 ms
+( -1;)s
+(})59.5 242.4 ms
+(module_init\(mod_init\);)59.5 222.4 ms
+(module_exit\(mod_exit\);)59.5 212.4 ms
 re sp
 %%PageTrailer
 %%Trailer

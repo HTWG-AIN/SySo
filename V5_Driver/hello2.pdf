@@ -2,7 +2,7 @@
 %%Title: hello2/hello2.c
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Fri Jan 24 20:09:45 2014
+%%CreationDate: Tue Jan 28 13:19:33 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -148,288 +148,302 @@ F0 sf
 F1 sf
 (hello2/hello2.c                                                               Page 1)59.5 792.4 ms
 F0 sf
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 772.4 ms
 0 g
 (<linux/init.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 762.4 ms
 0 g
 (<linux/module.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 752.4 ms
 0 g
 (<linux/fs.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 742.4 ms
 0 g
 (<linux/cdev.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 732.4 ms
 0 g
 (<linux/device.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 722.4 ms
 0 g
-(<linux/slab.h> )s
-0 1 1 r
-(// kmalloc\(\), kfree\(\))s
-0.502 0.502 0 r
+(<linux/slab.h>     // kmalloc\(\), kfree\(\))s
+0 0 0.376 r
 (#include )59.5 712.4 ms
 0 g
-(<asm/uaccess.h>   )s
-0 1 1 r
-(// copy_to_user\(\))s
+(<asm/uaccess.h>    // copy_to_user\(\))s
+(MODULE_AUTHOR\("Jakub Werner"\);)59.5 692.4 ms
+(MODULE_LICENSE\("GPL"\);)59.5 682.4 ms
+(MODULE_DESCRIPTION\("A dummy driver"\);)59.5 672.4 ms
+(MODULE_SUPPORTED_DEVICE\("none"\);)59.5 662.4 ms
+0 0 0.376 r
+(#define MAJORNUM )59.5 642.4 ms
 0 g
-( )59.5 702.4 ms
-( )59.5 692.4 ms
-(MODULE_AUTHOR\("Jakub Werner"\);)59.5 682.4 ms
-(MODULE_LICENSE\("GPL"\);)59.5 672.4 ms
-(MODULE_DESCRIPTION\("A dummy driver"\);)59.5 662.4 ms
-(MODULE_SUPPORTED_DEVICE\("none"\);)59.5 652.4 ms
-0 0 0.753 r
-(#define MAJORNUM )59.5 632.4 ms
-0.753 g
 (120)s
-0 0 0.753 r
-(#define NUMDEVICES )59.5 622.4 ms
-0.753 g
+0 0 0.376 r
+(#define NUMDEVICES )59.5 632.4 ms
+0 g
 (2)s
-0 0 0.753 r
-(#define DEVNAME )59.5 612.4 ms
+0 0 0.376 r
+(#define DEVNAME )59.5 622.4 ms
 0 g
 ("t12hello2")s
-0 0 0.753 r
-(#define HELLO  )59.5 592.4 ms
+0 0 0.376 r
+(#define HELLO  )59.5 602.4 ms
 0 g
 ("Hello World!!!)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 (")s
-(static )59.5 562.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 582.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( cdev *cdev = )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(static )59.5 542.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 562.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
-( is_open = )s
-0.753 g
-(0)s
+( is_open = 0;)s
+0.188 0.188 0.498 r
+(static)59.5 542.4 ms
 0 g
-(;)s
-(static )59.5 522.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( class *dev_class;)s
-(static )59.5 512.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 532.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( device *device;)s
-(static )59.5 492.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 512.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instanz, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *buf, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( num, loff_t *off\))s
-(; )59.5 482.4 ms
-(static )59.5 472.4 ms
-0 0 0.753 r
+( num,)s
+(               loff_t * off\);)59.5 502.4 ms
+0.188 0.188 0.498 r
+(static)59.5 492.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file* file\); )s
-(static )59.5 462.4 ms
-0 0 0.753 r
+( file *file\);)s
+0.188 0.188 0.498 r
+(static)59.5 482.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_close\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file* file\);)s
-(static )59.5 432.4 ms
-0 0 0.753 r
+( file *file\);)s
+0.188 0.188 0.498 r
+(static)59.5 462.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file_operations fops = {)s
-(    .owner= THIS_MODULE,)59.5 422.4 ms
-(    .read = driver_read,)59.5 412.4 ms
-(    .open = driver_open,)59.5 402.4 ms
-(    .release = driver_close)59.5 392.4 ms
-(};)59.5 372.4 ms
-0 0 0.753 r
-(typedef)59.5 352.4 ms
+(    .owner = THIS_MODULE,)59.5 452.4 ms
+(    .read = driver_read,)59.5 442.4 ms
+(    .open = driver_open,)59.5 432.4 ms
+(    .release = driver_close)59.5 422.4 ms
+(};)59.5 412.4 ms
+0.188 0.188 0.498 r
+(typedef)59.5 392.4 ms
 0 g
 ( )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( read_cout_t {)s
-(    )59.5 342.4 ms
-0 0 0.753 r
+(    )59.5 382.4 ms
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( count;)s
-(} read_count;)59.5 332.4 ms
-( )59.5 322.4 ms
-(static read_count *rc;)59.5 302.4 ms
-(static )59.5 282.4 ms
-0 0 0.753 r
+(} read_count;)59.5 372.4 ms
+0.188 0.188 0.498 r
+(static)59.5 352.4 ms
+0 g
+( read_count *rc;)s
+0.188 0.188 0.498 r
+(static)59.5 332.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init mod_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
-({)59.5 272.4 ms
-(    dev_t major_nummer = MKDEV\(MAJORNUM, )59.5 262.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
-(            )59.5 252.4 ms
-(    )59.5 242.4 ms
+({)59.5 322.4 ms
+(    dev_t major_nummer = MKDEV\(MAJORNUM, 0\);)59.5 312.4 ms
+(    )59.5 292.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(register_chrdev_region\(MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES, DEVNAME\)\) )s
-(    {)59.5 232.4 ms
-(        pr_warn\("Device number 0x)59.5 222.4 ms
+( \(register_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES, DEVNAME\)\) {)s
+(        pr_warn\("Device number 0x)59.5 282.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( not available ...)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(" , MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(        )59.5 212.4 ms
+(",)s
+(            MKDEV\(MAJORNUM, 0\)\);)59.5 272.4 ms
+(        )59.5 262.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -)s
 F1 sf
-0.753 g
+0 0 0.376 r
+18 ul
 (EIO)s
 F0 sf
 0 g
-( ;)s
-(    } )59.5 202.4 ms
-(    pr_info\("Device number 0x)59.5 182.4 ms
+(;)s
+(    })59.5 252.4 ms
+(    pr_info\("Device number 0x)59.5 232.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( created)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(    cdev = cdev_alloc\(\);)59.5 162.4 ms
-(    )59.5 152.4 ms
+(", MKDEV\(MAJORNUM, 0\)\);)s
+(    cdev = cdev_alloc\(\);)59.5 212.4 ms
+(    )59.5 202.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(cdev == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
-(\) )s
-(    {)59.5 142.4 ms
-(        pr_warn\("cdev_alloc failed!)59.5 132.4 ms
+(\) {)s
+(        pr_warn\("cdev_alloc failed!)59.5 192.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(        )59.5 122.4 ms
+(        )59.5 182.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
 ( free_devnum;)s
-(    })59.5 112.4 ms
-(    kobject_set_name\(&cdev->kobj, DEVNAME\);)59.5 92.4 ms
-(    cdev->owner = THIS_MODULE;)59.5 82.4 ms
-(    cdev_init\(cdev, &fops\);)59.5 72.4 ms
-(    )59.5 62.4 ms
-(    )59.5 52.4 ms
+(    })59.5 172.4 ms
+(    kobject_set_name\(&cdev->kobj, DEVNAME\);)59.5 152.4 ms
+(    cdev->owner = THIS_MODULE;)59.5 142.4 ms
+(    cdev_init\(cdev, &fops\);)59.5 132.4 ms
+(    )59.5 112.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(cdev_add\(cdev, MKDEV\(MAJORNUM,)s
-0.753 g
-(0)s
+( \(cdev_add\(cdev, MKDEV\(MAJORNUM, 0\), NUMDEVICES\)\) {)s
+(        pr_warn\("cdev_add failed!)59.5 102.4 ms
+F1 sf
+0 0.251 0 r
+(\\n)s
+F0 sf
 0 g
-(\), NUMDEVICES\)\) )s
+("\);)s
+(        )59.5 92.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(goto)s
+F0 sf
+0 g
+( free_cdev;)s
+(    })59.5 82.4 ms
+(    device = device;)59.5 62.4 ms
 re sp
 %%PageTrailer
 %%Page: 2 2
@@ -441,283 +455,284 @@ F0 sf
 F1 sf
 (hello2/hello2.c                                                               Page 2)59.5 792.4 ms
 F0 sf
-(    {)59.5 772.4 ms
-(        pr_warn\("cdev_add failed!)59.5 762.4 ms
+(    dev_class = class_create\(THIS_MODULE, DEVNAME\);)59.5 772.4 ms
+(    device = device_create\(dev_class, )59.5 762.4 ms
 F1 sf
-0 0 0.753 r
-(\\n)s
-F0 sf
-0 g
-("\);)s
-(        )59.5 752.4 ms
-F1 sf
-0 0 0.753 r
-(goto)s
-F0 sf
-0 g
-( free_cdev;)s
-(    })59.5 742.4 ms
-(    device = device;)59.5 722.4 ms
-(    dev_class = class_create\(THIS_MODULE, DEVNAME\);)59.5 702.4 ms
-(    device = device_create \(dev_class, )59.5 692.4 ms
-F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, major_nummer, )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, DEVNAME\);)s
-(    )59.5 662.4 ms
-0 1 1 r
-(// Device Specific operations.)s
-0 g
-(    )59.5 642.4 ms
+(    // Device Specific operations.)59.5 742.4 ms
+(    )59.5 722.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
-0.753 0 0.753 r
-(free_cdev)59.5 622.4 ms
+( 0;)s
+( )59.5 702.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(free_cdev)s
+F0 sf
 0 g
 (:)s
-(    kobject_put\(&cdev->kobj\);)59.5 612.4 ms
-(    cdev = )59.5 602.4 ms
+(    kobject_put\(&cdev->kobj\);)59.5 692.4 ms
+(    cdev = )59.5 682.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-0.753 0 0.753 r
-(free_devnum)59.5 592.4 ms
-0 g
-(:)s
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM,)59.5 582.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
+( )59.5 672.4 ms
 F1 sf
-0 0 0.753 r
-(return)59.5 572.4 ms
+0.498 0.125 0.498 r
+(free_devnum)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
+(:)s
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 662.4 ms
+(    )59.5 652.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(return)s
+F0 sf
 0 g
-(;)s
-(})59.5 562.4 ms
-(static )59.5 532.4 ms
-0 0 0.753 r
+( -1;)s
+(})59.5 642.4 ms
+0.188 0.188 0.498 r
+(static)59.5 622.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instanz, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *userbuf, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
-( count, loff_t)s
-( *off\))59.5 522.4 ms
-({)59.5 512.4 ms
-(   )59.5 482.4 ms
-0 0 0.753 r
+( count,)s
+(               loff_t * off\))59.5 612.4 ms
+({)59.5 602.4 ms
+(    )59.5 582.4 ms
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( len = strlen\(HELLO\);)s
-(   )59.5 472.4 ms
+(    )59.5 572.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(rc->count < len\) {)s
-(       rc->count += len - copy_to_user\(userbuf, HELLO, len\);)59.5 462.4 ms
-(       pr_debug\("Module fops : sent )59.5 452.4 ms
+(        rc->count += len - copy_to_user\(userbuf, HELLO, len\);)59.5 562.4 ms
+(        pr_debug)59.5 552.4 ms
+(            \("Module fops : sent )59.5 542.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d)s
 F0 sf
 0 g
 ( bytes to user space and String-len was: )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d)s
 F0 sf
 0 g
 ( )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", rc->count, len\);)59.5 442.4 ms
-(       )59.5 432.4 ms
+(",)s
+(             rc->count, len\);)59.5 532.4 ms
+(        )59.5 522.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( rc->count;)s
-(   })59.5 422.4 ms
-(   )59.5 412.4 ms
+(    })59.5 512.4 ms
+(    )59.5 502.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 482.4 ms
+0.188 0.188 0.498 r
+(static)59.5 462.4 ms
 0 g
-(;)s
-(})59.5 392.4 ms
-(static )59.5 362.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file* file\) {)s
-(    )59.5 332.4 ms
+( file *file\))s
+({)59.5 452.4 ms
+(    )59.5 432.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(is_open\) )s
+( \(is_open\))s
+(        )59.5 422.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -)s
 F1 sf
-0.753 g
+0 0 0.376 r
+30 ul
 (EBUSY)s
 F0 sf
 0 g
 (;)s
-(    rc = kmalloc\()59.5 312.4 ms
-0 0 0.753 r
+(    rc = kmalloc\()59.5 402.4 ms
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\(read_count\), GFP_USER\);)s
-(    rc->count = )59.5 302.4 ms
-0.753 g
-(0)s
-0 g
-(;)s
-(    )59.5 292.4 ms
-(    is_open++;)59.5 282.4 ms
-(    try_module_get\(THIS_MODULE\);)59.5 262.4 ms
-(    pr_debug\("Module fops:device )59.5 252.4 ms
+(    rc->count = 0;)59.5 392.4 ms
+(    is_open++;)59.5 372.4 ms
+(    try_module_get\(THIS_MODULE\);)59.5 352.4 ms
+(    pr_debug)59.5 342.4 ms
+(        \("Module fops:device )59.5 332.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%s)s
 F0 sf
 0 g
 ( was opened from device with minor no )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d)s
 F0 sf
 0 g
 ( )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", DEV)s
-(NAME , iminor\(inode\)\);)59.5 242.4 ms
-(    )59.5 232.4 ms
+(",)s
+(         DEVNAME, iminor\(inode\)\);)59.5 322.4 ms
+(    )59.5 312.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 292.4 ms
+0.188 0.188 0.498 r
+(static)59.5 272.4 ms
 0 g
-(;)s
-(})59.5 212.4 ms
-(static )59.5 182.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_close\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file* file\) {)s
-(    is_open--;)59.5 172.4 ms
-(    module_put\(THIS_MODULE\);)59.5 152.4 ms
-(    pr_debug\("Module fops:device )59.5 142.4 ms
+( file *file\))s
+({)59.5 262.4 ms
+(    is_open--;)59.5 252.4 ms
+(    module_put\(THIS_MODULE\);)59.5 232.4 ms
+(    pr_debug\("Module fops:device )59.5 222.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%s)s
 F0 sf
 0 g
 ( was closed )s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 (", DEVNAME\);)s
-(    kfree\(rc\);)59.5 132.4 ms
-(    )59.5 122.4 ms
+(    kfree\(rc\);)59.5 212.4 ms
+(    )59.5 202.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
+( 0;)s
+(})59.5 182.4 ms
+0.188 0.188 0.498 r
+(static)59.5 162.4 ms
 0 g
-(;)s
-(})59.5 102.4 ms
-( )59.5 62.4 ms
-(static )59.5 52.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit mod_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
+({)59.5 152.4 ms
+(    )59.5 132.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(if)s
+F0 sf
+0 g
+( \(cdev\) {)s
+(        cdev_del\(cdev\);)59.5 122.4 ms
+(    })59.5 112.4 ms
+(    device_destroy\(dev_class, MKDEV\(MAJORNUM, 0\)\);)59.5 92.4 ms
+(    class_destroy\(dev_class\);)59.5 82.4 ms
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 62.4 ms
+(    printk\(KERN_ALERT "Goodbye, cruel world)59.5 52.4 ms
+F1 sf
+0 0.251 0 r
+(\\n)s
+F0 sf
+0 g
+("\);)s
 re sp
 %%PageTrailer
 %%Page: 3 3
@@ -729,40 +744,9 @@ F0 sf
 F1 sf
 (hello2/hello2.c                                                               Page 3)59.5 792.4 ms
 F0 sf
-({)59.5 772.4 ms
-(    )59.5 762.4 ms
-(    )59.5 752.4 ms
-F1 sf
-0 0 0.753 r
-(if)s
-F0 sf
-0 g
-( \(cdev\) {)s
-(        cdev_del\(cdev\);)59.5 742.4 ms
-(    })59.5 732.4 ms
-(    device_destroy\(dev_class, MKDEV\(MAJORNUM, )59.5 712.4 ms
-0.753 g
-(0)s
-0 g
-(\)\);)s
-(    class_destroy\(dev_class\);)59.5 702.4 ms
-(                                                      )59.5 692.4 ms
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM, )59.5 682.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
-(        printk\(KERN_ALERT "Goodbye, cruel world)59.5 672.4 ms
-F1 sf
-0 0 0.753 r
-(\\n)s
-F0 sf
-0 g
-("\);)s
-(})59.5 662.4 ms
-( )59.5 652.4 ms
-(module_init\(mod_init\);)59.5 642.4 ms
-(module_exit\(mod_exit\);)59.5 632.4 ms
+(})59.5 772.4 ms
+(module_init\(mod_init\);)59.5 752.4 ms
+(module_exit\(mod_exit\);)59.5 742.4 ms
 re sp
 %%PageTrailer
 %%Trailer
