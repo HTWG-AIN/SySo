@@ -1,8 +1,8 @@
 %!PS-Adobe-3.0
-%%Title: mygpio/ledmax.c
+%%Title: gpio-out/led.sh
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Tue Jan 28 13:23:19 2014
+%%CreationDate: Tue Jan 28 13:24:06 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -146,440 +146,182 @@ sv
 F0 sf
 %%EndPageSetup
 F1 sf
-(mygpio/ledmax.c                                                               Page 1)59.5 792.4 ms
+(gpio-out/led.sh                                                               Page 1)59.5 792.4 ms
 F0 sf
-0 0 0.376 r
-(#include )59.5 772.4 ms
+(#!/bin/sh)59.5 772.4 ms
+F1 sf
+0.498 0.498 0 r
+(RUN_FLAG)59.5 762.4 ms
+F0 sf
 0 g
-(<stdio.h>)s
-0 0 0.376 r
-(#include )59.5 762.4 ms
-0 g
-(<stdlib.h>)s
-0 0 0.376 r
-(#include )59.5 752.4 ms
-0 g
-(<unistd.h>)s
-0 0 0.376 r
-(#include )59.5 742.4 ms
-0 g
-(<errno.h>)s
-0 0 0.376 r
-(#include )59.5 732.4 ms
-0 g
-(<signal.h>)s
-0 0 0.376 r
-(#include )59.5 722.4 ms
-0 g
-(<string.h>)s
-0 0 0.376 r
-(#include )59.5 712.4 ms
-0 g
-(<time.h>)s
-0 0 0.376 r
-(#include )59.5 702.4 ms
-0 g
-(<math.h>)s
-0 0 0.376 r
-(#include )59.5 692.4 ms
-0 g
-(<sched.h>)s
-0 0 0.376 r
-(#include )59.5 682.4 ms
-0 g
-(<pthread.h>)s
-0 0 0.376 r
-(#include )59.5 672.4 ms
-0 g
-(<sys/types.h>)s
-0 0 0.376 r
-(#include )59.5 662.4 ms
-0 g
-(<unistd.h>)s
-0 0 0.376 r
-(#include )59.5 652.4 ms
-0 g
-(<fcntl.h>)s
-0 0 0.376 r
-(#define NSEC_OVERFLOW_BORDER )59.5 622.4 ms
-0 g
-(999999999)s
-0 0 0.376 r
-(#define SEC_IN_NSEC )59.5 612.4 ms
-0 g
-(1000000000)s
-0 0 0.376 r
-(#define LOOPS )59.5 602.4 ms
-0 g
-(100000)s
-0.188 0.188 0.498 r
-(int)59.5 572.4 ms
-0 g
-( mygpio_write\()s
-0.188 0.188 0.498 r
-(char)s
-0 g
-( *value\);)s
-0.188 0.188 0.498 r
-(int)59.5 562.4 ms
-0 g
-( mygpio_read\(\);)s
-0.188 0.188 0.498 r
-(struct)59.5 552.4 ms
-0 g
-( timespec diff\()s
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec, )s
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec\);)s
-0.188 0.188 0.498 r
-(int)59.5 522.4 ms
-0 g
-( nssleep\()s
-0.188 0.188 0.498 r
-(long)s
-0 g
-( nsec\);)s
-0.188 0.188 0.498 r
-(int)59.5 502.4 ms
-0 g
-( main\(\))s
-({)59.5 492.4 ms
-(    )59.5 472.4 ms
-(    )59.5 462.4 ms
-0.188 0.188 0.498 r
-(long)s
+(=1)s
+(# pin freigeben durch signal handler)59.5 752.4 ms
+F1 sf
+0.498 0.125 0.498 r
+(trap)59.5 742.4 ms
+F0 sf
 0 g
 ( )s
-0.188 0.188 0.498 r
-(long)s
+F1 sf
+0.498 0.498 0 r
+(RUN_FLAG)s
+F0 sf
 0 g
-( nsec_average = 0;)s
-(    mygpio_write\("1"\);)59.5 452.4 ms
-(    pid_t pod = getpid\(\);)59.5 432.4 ms
-(    )59.5 422.4 ms
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( sched_param param;)s
-(    sched_setscheduler\(pod, SCHED_FIFO, &param\);)59.5 402.4 ms
-(    )59.5 382.4 ms
-0.188 0.188 0.498 r
-(int)s
-0 g
-( i = 0;)s
-(    )59.5 362.4 ms
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec res_start, res_stop, diff_stamp;)s
-(    )59.5 342.4 ms
+(=0 EXIT SIGINT SIGHUP SIGTERM SIGQUIT)s
+(#pin besschlagnahmen.)59.5 732.4 ms
 F1 sf
 0.498 0.125 0.498 r
-(for)s
+(echo)59.5 722.4 ms
 F0 sf
 0 g
-(\(i = 0; i < LOOPS; i++\) {)s
-(        clock_gettime\(CLOCK_REALTIME, &res_start\);)59.5 332.4 ms
-(        mygpio_write\("0"\);)59.5 322.4 ms
-(        mygpio_write\("1"\);)59.5 312.4 ms
-(        clock_gettime\(CLOCK_REALTIME, &res_stop\);)59.5 302.4 ms
-(        )59.5 282.4 ms
-(        diff_stamp = diff\(res_start, res_stop\);)59.5 272.4 ms
-(        )59.5 262.4 ms
-(        //printf\("diff_time = %lld.%.9ld, average = %ld\\n", \(long long\) diff_stamp.t)59.5 252.4 ms
-(v_sec, diff_stamp.tv_nsec, nsec_average\);)59.5 242.4 ms
-(        )59.5 222.4 ms
+( )s
 F1 sf
 0.498 0.125 0.498 r
-(if)s
+(")s
 F0 sf
 0 g
-( \(nsec_average == 0 \) {)s
-(            nsec_average = diff_stamp.tv_nsec;)59.5 212.4 ms
-(        } )59.5 202.4 ms
+(18)s
 F1 sf
 0.498 0.125 0.498 r
-(else)s
+(")s
 F0 sf
 0 g
-( {)s
-(            nsec_average = \(nsec_average + diff_stamp.tv_nsec\) / 2;)59.5 192.4 ms
-(        })59.5 182.4 ms
-(        )59.5 162.4 ms
-(    })59.5 152.4 ms
-(    )59.5 132.4 ms
-0.188 0.188 0.498 r
-(double)s
-0 g
-( nseconds = \()s
-0.188 0.188 0.498 r
-(double)s
-0 g
-(\)nsec_average * pow\(10, -9\);)s
-(    printf\("Nsec Avarage = )59.5 122.4 ms
-F1 sf
-0 0.251 0 r
-(%lld)s
-F0 sf
-0 g
-( 10^-9=)s
-F1 sf
-0 0.251 0 r
-(%lf)s
-F0 sf
-0 g
-( nseconds =)s
-F1 sf
-0 0.251 0 r
-(%lf\\n)s
-F0 sf
-0 g
-(", nsec_average, pow\(10,-9\))s
-(, nseconds\);)59.5 112.4 ms
-(    printf\("kHZ = )59.5 82.4 ms
-F1 sf
-0 0.251 0 r
-(%lf\\n)s
-F0 sf
-0 g
-(", \(1.0 / nseconds\) / 1000.0\);)s
-(    )59.5 52.4 ms
+( )s
 F1 sf
 0.498 0.125 0.498 r
-(return)s
+(>)s
 F0 sf
 0 g
-( 0;)s
-re sp
-%%PageTrailer
-%%Page: 2 2
-%%BeginPageSetup
-sv
-0 g
-F0 sf
-%%EndPageSetup
-F1 sf
-(mygpio/ledmax.c                                                               Page 2)59.5 792.4 ms
-F0 sf
-(})59.5 772.4 ms
-0.188 0.188 0.498 r
-(int)59.5 722.4 ms
-0 g
-( mygpio_write\()s
-0.188 0.188 0.498 r
-(char)s
-0 g
-( *value\){)s
-(    )59.5 712.4 ms
-0.188 0.188 0.498 r
-(int)s
-0 g
-( led_file = open\("/dev/mygpio", O_NONBLOCK | O_RDWR\);)s
-(    write\(led_file, value, 2\);)59.5 692.4 ms
-(    )59.5 672.4 ms
+(  /sys/class/gpio/export)s
+(# ausgang setzten)59.5 712.4 ms
 F1 sf
 0.498 0.125 0.498 r
-(if)s
+(echo)59.5 702.4 ms
 F0 sf
 0 g
-( \(close\(led_file\) != 0\) {)s
-(    })59.5 662.4 ms
-(    )59.5 642.4 ms
+( )s
 F1 sf
 0.498 0.125 0.498 r
-(return)s
+(")s
 F0 sf
 0 g
-( 1;)s
-(})59.5 622.4 ms
-0.188 0.188 0.498 r
-(int)59.5 612.4 ms
-0 g
-( mygpio_read\(\){)s
-(    )59.5 602.4 ms
-0.188 0.188 0.498 r
-(int)s
-0 g
-( read_count;)s
-(    )59.5 592.4 ms
-0.188 0.188 0.498 r
-(int)s
-0 g
-( fclose_ret;)s
-(    )59.5 582.4 ms
-0.188 0.188 0.498 r
-(int)s
-0 g
-( read_int;)s
-(    )59.5 572.4 ms
-0.188 0.188 0.498 r
-(FILE)s
-0 g
-( *mygpio = fopen\("/dev/mygpio", "r"\);)s
-(    )59.5 562.4 ms
+(out)s
 F1 sf
 0.498 0.125 0.498 r
-(if)s
+(")s
 F0 sf
 0 g
-( \(mygpio == )s
+( )s
 F1 sf
+0.498 0.125 0.498 r
+(>)s
+F0 sf
+0 g
+( /sys/class/gpio/gpio18/direction )s
+F1 sf
+0.498 0.125 0.498 r
+(echo)59.5 692.4 ms
+F0 sf
+0 g
+( 1 )s
+F1 sf
+0.498 0.125 0.498 r
+(>)s
+F0 sf
+0 g
+(   /sys/class/gpio/gpio18/value)s
+F1 sf
+0.498 0.125 0.498 r
+(while [)59.5 662.4 ms
+F0 sf
+0 g
+( )s
 0 0 0.376 r
-24 ul
-(NULL)s
-F0 sf
+($RUN_FLAG)s
 0 g
-(\) {)s
-(        printf\("failed to open gpio"\);)59.5 552.4 ms
-(        )59.5 542.4 ms
+( )s
 F1 sf
 0.498 0.125 0.498 r
-(return)s
+(-eq)s
 F0 sf
 0 g
-( -1;)s
-(    })59.5 532.4 ms
-(    read_count = fread\(&read_int, )59.5 512.4 ms
+( 1 )s
 F1 sf
 0.498 0.125 0.498 r
-(sizeof)s
+(])s
+(do)59.5 652.4 ms
 F0 sf
 0 g
-(\()s
-0.188 0.188 0.498 r
-(int)s
-0 g
-(\), 1, mygpio\);)s
-(    )59.5 502.4 ms
+(  # led einschalten)59.5 632.4 ms
+(  )59.5 622.4 ms
 F1 sf
 0.498 0.125 0.498 r
-(if)s
+(echo)s
 F0 sf
 0 g
-( \(read_count > 0 \) {)s
-(        ;)59.5 492.4 ms
-(    })59.5 482.4 ms
-(    fclose_ret = fclose\(mygpio\);)59.5 462.4 ms
-(    )59.5 452.4 ms
+( 0 )s
 F1 sf
 0.498 0.125 0.498 r
-(if)s
+(>)s
 F0 sf
 0 g
-( \(fclose_ret == )s
-F1 sf
-0 0 0.376 r
-18 ul
-(EOF)s
-F0 sf
-0 g
-(\) {)s
-(    })59.5 442.4 ms
-(    )59.5 422.4 ms
+(   /sys/class/gpio/gpio18/value)s
+(  )59.5 612.4 ms
 F1 sf
 0.498 0.125 0.498 r
-(return)s
+(sleep)s
 F0 sf
 0 g
-( 1;)s
-(})59.5 412.4 ms
-0.188 0.188 0.498 r
-(int)59.5 372.4 ms
-0 g
-( nssleep\()s
-0.188 0.188 0.498 r
-(long)s
-0 g
-( nsec\) {)s
-(    )59.5 362.4 ms
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec sleeptime;)s
-(    sleeptime.tv_sec = 0;)59.5 342.4 ms
-(    sleeptime.tv_nsec = nsec;)59.5 332.4 ms
-(    )59.5 302.4 ms
+( 1)s
+(  # led ausschalten.)59.5 602.4 ms
+(  )59.5 592.4 ms
 F1 sf
 0.498 0.125 0.498 r
-(while)s
+(echo)s
 F0 sf
 0 g
-( \(clock_nanosleep\(CLOCK_MONOTONIC, 0, &sleeptime, )s
-F1 sf
-0 0 0.376 r
-24 ul
-(NULL)s
-F0 sf
-0 g
-(\) == )s
-F1 sf
-0 0 0.376 r
-30 ul
-(EINTR)s
-F0 sf
-0 g
-( \);)s
-(    )59.5 282.4 ms
+( 1 )s
 F1 sf
 0.498 0.125 0.498 r
-(return)s
+(>)s
 F0 sf
 0 g
-( 0;)s
-(})59.5 272.4 ms
-0.188 0.188 0.498 r
-(struct)59.5 252.4 ms
-0 g
-( timespec diff\()s
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec start, )s
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec end\))s
-({)59.5 242.4 ms
-(    )59.5 232.4 ms
-0.188 0.188 0.498 r
-(struct)s
-0 g
-( timespec temp;)s
-(    )59.5 222.4 ms
+(   /sys/class/gpio/gpio18/value)s
+(  )59.5 582.4 ms
 F1 sf
 0.498 0.125 0.498 r
-(if)s
+(sleep)s
 F0 sf
 0 g
-( \(\(end.tv_nsec-start.tv_nsec\)<0\) {)s
-(        temp.tv_sec = end.tv_sec-start.tv_sec-1;)59.5 212.4 ms
-(        temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;)59.5 202.4 ms
-(    } )59.5 192.4 ms
+( 1)s
 F1 sf
 0.498 0.125 0.498 r
-(else)s
+(done)59.5 542.4 ms
+(echo)59.5 522.4 ms
 F0 sf
 0 g
-( {)s
-(        temp.tv_sec = end.tv_sec-start.tv_sec;)59.5 182.4 ms
-(        temp.tv_nsec = end.tv_nsec-start.tv_nsec;)59.5 172.4 ms
-(    })59.5 162.4 ms
-(    )59.5 152.4 ms
+( )s
 F1 sf
 0.498 0.125 0.498 r
-(return)s
+(")s
 F0 sf
 0 g
-( temp;)s
-(})59.5 142.4 ms
+(18)s
+F1 sf
+0.498 0.125 0.498 r
+(")s
+F0 sf
+0 g
+( )s
+F1 sf
+0.498 0.125 0.498 r
+(>)s
+F0 sf
+0 g
+(/sys/class/gpio/unexport)s
 re sp
 %%PageTrailer
 %%Trailer
-%%Pages: 2
+%%Pages: 1
 %%EOF
 

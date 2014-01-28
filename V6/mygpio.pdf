@@ -2,7 +2,7 @@
 %%Title: mygpio/mygpio.c
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Fri Jan 24 20:12:41 2014
+%%CreationDate: Tue Jan 28 13:22:54 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -148,67 +148,63 @@ F0 sf
 F1 sf
 (mygpio/mygpio.c                                                               Page 1)59.5 792.4 ms
 F0 sf
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 772.4 ms
 0 g
 (<linux/init.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 762.4 ms
 0 g
 (<linux/module.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 752.4 ms
 0 g
 (<linux/kernel.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 742.4 ms
 0 g
 (<linux/timer.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 732.4 ms
 0 g
 (<linux/sched.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 722.4 ms
 0 g
 (<linux/fs.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 712.4 ms
 0 g
 (<linux/cdev.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 702.4 ms
 0 g
 (<linux/device.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 692.4 ms
 0 g
-(<linux/slab.h>     )s
-0 1 1 r
-(// kmalloc\(\), kfree\(\))s
-0.502 0.502 0 r
+(<linux/slab.h>     // kmalloc\(\), kfree\(\))s
+0 0 0.376 r
 (#include )59.5 682.4 ms
 0 g
-(<asm/uaccess.h>    )s
-0 1 1 r
-(// copy_to_user\(\))s
-0.502 0.502 0 r
+(<asm/uaccess.h>    // copy_to_user\(\))s
+0 0 0.376 r
 (#include )59.5 672.4 ms
 0 g
 (<asm/segment.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 662.4 ms
 0 g
 (<linux/buffer_head.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 652.4 ms
 0 g
 (<linux/gpio.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 642.4 ms
 0 g
 (<linux/io.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 632.4 ms
 0 g
 (<asm/io.h>)s
@@ -216,83 +212,83 @@ F0 sf
 (MODULE_LICENSE\("GPL"\);)59.5 602.4 ms
 (MODULE_DESCRIPTION\("mygpio device"\);)59.5 592.4 ms
 (MODULE_SUPPORTED_DEVICE\("none"\);)59.5 582.4 ms
-0 0 0.753 r
+0 0 0.376 r
 (#define DEVNAME )59.5 562.4 ms
 0 g
 ("mygpio")s
-0 0 0.753 r
+0 0 0.376 r
 (#define MAJORNUM )59.5 552.4 ms
-0.753 g
+0 g
 (150)s
-0 0 0.753 r
+0 0 0.376 r
 (#define NUMDEVICES )59.5 542.4 ms
-0.753 g
+0 g
 (1)s
-0 0 0.753 r
+0 0 0.376 r
 (#define GPBASE\(x\) \()59.5 522.4 ms
-0.753 g
+0 g
 (0xF2200000)s
-0 0 0.753 r
+0 0 0.376 r
 ( | x\))s
 (#define GPFSEL0 GPBASE\()59.5 502.4 ms
-0.753 g
+0 g
 (0x0000)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPFSEL1 GPBASE\()59.5 492.4 ms
-0.753 g
+0 g
 (0x0004)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPFSEL2 GPBASE\()59.5 482.4 ms
-0.753 g
+0 g
 (0x0008)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPFSEL3 GPBASE\()59.5 472.4 ms
-0.753 g
+0 g
 (0x000C)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPFSEL4 GPBASE\()59.5 462.4 ms
-0.753 g
+0 g
 (0x0010)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPFSEL5 GPBASE\()59.5 452.4 ms
-0.753 g
+0 g
 (0x0014)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPSET0 GPBASE\()59.5 442.4 ms
-0.753 g
+0 g
 (0x001C)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPSET1 GPBASE\()59.5 432.4 ms
-0.753 g
+0 g
 (0x0020)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPCLR0 GPBASE\()59.5 422.4 ms
-0.753 g
+0 g
 (0x0028)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPCLR1 GPBASE\()59.5 412.4 ms
-0.753 g
+0 g
 (0x002C)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPLEV0 GPBASE\()59.5 402.4 ms
-0.753 g
+0 g
 (0x0034)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPLEV1 GPBASE\()59.5 392.4 ms
-0.753 g
+0 g
 (0x0038)s
-0 0 0.753 r
+0 0 0.376 r
 (\))s
 (#define GPIO_PORT_18_SEL)59.5 362.4 ms
 (#define GPIO_PORT_25_SEL)59.5 352.4 ms
@@ -301,125 +297,143 @@ F0 sf
 (#define GPIO_PORT_25_SET)59.5 322.4 ms
 0 g
 ( )59.5 302.4 ms
-(static )59.5 292.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 292.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( read_bit\(u32 n , )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( bit\) {)s
 (    )59.5 282.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( \(n & \()s
-0.753 g
-(1)s
-0 g
-( << bit\)\) >> bit;)s
+( \(n & \(1 << bit\)\) >> bit;)s
 (})59.5 272.4 ms
-(static u32 turn_on_bit\(u32 n, )59.5 252.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 252.4 ms
+0 g
+( u32 turn_on_bit\(u32 n, )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( bitnum\) {)s
 (        )59.5 242.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( n | \()s
-0.753 g
-(1)s
-0 g
-( << bitnum\);)s
+( n | \(1 << bitnum\);)s
 (})59.5 232.4 ms
-(static u32 turn_off_bit\(u32 n, )59.5 212.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 212.4 ms
+0 g
+( u32 turn_off_bit\(u32 n, )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( bitnum\) {)s
 (        )59.5 202.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( n & \(~ \()s
-0.753 g
-(1)s
-0 g
-( << bitnum\)\);)s
+( n & \(~ \(1 << bitnum\)\);)s
 (}      )59.5 192.4 ms
-(static )59.5 162.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 162.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( cdev *cdev = )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
-(static )59.5 152.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 152.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( class *dev_class;)s
-0 1 1 r
 (// function prototypes)59.5 102.4 ms
+0.188 0.188 0.498 r
+(static)59.5 92.4 ms
 0 g
-(static )59.5 92.4 ms
-0 0 0.753 r
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init mod_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\);)s
-(static )59.5 82.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 82.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit mod_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\);)s
-(static )59.5 72.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 72.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\);)s
-(static )59.5 62.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 62.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_write\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file *instance, const )s
-0 0 0.753 r
+( file *instance, )s
+0.188 0.188 0.498 r
+(const)s
+0 g
+( )s
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( __user * userbuf, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size)s
 (_t)59.5 52.4 ms
 0 g
@@ -435,48 +449,60 @@ F0 sf
 F1 sf
 (mygpio/mygpio.c                                                               Page 2)59.5 792.4 ms
 F0 sf
-(static )59.5 772.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 772.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( driver_close\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance\);)s
-(static )59.5 762.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 762.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
 ( count, loff_t *)s
 ( offset\);)59.5 752.4 ms
-(static )59.5 742.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 742.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( read_bit\(u32 n , )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( bit\);)s
-(static )59.5 712.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 712.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file_operations fops = {)s
@@ -486,20 +512,23 @@ F0 sf
 (    .write = driver_write,)59.5 672.4 ms
 (    .release = driver_close)59.5 662.4 ms
 (};)59.5 652.4 ms
-(static )59.5 622.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 622.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_read\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *instance, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( *user, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
 ( count,)s
@@ -508,188 +537,167 @@ F0 sf
 (    u32 *ptr_port_button = \(u32*\) GPLEV0;)59.5 592.4 ms
 (    u32 old_value_button = readl\(ptr_port_button\);)59.5 582.4 ms
 (    )59.5 562.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
-( data[)s
-0.753 g
-(5)s
-0 g
-(];)s
+( data[5];)s
 (    )59.5 542.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( size = sprintf\(data, ")s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d\\n)s
 F0 sf
 0 g
-(", read_bit\(old_value_button, )s
-0.753 g
-(25)s
-0 g
-(\)\);)s
+(", read_bit\(old_value_button, 25\)\);)s
 (    )59.5 522.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( not_copied = copy_to_user\(user, data , size\);)s
 (    )59.5 492.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 (  size - not_copied;)s
 (})59.5 482.4 ms
-(static )59.5 462.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 462.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_write\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
-( file *instance, const )s
-0 0 0.753 r
+( file *instance, )s
+0.188 0.188 0.498 r
+(const)s
+0 g
+( )s
+0.188 0.188 0.498 r
 (char)s
 0 g
 ( __user * userbuf, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size)s
 (_t)59.5 452.4 ms
 0 g
 ( count, loff_t * off\) )s
 ({)59.5 442.4 ms
 (    )59.5 432.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( userval;)s
 (    )59.5 412.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
-( not_copied = kstrtoint_from_user\(userbuf, count, )s
-0.753 g
-(0)s
-0 g
-(, &userval\);)s
+( not_copied = kstrtoint_from_user\(userbuf, count, 0, &userval\);)s
 (    u32 *ptr_port_led = )59.5 402.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
 (    )59.5 382.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(userval == )s
-0.753 g
-(1)s
-0 g
-(\) {)s
+( \(userval == 1\) {)s
 (        ptr_port_led = \(u32*\)GPSET0;)59.5 372.4 ms
 (    })59.5 362.4 ms
 (    )59.5 352.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(userval == )s
-0.753 g
-(0)s
-0 g
-(\) {)s
+( \(userval == 0\) {)s
 (        ptr_port_led = \(u32*\)GPCLR0;)59.5 342.4 ms
 (    })59.5 332.4 ms
 (    )59.5 322.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(ptr_port_led == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
 (        )59.5 312.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( count;)s
 (    })59.5 302.4 ms
-(    u32 old_value_led = \()59.5 292.4 ms
-0.753 g
-(0x00000000)s
-0 g
-(\) | \()s
-0.753 g
-(1)s
-0 g
-( << )s
-0.753 g
-(18)s
-0 g
-(\);)s
+(    u32 old_value_led = \(0x00000000\) | \(1 << 18\);)59.5 292.4 ms
 (    writel\(old_value_led, ptr_port_led\);)59.5 262.4 ms
 (    )59.5 242.4 ms
 (    )59.5 232.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( count - not_copied;)s
 (})59.5 222.4 ms
-(static )59.5 192.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 192.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_close\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *file\))s
 ({)59.5 182.4 ms
 (    )59.5 172.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
+( 0;)s
 (})59.5 162.4 ms
-(static )59.5 142.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 142.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (ssize_t)s
 0 g
 ( driver_open\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( inode *inode, )s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( file *file\))s
@@ -697,15 +705,8 @@ F0 sf
 (    u32 *ptr_port_button = \(u32*\)GPFSEL2;)59.5 102.4 ms
 (    u32 old_value_button = readl\(ptr_port_button\);)59.5 92.4 ms
 (    rmb\(\);)59.5 82.4 ms
-(    )59.5 72.4 ms
-0 1 1 r
-(// clear its fuer port 25 = FFFC7FFF)s
-0 g
-(    u32 cleared_ports = old_value_button & )59.5 62.4 ms
-0.753 g
-(0xFFFC7FFF)s
-0 g
-(;)s
+(    // clear its fuer port 25 = FFFC7FFF)59.5 72.4 ms
+(    u32 cleared_ports = old_value_button & 0xFFFC7FFF;)59.5 62.4 ms
 re sp
 %%PageTrailer
 %%Page: 3 3
@@ -717,99 +718,77 @@ F0 sf
 F1 sf
 (mygpio/mygpio.c                                                               Page 3)59.5 792.4 ms
 F0 sf
-(    )59.5 772.4 ms
-0 1 1 r
-(// writing )s
-0 g
+(    // writing )59.5 772.4 ms
 (    wmb\(\);)59.5 762.4 ms
 (    writel\(cleared_ports, ptr_port_button\);)59.5 752.4 ms
 (    u32 *ptr_port_led = \(u32*\)GPFSEL1;)59.5 702.4 ms
 (    u32 old_value_led = readl\(ptr_port_led\);)59.5 692.4 ms
 (    rmb\(\);)59.5 682.4 ms
-(    )59.5 672.4 ms
-0 1 1 r
-(// clear its fuer port 18 = F8FFFFFF)s
-0 g
-(    u32 cleared_ports_led = old_value_led & )59.5 662.4 ms
-0.753 g
-(0xF8FFFFFF)s
-0 g
-(;)s
-(    u32 new_ports_led = cleared_ports_led | )59.5 652.4 ms
-0.753 g
-(0x01000000)s
-0 g
-(;)s
+(    // clear its fuer port 18 = F8FFFFFF)59.5 672.4 ms
+(    u32 cleared_ports_led = old_value_led & 0xF8FFFFFF;)59.5 662.4 ms
+(    u32 new_ports_led = cleared_ports_led | 0x01000000;)59.5 652.4 ms
 (    wmb\(\);)59.5 642.4 ms
 (    writel\(new_ports_led, ptr_port_led\);)59.5 632.4 ms
 (    )59.5 622.4 ms
 (    )59.5 592.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
+( 0;)s
 (})59.5 582.4 ms
-(static )59.5 552.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 552.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( __init mod_init\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
 ({)59.5 542.4 ms
-(    dev_t major_nummer = MKDEV\(MAJORNUM, )59.5 522.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
+(    dev_t major_nummer = MKDEV\(MAJORNUM, 0\);)59.5 522.4 ms
 (    printk\(KERN_ALERT "mypgio: Hello, world!)59.5 502.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (    )59.5 482.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(register_chrdev_region\(major_nummer, NUMDEVICES, DEVNAME\)\) {)s
 (        pr_warn\("Device number 0x)59.5 472.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( not available ...)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
+(", MKDEV\(MAJORNUM, 0\)\);)s
 (        )59.5 462.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
 ( -)s
 F1 sf
-0.753 g
+0 0 0.376 r
+18 ul
 (EIO)s
 F0 sf
 0 g
@@ -817,45 +796,42 @@ F0 sf
 (    })59.5 452.4 ms
 (    pr_info\("Device number 0x)59.5 432.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%x)s
 F0 sf
 0 g
 ( created)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
-(", MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\)\);)s
+(", MKDEV\(MAJORNUM, 0\)\);)s
 (    cdev = cdev_alloc\(\);)59.5 412.4 ms
 (    )59.5 392.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(cdev == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\) {)s
 (        pr_warn\("cdev_alloc failed!)59.5 382.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (        )59.5 372.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
@@ -866,25 +842,21 @@ F0 sf
 (    cdev_init\(cdev, &fops\);)59.5 322.4 ms
 (    )59.5 302.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(cdev_add\(cdev, MKDEV\(MAJORNUM, )s
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\)\) {)s
+( \(cdev_add\(cdev, MKDEV\(MAJORNUM, 0\), NUMDEVICES\)\) {)s
 (        pr_warn\("cdev_add failed!)59.5 292.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (        )59.5 282.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (goto)s
 F0 sf
 0 g
@@ -893,85 +865,79 @@ F0 sf
 (    dev_class = class_create\(THIS_MODULE, DEVNAME\);)59.5 252.4 ms
 (    device_create\(dev_class, )59.5 242.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, major_nummer, )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (, DEVNAME\);)s
 (    )59.5 192.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
+( 0;)s
 (      )59.5 172.4 ms
-0.753 0 0.753 r
+F1 sf
+0.498 0.125 0.498 r
 (free_cdev)s
+F0 sf
 0 g
 (:)s
 (    kobject_put\(&cdev->kobj\);)59.5 162.4 ms
 (    cdev = )59.5 152.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
 (      )59.5 142.4 ms
-0.753 0 0.753 r
+F1 sf
+0.498 0.125 0.498 r
 (free_devnum)s
+F0 sf
 0 g
 (:)s
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM, )59.5 132.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 132.4 ms
 (    )59.5 122.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
+( -1;)s
 (})59.5 112.4 ms
-(static )59.5 92.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
+(static)59.5 92.4 ms
+0 g
+( )s
+0.188 0.188 0.498 r
 (void)s
 0 g
 ( __exit mod_exit\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)s
 0 g
 (\))s
 ({)59.5 82.4 ms
 (    printk\(KERN_ALERT "mypgio: Goodbye, cruel world)59.5 72.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
-(    device_destroy\(dev_class, MKDEV\(MAJORNUM, )59.5 62.4 ms
-0.753 g
-(0)s
-0 g
-(\)\);)s
+(    device_destroy\(dev_class, MKDEV\(MAJORNUM, 0\)\);)59.5 62.4 ms
 (    class_destroy\(dev_class\);)59.5 52.4 ms
 re sp
 %%PageTrailer
@@ -986,18 +952,14 @@ F1 sf
 F0 sf
 (    )59.5 762.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(cdev\) {)s
 (        cdev_del\(cdev\);)59.5 752.4 ms
 (    })59.5 742.4 ms
-(    unregister_chrdev_region\(MKDEV\(MAJORNUM, )59.5 722.4 ms
-0.753 g
-(0)s
-0 g
-(\), NUMDEVICES\);)s
+(    unregister_chrdev_region\(MKDEV\(MAJORNUM, 0\), NUMDEVICES\);)59.5 722.4 ms
 (})59.5 702.4 ms
 (module_init\(mod_init\);)59.5 682.4 ms
 (module_exit\(mod_exit\);)59.5 672.4 ms

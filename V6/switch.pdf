@@ -2,7 +2,7 @@
 %%Title: gpio-in/switch.c
 %%For: jakub
 %%Creator: VIM - Vi IMproved 7.4 (2013 Aug 10)
-%%CreationDate: Fri Jan 24 20:12:09 2014
+%%CreationDate: Tue Jan 28 13:22:45 2014
 %%DocumentData: Clean8Bit
 %%Orientation: Portrait
 %%Pages: (atend)
@@ -148,112 +148,99 @@ F0 sf
 F1 sf
 (gpio-in/switch.c                                                              Page 1)59.5 792.4 ms
 F0 sf
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 772.4 ms
 0 g
 (<stdio.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 762.4 ms
 0 g
 (<stdlib.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 752.4 ms
 0 g
 (<unistd.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 742.4 ms
 0 g
 (<errno.h>)s
-0.502 0.502 0 r
+0 0 0.376 r
 (#include )59.5 732.4 ms
 0 g
 (<signal.h>)s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)59.5 692.4 ms
 0 g
 ( sigint_handler\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 (\);)s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)59.5 662.4 ms
 0 g
 ( main\(\))s
 ({)59.5 652.4 ms
 (    )59.5 642.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
-( trigger_count = )s
-0.753 g
-(0)s
-0 g
-(;)s
+( trigger_count = 0;)s
 (    printf\("activating sighandler)59.5 632.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
 ("\);)s
 (    )59.5 622.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (struct)s
 0 g
 ( sigaction  sa;)s
 (    )59.5 612.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
-( fclose_ret = )s
-0.753 g
-(0)s
-0 g
-(;)s
+( fclose_ret = 0;)s
 (    )59.5 602.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
-( trigger_temp = )s
-0.753 g
-(1)s
-0 g
-(;)s
+( trigger_temp = 1;)s
 (    )59.5 592.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (FILE)s
 0 g
 ( *gpio17 = )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (;)s
 (    sigemptyset\(&sa.sa_mask\);)59.5 572.4 ms
 (    sa.sa_handler = sigint_handler;)59.5 562.4 ms
-(    sa.sa_flags = )59.5 552.4 ms
-0.753 g
-(0)s
-0 g
-(;)s
+(    sa.sa_flags = 0;)59.5 552.4 ms
 (    sigaction\()59.5 542.4 ms
 F1 sf
-0.753 g
+0 0 0.376 r
+36 ul
 (SIGINT)s
 F0 sf
 0 g
 (, &sa, )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
 (\);)s
 (    printf\("starting trigger logger)59.5 522.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
@@ -262,39 +249,32 @@ F0 sf
 (    perror\(""\);)59.5 492.4 ms
 (    )59.5 452.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (while)s
 F0 sf
 0 g
-(\()s
-0.753 g
-(1)s
-0 g
-(\) {)s
+(\(1\) {)s
 (        )59.5 442.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
-( read_text[)s
-0.753 g
-(10)s
-0 g
-(];)s
+( read_text[10];)s
 (        )59.5 432.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (size_t)s
 0 g
 ( read_count;)s
 (        gpio17 = fopen\("/sys/class/gpio/gpio17/value", "r"\);)59.5 412.4 ms
 (        )59.5 402.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(gpio17 == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+24 ul
 (NULL)s
 F0 sf
 0 g
@@ -302,70 +282,52 @@ F0 sf
 (            printf\("failed to open gpio"\);)59.5 392.4 ms
 (            )59.5 382.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
+( -1;)s
 (        })59.5 372.4 ms
 (        read_count = fread\(&read_text, )59.5 362.4 ms
-0 0 0.753 r
+F1 sf
+0.498 0.125 0.498 r
 (sizeof)s
+F0 sf
 0 g
 (\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (char)s
 0 g
-(\), )s
-0.753 g
-(2)s
-0 g
-(, gpio17\);)s
+(\), 2, gpio17\);)s
 (        )59.5 352.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-(\(read_count > )s
-0.753 g
-(0)s
-0 g
-( \) {)s
+(\(read_count > 0 \) {)s
 (            )59.5 342.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( trigger_state = atoi\(read_text\);)s
 (            )59.5 332.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
-( \(trigger_temp == )s
-0.753 g
-(0)s
-0 g
-( && trigger_state == )s
-0.753 g
-(1)s
-0 g
-(\){)s
+( \(trigger_temp == 0 && trigger_state == 1\){)s
 (                trigger_count++;)59.5 322.4 ms
 (                printf\("trigger pushed )59.5 312.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d)s
 F0 sf
 0 g
 ( times)s
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (\\n)s
 F0 sf
 0 g
@@ -376,62 +338,51 @@ F0 sf
 (        fclose_ret = fclose\(gpio17\);)59.5 272.4 ms
 (        )59.5 262.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (if)s
 F0 sf
 0 g
 ( \(fclose_ret == )s
 F1 sf
-0.753 g
+0 0 0.376 r
+18 ul
 (EOF)s
 F0 sf
 0 g
 (\) {)s
 (            )59.5 252.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( -)s
-0.753 g
-(1)s
-0 g
-(;)s
+( -1;)s
 (        })59.5 242.4 ms
 (    })59.5 222.4 ms
 (    )59.5 192.4 ms
 F1 sf
-0 0 0.753 r
+0.498 0.125 0.498 r
 (return)s
 F0 sf
 0 g
-( )s
-0.753 g
-(0)s
-0 g
-(;)s
+( 0;)s
 (})59.5 182.4 ms
-0 0 0.753 r
+0.188 0.188 0.498 r
 (void)59.5 162.4 ms
 0 g
 ( sigint_handler\()s
-0 0 0.753 r
+0.188 0.188 0.498 r
 (int)s
 0 g
 ( signum\) {)s
 (    printf\("Programm interrupted with signum: )59.5 152.4 ms
 F1 sf
-0 0 0.753 r
+0 0.251 0 r
 (%d\\n)s
 F0 sf
 0 g
 (", signum\);)s
-(    exit\()59.5 142.4 ms
-0.753 g
-(0)s
-0 g
-(\);)s
+(    exit\(0\);)59.5 142.4 ms
 (})59.5 132.4 ms
 re sp
 %%PageTrailer
